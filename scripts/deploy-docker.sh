@@ -6,14 +6,14 @@ cd /opt/reserve-kursk/current
 echo "==> Pulling latest code..."
 git pull origin main
 
-echo "==> Building Docker image..."
-docker compose build --no-cache app
+echo "==> Building Docker images..."
+docker compose build
 
-echo "==> Starting services..."
+echo "==> Restarting services..."
 docker compose up -d
 
 echo "==> Cleaning up old images..."
 docker image prune -f
 
-echo "==> Done! Checking status..."
+echo "==> Done!"
 docker compose ps
