@@ -6,7 +6,7 @@ import { DateInput } from "@/components/DateInput";
 import { OwnerTabs } from "@/components/OwnerTabs";
 import { ReservationActions } from "@/components/ReservationActions";
 import { ReservationSearchBox } from "@/components/ReservationSearchBox";
-import { EXTERNAL_PAYMENT_STATUSES, RESERVATION_STATUSES, VERIFICATION_STATUSES } from "@/lib/constants";
+import { EXTERNAL_PAYMENT_STATUSES, RESERVATION_STATUSES, STAFF_ROLES, VERIFICATION_STATUSES } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 import { externalPaymentStatusLabel } from "@/lib/external-payments";
 import { formatMoney, reservationDateLabel, statusLabel } from "@/lib/format";
@@ -196,7 +196,7 @@ export default async function ReservationsPage({ params, searchParams }: Props) 
         <p>Новые заявки и брони, которые ждут действия менеджера, теперь всегда показываются первыми.</p>
       </div>
 
-      <OwnerTabs restaurantId={restaurant.id} />
+      <OwnerTabs restaurantId={restaurant.id} isStaff={(STAFF_ROLES as readonly string[]).includes(user.role)} />
 
       <section className="panel owner-reservation-panel">
         <div className="owner-reservation-head">

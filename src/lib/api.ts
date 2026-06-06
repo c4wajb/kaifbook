@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { getCurrentUser, isAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { canManageRestaurant } from "@/lib/permissions";
+import { canAccessRestaurant, canManageRestaurant } from "@/lib/permissions";
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
@@ -64,5 +64,13 @@ export async function requireOwnerAccess(restaurantId: string) {
   const user = await requireAuth();
   const restaurant = await prisma.restaurant.findUnique({ where: { id: restaurantId } });
   if (!restaurant || !canManageRestaurant(user, restaurant)) throw new ApiError(403, "Access denied");
+  return { user, restaurant };
+}
+
+/** Require authenticated user with staff or owner access to the restaurant. Returns { user, restaurant }. */
+export async function requireStaffOrOwnerAccess(restaurantId: string) {
+  const user = await requireAuth();
+  const restaurant = await prisma.restaurant.findUnique({ where: { id: restaurantId } });
+  if (!restaurant || !(await canAccessRestaurant(user, restaurant))) throw new ApiError(403, "Access denied");
   return { user, restaurant };
 }

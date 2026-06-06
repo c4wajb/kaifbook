@@ -34,19 +34,22 @@ export const ROLES = {
   RESTAURANT_OWNER: "restaurant_owner",
   RESTAURANT_MANAGER: "restaurant_manager",
   RESTAURANT_STAFF: "restaurant_staff",
+  WAITER: "waiter",
   CUSTOMER: "customer",
   GUEST: "guest",
 } as const;
 export const ADMIN_ROLES = [ROLES.ADMIN, ROLES.PLATFORM_ADMIN] as const;
-export const STAFF_ROLES = [ROLES.RESTAURANT_MANAGER, ROLES.RESTAURANT_STAFF] as const;
-export const OWNER_ROLES = [ROLES.ADMIN, ROLES.PLATFORM_ADMIN, ROLES.RESTAURANT_OWNER, ROLES.RESTAURANT_MANAGER, ROLES.RESTAURANT_STAFF, "owner"] as const;
+export const STAFF_ROLES = [ROLES.RESTAURANT_MANAGER, ROLES.RESTAURANT_STAFF, ROLES.WAITER] as const;
+export const OWNER_ROLES = [ROLES.ADMIN, ROLES.PLATFORM_ADMIN, ROLES.RESTAURANT_OWNER, ROLES.RESTAURANT_MANAGER, ROLES.RESTAURANT_STAFF, ROLES.WAITER, "owner"] as const;
 export const RESTAURANT_WRITE_ROLES = [ROLES.ADMIN, ROLES.PLATFORM_ADMIN, ROLES.RESTAURANT_OWNER] as const;
+export const WAITER_ALLOWED_PAGES = ["reservations", "guests", "menu", "halls"] as const;
 export const ROLE_LABELS: Record<string, string> = {
   admin: "Администратор платформы",
   platform_admin: "Администратор платформы",
   restaurant_owner: "Владелец ресторана",
   restaurant_manager: "Сотрудник ресторана",
   restaurant_staff: "Сотрудник ресторана",
+  waiter: "Официант",
   customer: "Гость",
   guest: "Гость",
   owner: "Владелец ресторана",

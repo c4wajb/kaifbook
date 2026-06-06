@@ -5,8 +5,9 @@ import { OwnerTabs } from "@/components/OwnerTabs";
 import { prisma } from "@/lib/db";
 import { formatDate, reservationDateLabel, statusLabel } from "@/lib/format";
 import { parseStringList } from "@/lib/json-fields";
+import { STAFF_ROLES } from "@/lib/constants";
 import { requireOwnerPageUser } from "@/lib/page-auth";
-import { canManageRestaurant } from "@/lib/permissions";
+import { canAccessRestaurant } from "@/lib/permissions";
 
 type Props = { params: Promise<{ restaurantId: string }>; searchParams: Promise<{ q?: string }> };
 
@@ -23,7 +24,7 @@ export default async function GuestsPage({ params, searchParams }: Props) {
   const { restaurantId } = await params;
   const filters = await searchParams;
   const restaurant = await prisma.restaurant.findUnique({ where: { id: restaurantId } });
-  if (!restaurant || !canManageRestaurant(user, restaurant)) notFound();
+  if (!restaurant || !(await canAccessRestaurant(user, restaurant))) notFound();
 
   const q = filters.q?.trim() || "";
   const rawGuests = await prisma.guest.findMany({
@@ -50,7 +51,7 @@ export default async function GuestsPage({ params, searchParams }: Props) {
         <h1>{restaurant.title}</h1>
         <p>База гостей собирается автоматически по телефону: история визитов, повторы, неявки, теги и заметки.</p>
       </div>
-      <OwnerTabs restaurantId={restaurant.id} />
+      <OwnerTabs restaurantId={restaurant.id} isStaff={(STAFF_ROLES as readonly string[]).includes(user.role)} />
 
       <section className="dashboard-grid">
         <div className="metric-card"><strong>{guests.length}</strong><span>гостей в базе</span></div>

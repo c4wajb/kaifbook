@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { BarChart3, CalendarClock, MousePointerClick, UserRoundCheck } from "lucide-react";
 import { Badge } from "@/components/Badge";
-import { RESERVATION_STATUSES, ROLES } from "@/lib/constants";
+import { RESERVATION_STATUSES, ROLES, STAFF_ROLES } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 import { formatMoney } from "@/lib/format";
 import { requireOwnerPageUser } from "@/lib/page-auth";
+import { getStaffRestaurantIds } from "@/lib/permissions";
 
 function startOfDay(date = new Date()) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -22,8 +23,10 @@ function percent(part: number, total: number) {
 
 export default async function OwnerDashboardPage() {
   const user = await requireOwnerPageUser("/owner/dashboard");
-  const restaurantWhere = user.role === ROLES.ADMIN ? {} : { ownerId: user.id };
-  const reservationRestaurantWhere = user.role === ROLES.ADMIN ? undefined : { is: { ownerId: user.id } };
+  const isStaff = (STAFF_ROLES as readonly string[]).includes(user.role);
+  const staffRestaurantIds = isStaff ? await getStaffRestaurantIds(user.id) : [];
+  const restaurantWhere = user.role === ROLES.ADMIN ? {} : isStaff ? { id: { in: staffRestaurantIds } } : { ownerId: user.id };
+  const reservationRestaurantWhere = user.role === ROLES.ADMIN ? undefined : isStaff ? { is: { id: { in: staffRestaurantIds } } } : { is: { ownerId: user.id } };
   const today = startOfDay();
   const tomorrow = addDays(today, 1);
   const last30 = addDays(today, -29);

@@ -1,7 +1,9 @@
 import Link from "next/link";
 
-export function OwnerTabs({ restaurantId }: { restaurantId: string }) {
-  const tabs = [
+const WAITER_TABS = new Set(["Брони", "Гости", "Меню", "Схема зала"]);
+
+export function OwnerTabs({ restaurantId, isStaff }: { restaurantId: string; isStaff?: boolean }) {
+  const allTabs = [
     ["Описание", `/owner/restaurants/${restaurantId}/edit`],
     ["Брони", `/owner/restaurants/${restaurantId}/reservations`],
     ["История броней", `/owner/restaurants/${restaurantId}/reservation-history`],
@@ -11,8 +13,11 @@ export function OwnerTabs({ restaurantId }: { restaurantId: string }) {
     ["Меню", `/owner/restaurants/${restaurantId}/menu`],
     ["Схема зала", `/owner/restaurants/${restaurantId}/halls`],
     ["Время работы", `/owner/restaurants/${restaurantId}/working-hours`],
+    ["Сотрудники", `/owner/restaurants/${restaurantId}/staff`],
     ["Настройки", `/owner/restaurants/${restaurantId}/settings`],
   ] as const;
+
+  const tabs = isStaff ? allTabs.filter(([label]) => WAITER_TABS.has(label)) : allTabs;
 
   return (
     <nav className="tabs" aria-label="Разделы ресторана">

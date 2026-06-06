@@ -47,6 +47,12 @@ export async function requireMenuCategoryAccess(user: { id: string; role: string
 export async function requireMenuItemAccess(user: { id: string; role: string }, itemId: string) {
   const item = await prisma.menuItem.findUnique({ where: { id: itemId }, include: { restaurant: true } });
   if (!item) throw new ApiError(404, "Позиция меню не найдена");
-  if (!canEditRestaurant(user, item.restaurant)) throw new ApiError(403, "Нет доступа к меню");
-  return item;
+  if (canEditRestaurant(user, item.restaurant)) return item;
+  if (await canAccessRestaurant(user, item.restaurant)) return item;
+  throw new ApiError(403, "Нет доступа к меню");
+}
+/** Get the list of restaurant IDs a staff user has access to */
+export async function getStaffRestaurantIds(userId: string) {
+  const records = await prisma.restaurantStaffAccess.findMany({ where: { userId }, select: { restaurantId: true } });
+  return records.map((r) => r.restaurantId);
 }

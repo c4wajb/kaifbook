@@ -6,8 +6,9 @@ import { OwnerTabs } from "@/components/OwnerTabs";
 import { prisma } from "@/lib/db";
 import { formatDate, reservationDateLabel } from "@/lib/format";
 import { parseStringList } from "@/lib/json-fields";
+import { STAFF_ROLES } from "@/lib/constants";
 import { requireOwnerPageUser } from "@/lib/page-auth";
-import { canManageRestaurant } from "@/lib/permissions";
+import { canAccessRestaurant } from "@/lib/permissions";
 
 type Props = { params: Promise<{ restaurantId: string; guestId: string }> };
 
@@ -15,7 +16,7 @@ export default async function GuestPage({ params }: Props) {
   const user = await requireOwnerPageUser();
   const { restaurantId, guestId } = await params;
   const restaurant = await prisma.restaurant.findUnique({ where: { id: restaurantId } });
-  if (!restaurant || !canManageRestaurant(user, restaurant)) notFound();
+  if (!restaurant || !(await canAccessRestaurant(user, restaurant))) notFound();
 
   const guest = await prisma.guest.findFirst({
     where: { id: guestId, restaurantId },
@@ -31,7 +32,7 @@ export default async function GuestPage({ params }: Props) {
         <h1>{guest.name}</h1>
         <p>{guest.phone}{guest.email ? ` · ${guest.email}` : ""}</p>
       </div>
-      <OwnerTabs restaurantId={restaurant.id} />
+      <OwnerTabs restaurantId={restaurant.id} isStaff={(STAFF_ROLES as readonly string[]).includes(user.role)} />
 
       <div className="guest-profile-grid">
         <aside className="panel">

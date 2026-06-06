@@ -4,7 +4,8 @@ import { HallCreateForm } from "@/components/HallCreateForm";
 import { HallEditor } from "@/components/HallEditor";
 import { OwnerTabs } from "@/components/OwnerTabs";
 import { prisma } from "@/lib/db";
-import { canManageRestaurant } from "@/lib/permissions";
+import { STAFF_ROLES } from "@/lib/constants";
+import { canAccessRestaurant } from "@/lib/permissions";
 import { requireOwnerPageUser } from "@/lib/page-auth";
 
 type Props = { params: Promise<{ restaurantId: string }>; searchParams: Promise<{ hallId?: string }> };
@@ -27,7 +28,8 @@ export default async function HallsPage({ params, searchParams }: Props) {
       },
     },
   });
-  if (!restaurant || !canManageRestaurant(user, restaurant)) notFound();
+  if (!restaurant || !(await canAccessRestaurant(user, restaurant))) notFound();
+  const isStaff = (STAFF_ROLES as readonly string[]).includes(user.role);
   const selectedHall = restaurant.halls.find((hall) => hall.id === hallId) ?? restaurant.halls[0];
 
   return (
@@ -35,10 +37,10 @@ export default async function HallsPage({ params, searchParams }: Props) {
       <div className="page-title">
         <p className="eyebrow">Схема зала</p>
         <h1>{restaurant.title}</h1>
-        <p>Настройте залы, столы, зоны и объекты интерьера. Столы участвуют в бронировании, а нейтральные объекты помогают гостю понять планировку.</p>
+        {!isStaff && <p>Настройте залы, столы, зоны и объекты интерьера. Столы участвуют в бронировании, а нейтральные объекты помогают гостю понять планировку.</p>}
       </div>
-      <OwnerTabs restaurantId={restaurant.id} />
-      <HallCreateForm restaurantId={restaurant.id} />
+      <OwnerTabs restaurantId={restaurant.id} isStaff={isStaff} />
+      {!isStaff && <HallCreateForm restaurantId={restaurant.id} />}
       {restaurant.halls.length > 1 ? (
         <nav className="tabs hall-editor-tabs">
           {restaurant.halls.map((hall) => (
@@ -48,7 +50,7 @@ export default async function HallsPage({ params, searchParams }: Props) {
           ))}
         </nav>
       ) : null}
-      {selectedHall ? <HallEditor key={selectedHall.id} hall={selectedHall} tableTypes={restaurant.tableTypes} /> : <div className="empty-state">Добавьте зал, чтобы открыть редактор схемы.</div>}
+      {selectedHall ? <HallEditor key={selectedHall.id} hall={selectedHall} tableTypes={restaurant.tableTypes} /> : <div className="empty-state">{isStaff ? "Залы не настроены." : "Добавьте зал, чтобы открыть редактор схемы."}</div>}
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { CalendarCheck, Code, LayoutDashboard, ShieldCheck } from "lucide-react"
 import { BrandLogo } from "@/components/BrandLogo";
 import { LogoutButton } from "@/components/LogoutButton";
 import { getCurrentUser } from "@/lib/auth";
-import { OWNER_ROLES, ROLES } from "@/lib/constants";
+import { OWNER_ROLES, ROLES, STAFF_ROLES } from "@/lib/constants";
 
 export async function AppHeader() {
   const user = await getCurrentUser();
@@ -17,6 +17,7 @@ export async function AppHeader() {
 
   const isOwner = user && (OWNER_ROLES as readonly string[]).includes(user.role);
   const isAdmin = user?.role === ROLES.ADMIN;
+  const isStaff = user && (STAFF_ROLES as readonly string[]).includes(user.role);
   const isOffice = pathname.startsWith("/owner") || pathname.startsWith("/admin");
 
   if (isOffice) {
@@ -68,7 +69,7 @@ export async function AppHeader() {
           ) : (
             <>
               <Link className="ghost" href="/owner/login">Войти</Link>
-              {!isStolix && <Link className="button compact" href="/owner/register">Подключить ресторан</Link>}
+              {!isStolix && !isStaff && <Link className="button compact" href="/owner/register">Подключить ресторан</Link>}
             </>
           )}
         </div>
