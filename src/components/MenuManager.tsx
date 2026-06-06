@@ -370,7 +370,6 @@ export function MenuManager({
                             onClick={() => toggleAvailability(item)}
                           >
                             <span className="toggle-track"><span className="toggle-knob" /></span>
-                            <span className="toggle-label">{item.isAvailable ? "В меню" : "Стоп-лист"}</span>
                           </button>
                           <button
                             className="icon-button"

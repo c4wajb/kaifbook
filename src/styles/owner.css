@@ -465,7 +465,7 @@
 /* === owner-menu-item-row === */
 .owner-menu-item-row {
   display: grid !important;
-  grid-template-columns: 80px minmax(0, 1fr) minmax(104px, 132px) auto;
+  grid-template-columns: 80px minmax(0, 1fr) auto auto;
   gap: 20px !important;
   align-items: center !important;
   min-width: 0;
@@ -500,66 +500,48 @@
 
 /* stop-list toggle */
 .stop-list-toggle {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  flex: 0 0 auto;
   padding: 0;
   border: 0;
   background: none;
   cursor: pointer;
-  white-space: nowrap;
 }
 
 .stop-list-toggle:disabled {
-  opacity: .45;
+  opacity: .4;
   cursor: not-allowed;
 }
 
 .stop-list-toggle .toggle-track {
   position: relative;
-  display: block;
-  width: 36px;
-  height: 20px;
-  flex: 0 0 36px;
-  border-radius: 10px;
-  background: #c9a96e;
-  transition: background .2s ease;
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: #b8ada2;
+  transition: background .25s ease;
 }
 
 .stop-list-toggle .toggle-knob {
   position: absolute;
   top: 2px;
   left: 2px;
-  display: block;
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: #fff;
-  transition: transform .2s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,.15);
+  box-shadow: 0 1px 4px rgba(0,0,0,.18);
+  transition: transform .25s cubic-bezier(.4,.0,.2,1);
 }
 
 .stop-list-toggle.active .toggle-track {
-  background: #5a8f3c;
+  background: #4caf50;
 }
 
 .stop-list-toggle.active .toggle-knob {
-  transform: translateX(16px);
-}
-
-.stop-list-toggle .toggle-label {
-  font-size: 12px;
-  font-weight: 700;
-  color: #8b6914;
-  line-height: 1.1;
-}
-
-.stop-list-toggle.active .toggle-label {
-  color: #3d7a1c;
-}
-
-.stop-list-toggle.stopped .toggle-label {
-  color: #b5631a;
+  transform: translateX(20px);
 }
 
 /* === working-hours-form === */
