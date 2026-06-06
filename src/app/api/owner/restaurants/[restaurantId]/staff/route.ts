@@ -37,9 +37,10 @@ export async function POST(request: Request, context: C) {
       return jsonError("Укажите email, имя и пароль", 422);
     }
 
+    const normalizedEmail = email.trim().toLowerCase();
     const staffRole = role === ROLES.RESTAURANT_MANAGER ? ROLES.RESTAURANT_MANAGER : ROLES.WAITER;
 
-    let user = await prisma.user.findUnique({ where: { email } });
+    let user = await prisma.user.findFirst({ where: { email: { equals: normalizedEmail, mode: "insensitive" } } });
     if (user) {
       const existing = await prisma.restaurantStaffAccess.findUnique({
         where: { restaurantId_userId: { restaurantId, userId: user.id } },
@@ -48,7 +49,7 @@ export async function POST(request: Request, context: C) {
     } else {
       user = await prisma.user.create({
         data: {
-          email,
+          email: normalizedEmail,
           fullName,
           phone: phone || null,
           passwordHash: await hashPassword(password),
