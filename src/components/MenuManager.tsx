@@ -2,7 +2,7 @@
 
 import { Eye, EyeOff, ImageIcon, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, startTransition, useState } from "react";
 
 import { ImageUploadField } from "@/components/ImageUploadField";
 import { formatMoney } from "@/lib/format";
@@ -89,6 +89,7 @@ export function MenuManager({
   const [pending, setPending] = useState<string | null>(null);
   const [itemFormKey, setItemFormKey] = useState(0);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
+  const [availOverrides, setAvailOverrides] = useState<Record<string, boolean>>({});
 
   async function submitCategory(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -206,21 +207,27 @@ export function MenuManager({
     setPending(null);
   }
 
+  function getAvail(item: MenuItem) {
+    return item.id in availOverrides ? availOverrides[item.id] : item.isAvailable;
+  }
+
   async function toggleAvailability(item: MenuItem) {
-    setPending(`toggle-${item.id}`);
+    const current = getAvail(item);
+    const next = !current;
+    setAvailOverrides((prev) => ({ ...prev, [item.id]: next }));
     setError(null);
     const response = await fetch(`/api/menu-items/${item.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ isAvailable: !item.isAvailable }),
+      body: JSON.stringify({ isAvailable: next }),
     });
     if (!response.ok) {
+      setAvailOverrides((prev) => ({ ...prev, [item.id]: current }));
       const data = await response.json().catch(() => ({}));
       setError(data.error || "Не удалось обновить блюдо.");
     } else {
-      router.refresh();
+      startTransition(() => router.refresh());
     }
-    setPending(null);
   }
 
   const hasMenuItems = categories.some((category) => category.items.length > 0);
@@ -345,8 +352,10 @@ export function MenuManager({
                   <p className="menu-category-empty">В этой категории пока нет блюд.</p>
                 ) : (
                   <div className="owner-menu-items">
-                    {category.items.map((item) => (
-                      <article className={`menu-item-row owner-menu-item-row ${!item.isAvailable ? "menu-item-stopped" : ""}`} key={item.id}>
+                    {category.items.map((item) => {
+                      const avail = getAvail(item);
+                      return (
+                      <article className={`menu-item-row owner-menu-item-row ${!avail ? "menu-item-stopped" : ""}`} key={item.id}>
                         <div className="menu-item-image-wrap">
                           {item.photoUrl ? (
                             <img className="menu-item-thumb" src={item.photoUrl} alt={`Фото блюда ${item.title}`} />
@@ -364,14 +373,13 @@ export function MenuManager({
                         <strong className="menu-item-price">{formatMoney(item.price)}</strong>
                         <div className="menu-item-actions">
                           <button
-                            className={`icon-button ${item.isAvailable ? "stop-list-on" : "stop-list-off"}`}
+                            className={`icon-button ${avail ? "stop-list-on" : "stop-list-off"}`}
                             type="button"
-                            disabled={pending === `toggle-${item.id}`}
                             onClick={() => toggleAvailability(item)}
-                            aria-label={item.isAvailable ? "Убрать в стоп-лист" : "Вернуть в меню"}
-                            title={item.isAvailable ? "Убрать в стоп-лист" : "Вернуть в меню"}
+                            aria-label={avail ? "Убрать в стоп-лист" : "Вернуть в меню"}
+                            title={avail ? "Убрать в стоп-лист" : "Вернуть в меню"}
                           >
-                            {item.isAvailable ? <Eye size={16} aria-hidden /> : <EyeOff size={16} aria-hidden />}
+                            {avail ? <Eye size={16} aria-hidden /> : <EyeOff size={16} aria-hidden />}
                           </button>
                           <button
                             className="icon-button"
@@ -394,7 +402,8 @@ export function MenuManager({
                           </button>
                         </div>
                       </article>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </section>
