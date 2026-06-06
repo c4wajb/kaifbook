@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: kaifbook
+      POSTGRES_USER: kaifbook
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kbk_pg_2026_secure}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kaifbook"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:3000:3000"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://kaifbook:${POSTGRES_PASSWORD:-kbk_pg_2026_secure}@postgres:5432/kaifbook
+    volumes:
+      - uploads:/app/public/uploads
+
+volumes:
+  pgdata:
+  uploads:
