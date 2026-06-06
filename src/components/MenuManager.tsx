@@ -362,15 +362,18 @@ export function MenuManager({
                           {item.weight ? <small className="menu-item-portion">{item.weight}</small> : null}
                         </div>
                         <strong className="menu-item-price">{formatMoney(item.price)}</strong>
+                        <div
+                          className={`stop-list-toggle ${item.isAvailable ? "sl-on" : "sl-off"}`}
+                          role="switch"
+                          aria-checked={item.isAvailable}
+                          tabIndex={0}
+                          onClick={() => { if (pending !== `toggle-${item.id}`) toggleAvailability(item); }}
+                          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); if (pending !== `toggle-${item.id}`) toggleAvailability(item); } }}
+                        >
+                          <div className="sl-track"><div className="sl-knob" /></div>
+                          <span className="sl-label">{item.isAvailable ? "В меню" : "Стоп"}</span>
+                        </div>
                         <div className="menu-item-actions">
-                          <button
-                            className={`stop-list-toggle ${item.isAvailable ? "active" : "stopped"}`}
-                            type="button"
-                            disabled={pending === `toggle-${item.id}`}
-                            onClick={() => toggleAvailability(item)}
-                          >
-                            <span className="toggle-track"><span className="toggle-knob" /></span>
-                          </button>
                           <button
                             className="icon-button"
                             type="button"

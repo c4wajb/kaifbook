@@ -465,11 +465,11 @@
 /* === owner-menu-item-row === */
 .owner-menu-item-row {
   display: grid !important;
-  grid-template-columns: 80px minmax(0, 1fr) auto auto;
-  gap: 20px !important;
+  grid-template-columns: 80px minmax(0, 1fr) auto 68px 88px;
+  gap: 14px !important;
   align-items: center !important;
   min-width: 0;
-  padding: 16px !important;
+  padding: 14px 16px !important;
   border: 0 !important;
   border-bottom: 1px solid rgba(117, 83, 58, .1) !important;
   border-radius: 0 !important;
@@ -500,48 +500,65 @@
 
 /* stop-list toggle */
 .stop-list-toggle {
-  position: relative;
-  display: inline-flex;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  flex: 0 0 auto;
-  padding: 0;
-  border: 0;
-  background: none;
+  gap: 4px;
+  justify-self: center;
   cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
-.stop-list-toggle:disabled {
-  opacity: .4;
-  cursor: not-allowed;
+.stop-list-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 14px;
 }
 
-.stop-list-toggle .toggle-track {
+.sl-track {
   position: relative;
-  width: 44px;
-  height: 24px;
-  border-radius: 12px;
-  background: #b8ada2;
+  width: 48px;
+  height: 26px;
+  border-radius: 13px;
+  background: #d44;
   transition: background .25s ease;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.15);
 }
 
-.stop-list-toggle .toggle-knob {
+.sl-knob {
   position: absolute;
-  top: 2px;
-  left: 2px;
+  top: 3px;
+  left: 3px;
   width: 20px;
   height: 20px;
   border-radius: 50%;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,.18);
-  transition: transform .25s cubic-bezier(.4,.0,.2,1);
+  box-shadow: 0 1px 4px rgba(0,0,0,.2);
+  transition: transform .25s cubic-bezier(.4,0,.2,1);
 }
 
-.stop-list-toggle.active .toggle-track {
+.sl-on .sl-track {
   background: #4caf50;
 }
 
-.stop-list-toggle.active .toggle-knob {
-  transform: translateX(20px);
+.sl-on .sl-knob {
+  transform: translateX(22px);
+}
+
+.sl-label {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: .01em;
+}
+
+.sl-on .sl-label {
+  color: #3a7d1c;
+}
+
+.sl-off .sl-label {
+  color: #c33;
 }
 
 /* === working-hours-form === */
@@ -720,12 +737,12 @@
   }
 
   .owner-menu-item-row {
-    grid-template-columns: 64px minmax(0, 1fr) !important;
+    grid-template-columns: 64px minmax(0, 1fr) auto !important;
     grid-template-areas:
-      "image content"
-      "price actions";
-    gap: 12px !important;
-    padding: 14px !important;
+      "image content content"
+      "toggle price actions";
+    gap: 10px !important;
+    padding: 12px !important;
   }
 
   .owner-menu-item-row .menu-item-image-wrap {
@@ -741,6 +758,12 @@
     align-self: center;
     justify-self: start;
     text-align: left;
+  }
+
+  .owner-menu-item-row .stop-list-toggle {
+    grid-area: toggle;
+    flex-direction: row;
+    justify-self: start;
   }
 
   .owner-menu-item-row .menu-item-actions {
