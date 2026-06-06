@@ -1,6 +1,6 @@
 "use client";
 
-import { ImageIcon, Pencil, Plus, Trash2, X } from "lucide-react";
+import { Eye, EyeOff, ImageIcon, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
@@ -362,18 +362,17 @@ export function MenuManager({
                           {item.weight ? <small className="menu-item-portion">{item.weight}</small> : null}
                         </div>
                         <strong className="menu-item-price">{formatMoney(item.price)}</strong>
-                        <div
-                          className={`stop-list-toggle ${item.isAvailable ? "sl-on" : "sl-off"}`}
-                          role="switch"
-                          aria-checked={item.isAvailable}
-                          tabIndex={0}
-                          onClick={() => { if (pending !== `toggle-${item.id}`) toggleAvailability(item); }}
-                          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); if (pending !== `toggle-${item.id}`) toggleAvailability(item); } }}
-                        >
-                          <div className="sl-track"><div className="sl-knob" /></div>
-                          <span className="sl-label">{item.isAvailable ? "В меню" : "Стоп"}</span>
-                        </div>
                         <div className="menu-item-actions">
+                          <button
+                            className={`icon-button ${item.isAvailable ? "stop-list-on" : "stop-list-off"}`}
+                            type="button"
+                            disabled={pending === `toggle-${item.id}`}
+                            onClick={() => toggleAvailability(item)}
+                            aria-label={item.isAvailable ? "Убрать в стоп-лист" : "Вернуть в меню"}
+                            title={item.isAvailable ? "Убрать в стоп-лист" : "Вернуть в меню"}
+                          >
+                            {item.isAvailable ? <Eye size={16} aria-hidden /> : <EyeOff size={16} aria-hidden />}
+                          </button>
                           <button
                             className="icon-button"
                             type="button"
