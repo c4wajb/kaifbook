@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { headers } from "next/headers";
-import { CalendarCheck, LayoutDashboard, ShieldCheck } from "lucide-react";
+import { CalendarCheck, Code, LayoutDashboard, ShieldCheck } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { LogoutButton } from "@/components/LogoutButton";
 import { getCurrentUser } from "@/lib/auth";
@@ -40,8 +40,18 @@ export async function AppHeader() {
             </Link>
           ) : null}
           {isStolix ? (
-            <Link className="icon-text" href="/server">
-              <ShieldCheck size={16} aria-hidden /> Сервер
+            <>
+              <Link className="icon-text" href="/server">
+                <ShieldCheck size={16} aria-hidden /> Сервер
+              </Link>
+              <Link className="icon-text" href="/stolix/api-docs">
+                <Code size={16} aria-hidden /> API
+              </Link>
+            </>
+          ) : null}
+          {isAdmin ? (
+            <Link className="icon-text" href="/admin/api-docs">
+              <Code size={16} aria-hidden /> API
             </Link>
           ) : null}
           <Link href="https://www.kaifbook.ru/restaurants">{isStolix ? "Kaifbook" : "Клиентский сайт"}</Link>
