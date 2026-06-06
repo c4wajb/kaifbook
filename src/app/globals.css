@@ -2872,6 +2872,22 @@ h1,h2,h3,.brand span,.catalog-title h1,.showcase-content h2,.profile-hero-conten
 }
 .profile-hero-content h1{color:#F5F4F2}
 .profile-hero-content p:not(.eyebrow){color:rgba(255,250,243,.9)}
+.profile-hero-content .eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 14px;
+  border-radius:999px;
+  background:rgba(255,253,249,.14);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  color:#f8e7cf;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-shadow:0 1px 4px rgba(0,0,0,.4);
+  width:fit-content;
+}
 .restaurant-anchor-nav{
   min-height:66px;
   top:0;
