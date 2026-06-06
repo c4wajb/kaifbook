@@ -498,52 +498,68 @@
   opacity: .75;
 }
 
-/* stop-list toggle switch */
+/* stop-list toggle */
 .stop-list-toggle {
-  position: relative;
   display: inline-flex;
   align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
   cursor: pointer;
+  white-space: nowrap;
 }
 
-.stop-list-toggle input {
-  position: absolute;
-  width: 0;
-  height: 0;
-  opacity: 0;
+.stop-list-toggle:disabled {
+  opacity: .45;
+  cursor: not-allowed;
 }
 
 .stop-list-toggle .toggle-track {
+  position: relative;
   display: block;
   width: 36px;
   height: 20px;
+  flex: 0 0 36px;
   border-radius: 10px;
-  background: #c5b9ae;
+  background: #c9a96e;
   transition: background .2s ease;
 }
 
-.stop-list-toggle .toggle-track::after {
-  content: "";
+.stop-list-toggle .toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
   display: block;
   width: 16px;
   height: 16px;
-  margin: 2px;
   border-radius: 50%;
   background: #fff;
   transition: transform .2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,.15);
 }
 
-.stop-list-toggle input:checked + .toggle-track {
+.stop-list-toggle.active .toggle-track {
   background: #5a8f3c;
 }
 
-.stop-list-toggle input:checked + .toggle-track::after {
+.stop-list-toggle.active .toggle-knob {
   transform: translateX(16px);
 }
 
-.stop-list-toggle input:disabled + .toggle-track {
-  opacity: .5;
-  cursor: not-allowed;
+.stop-list-toggle .toggle-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #8b6914;
+  line-height: 1.1;
+}
+
+.stop-list-toggle.active .toggle-label {
+  color: #3d7a1c;
+}
+
+.stop-list-toggle.stopped .toggle-label {
+  color: #b5631a;
 }
 
 /* === working-hours-form === */

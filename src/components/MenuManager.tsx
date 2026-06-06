@@ -363,18 +363,15 @@ export function MenuManager({
                         </div>
                         <strong className="menu-item-price">{formatMoney(item.price)}</strong>
                         <div className="menu-item-actions">
-                          <label
-                            className="stop-list-toggle"
-                            title={item.isAvailable ? "Убрать в стоп-лист" : "Вернуть из стоп-листа"}
+                          <button
+                            className={`stop-list-toggle ${item.isAvailable ? "active" : "stopped"}`}
+                            type="button"
+                            disabled={pending === `toggle-${item.id}`}
+                            onClick={() => toggleAvailability(item)}
                           >
-                            <input
-                              type="checkbox"
-                              checked={item.isAvailable}
-                              disabled={pending === `toggle-${item.id}`}
-                              onChange={() => toggleAvailability(item)}
-                            />
-                            <span className="toggle-track" />
-                          </label>
+                            <span className="toggle-track"><span className="toggle-knob" /></span>
+                            <span className="toggle-label">{item.isAvailable ? "В меню" : "Стоп-лист"}</span>
+                          </button>
                           <button
                             className="icon-button"
                             type="button"
