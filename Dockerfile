@@ -39,8 +39,8 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
-# Uploads directory (mounted as volume in production)
-RUN mkdir -p public/uploads && chown -R nextjs:nodejs public/uploads
+# Writable directories
+RUN mkdir -p public/uploads .next/cache && chown -R nextjs:nodejs public/uploads .next/cache
 
 USER nextjs
 EXPOSE 3000
