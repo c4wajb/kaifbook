@@ -38,7 +38,7 @@ function matchesNameSearch(value: string | null | undefined, query: string | und
 // --- Cached data fetching ---
 
 const fetchAllRestaurants = unstable_cache(
-  async (city?: string, cuisine?: string, feature?: string, averageCheckMax?: number) => {
+  async (city?: string, cuisine?: string, feature?: string, averageCheckMax = 0) => {
     return prisma.restaurant.findMany({
       where: {
         isActive: true,
