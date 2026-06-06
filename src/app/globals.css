@@ -13522,3 +13522,25 @@ svg {
 .form-actions{display:flex;gap:10px}
 .small-button.danger{color:var(--danger);border-color:var(--danger)}
 .small-button.danger:hover{background:#F0E0DE}
+
+/* Waiter sidebar layout */
+.waiter-shell{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:calc(100vh - 72px)}
+.waiter-sidebar{position:sticky;top:72px;height:calc(100vh - 72px);display:flex;flex-direction:column;gap:0;border-right:1px solid var(--line);background:var(--surface);overflow-y:auto}
+.waiter-sidebar-header{display:grid;gap:4px;padding:20px 18px;border-bottom:1px solid var(--line)}
+.waiter-sidebar-header strong{font-size:16px;line-height:1.2}
+.waiter-sidebar-header span{color:var(--muted);font-size:12px;font-weight:800;text-transform:uppercase}
+.waiter-nav{display:flex;flex-direction:column;padding:10px 8px}
+.waiter-nav a{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:8px;color:var(--ink);font-weight:700;font-size:14px;transition:background .15s}
+.waiter-nav a:hover{background:var(--surface-2)}
+.waiter-nav a svg{color:var(--muted);flex-shrink:0}
+.waiter-main{min-width:0;background:var(--bg)}
+.waiter-main .page{width:min(960px,calc(100% - 32px))}
+.waiter-main .tabs{display:none}
+@media(max-width:768px){
+  .waiter-shell{grid-template-columns:1fr}
+  .waiter-sidebar{position:static;height:auto;flex-direction:row;border-right:0;border-bottom:1px solid var(--line);overflow-x:auto}
+  .waiter-sidebar-header{display:none}
+  .waiter-nav{flex-direction:row;padding:6px 8px;gap:2px}
+  .waiter-nav a{white-space:nowrap;padding:8px 12px;font-size:13px}
+  .waiter-nav a span{display:none}
+}

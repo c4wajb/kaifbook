@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { BarChart3, CalendarClock, MousePointerClick, UserRoundCheck } from "lucide-react";
 import { Badge } from "@/components/Badge";
 import { RESERVATION_STATUSES, ROLES, STAFF_ROLES } from "@/lib/constants";
@@ -25,6 +26,10 @@ export default async function OwnerDashboardPage() {
   const user = await requireOwnerPageUser("/owner/dashboard");
   const isStaff = (STAFF_ROLES as readonly string[]).includes(user.role);
   const staffRestaurantIds = isStaff ? await getStaffRestaurantIds(user.id) : [];
+
+  if (isStaff && staffRestaurantIds.length > 0) {
+    redirect(`/owner/restaurants/${staffRestaurantIds[0]}/reservations`);
+  }
   const restaurantWhere = user.role === ROLES.ADMIN ? {} : isStaff ? { id: { in: staffRestaurantIds } } : { ownerId: user.id };
   const reservationRestaurantWhere = user.role === ROLES.ADMIN ? undefined : isStaff ? { is: { id: { in: staffRestaurantIds } } } : { is: { ownerId: user.id } };
   const today = startOfDay();

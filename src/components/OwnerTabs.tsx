@@ -17,11 +17,11 @@ export function OwnerTabs({ restaurantId, isStaff }: { restaurantId: string; isS
     ["Настройки", `/owner/restaurants/${restaurantId}/settings`],
   ] as const;
 
-  const tabs = isStaff ? allTabs.filter(([label]) => WAITER_TABS.has(label)) : allTabs;
+  if (isStaff) return null;
 
   return (
     <nav className="tabs" aria-label="Разделы ресторана">
-      {tabs.map(([label, href]) => (
+      {allTabs.map(([label, href]) => (
         <Link key={href} href={href}>
           {label}
         </Link>
