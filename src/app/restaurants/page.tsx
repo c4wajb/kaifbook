@@ -11,6 +11,7 @@ export const metadata: Metadata = {
     type: "website",
   },
 };
+import { ChipSlider } from "@/components/ChipSlider";
 import { HomeBannerSlider } from "@/components/HomeBannerSlider";
 import { RestaurantCard } from "@/components/RestaurantCard";
 import { RestaurantFilters } from "@/components/RestaurantFilters";
@@ -119,14 +120,14 @@ export default async function RestaurantsPage({ searchParams }: Props) {
     <div className={`page client-page catalog-page catalog-layout-${layoutMode}`}>
       <h1 className="visually-hidden">Рестораны в Курске</h1>
 
-      <div className="quick-filter-row catalog-quick-row" aria-label="Быстрые подборки">
+      <ChipSlider className="quick-filter-row catalog-quick-row">
         {quickFilters.map((filter) => (
           <Link key={filter.label} href={filter.href} className={isQuickFilterActive(filters, filter.href) ? "active" : undefined} scroll={false}>
             <filter.icon size={15} aria-hidden />
             {filter.label}
           </Link>
         ))}
-      </div>
+      </ChipSlider>
 
       <HomeBannerSlider restaurants={bannerRestaurants} />
 

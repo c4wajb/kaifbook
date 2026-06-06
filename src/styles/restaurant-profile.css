@@ -191,7 +191,20 @@
 }
 
 .profile-hero-content .eyebrow {
-  color: rgba(255,250,243,.78);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255,253,249,.14);
+  backdrop-filter: blur(8px);
+  color: #f8e7cf;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 4px rgba(0,0,0,.4);
+  width: fit-content;
 }
 
 .profile-hero-content p:not(.eyebrow) {
@@ -577,7 +590,22 @@
   gap: 9px;
 }
 
-.profile-badge-row span,
+.profile-badge-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 14px;
+  border: 1px solid rgba(255,250,240,.22);
+  border-radius: 999px;
+  background: rgba(255,253,249,.15);
+  backdrop-filter: blur(8px);
+  color: #fff3e0;
+  font-size: 12.5px;
+  font-weight: 800;
+  text-shadow: 0 1px 3px rgba(0,0,0,.3);
+}
+
 .profile-rating-pill {
   display: inline-flex;
   align-items: center;
