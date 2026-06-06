@@ -2,7 +2,7 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci --ignore-scripts && npx prisma --version
+RUN npm ci
 
 # ── Stage 2: Build ────────────────────────────────────────────────
 FROM node:20-alpine AS builder
@@ -15,7 +15,15 @@ RUN rm -f public/uploads
 
 RUN npx prisma generate && npx next build
 
-# ── Stage 3: Runtime ──────────────────────────────────────────────
+# ── Stage 3: Migrator (used for running prisma migrate deploy) ────
+FROM node:20-alpine AS migrator
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY prisma ./prisma
+COPY package.json ./
+CMD ["npx", "prisma", "migrate", "deploy"]
+
+# ── Stage 4: Runtime ──────────────────────────────────────────────
 FROM node:20-alpine AS runner
 WORKDIR /app
 
@@ -31,19 +39,10 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
-# Prisma: schema for migrations + generated client
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
-
 # Uploads directory (mounted as volume in production)
 RUN mkdir -p public/uploads && chown -R nextjs:nodejs public/uploads
-
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
 
 USER nextjs
 EXPOSE 3000
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["node", "server.js"]
