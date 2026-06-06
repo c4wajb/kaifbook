@@ -465,7 +465,7 @@
 /* === owner-menu-item-row === */
 .owner-menu-item-row {
   display: grid !important;
-  grid-template-columns: 80px minmax(0, 1fr) minmax(104px, 132px) 96px;
+  grid-template-columns: 80px minmax(0, 1fr) minmax(104px, 132px) auto;
   gap: 20px !important;
   align-items: center !important;
   min-width: 0;
@@ -474,7 +474,7 @@
   border-bottom: 1px solid rgba(117, 83, 58, .1) !important;
   border-radius: 0 !important;
   background: #fffdf9;
-  transition: background .16s ease;
+  transition: background .16s ease, opacity .2s ease;
 }
 
 .owner-menu-item-row:last-child {
@@ -483,6 +483,67 @@
 
 .owner-menu-item-row:hover {
   background: #fbf5ed !important;
+}
+
+/* stop-list state */
+.menu-item-stopped {
+  opacity: .5;
+}
+
+.menu-item-stopped .menu-item-title {
+  text-decoration: line-through;
+}
+
+.menu-item-stopped:hover {
+  opacity: .75;
+}
+
+/* stop-list toggle switch */
+.stop-list-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.stop-list-toggle input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.stop-list-toggle .toggle-track {
+  display: block;
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  background: #c5b9ae;
+  transition: background .2s ease;
+}
+
+.stop-list-toggle .toggle-track::after {
+  content: "";
+  display: block;
+  width: 16px;
+  height: 16px;
+  margin: 2px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform .2s ease;
+}
+
+.stop-list-toggle input:checked + .toggle-track {
+  background: #5a8f3c;
+}
+
+.stop-list-toggle input:checked + .toggle-track::after {
+  transform: translateX(16px);
+}
+
+.stop-list-toggle input:disabled + .toggle-track {
+  opacity: .5;
+  cursor: not-allowed;
 }
 
 /* === working-hours-form === */
@@ -664,10 +725,17 @@
     grid-template-columns: 64px minmax(0, 1fr) !important;
     grid-template-areas:
       "image content"
-      "image price"
-      "image actions";
+      "price actions";
     gap: 12px !important;
     padding: 14px !important;
+  }
+
+  .owner-menu-item-row .menu-item-image-wrap {
+    grid-area: image;
+  }
+
+  .owner-menu-item-row .menu-item-content {
+    grid-area: content;
   }
 
   .owner-menu-item-row .menu-item-price {

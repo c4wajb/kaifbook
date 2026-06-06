@@ -206,6 +206,23 @@ export function MenuManager({
     setPending(null);
   }
 
+  async function toggleAvailability(item: MenuItem) {
+    setPending(`toggle-${item.id}`);
+    setError(null);
+    const response = await fetch(`/api/menu-items/${item.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isAvailable: !item.isAvailable }),
+    });
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      setError(data.error || "Не удалось обновить блюдо.");
+    } else {
+      router.refresh();
+    }
+    setPending(null);
+  }
+
   const hasMenuItems = categories.some((category) => category.items.length > 0);
 
   return (
@@ -329,7 +346,7 @@ export function MenuManager({
                 ) : (
                   <div className="owner-menu-items">
                     {category.items.map((item) => (
-                      <article className="menu-item-row owner-menu-item-row" key={item.id}>
+                      <article className={`menu-item-row owner-menu-item-row ${!item.isAvailable ? "menu-item-stopped" : ""}`} key={item.id}>
                         <div className="menu-item-image-wrap">
                           {item.photoUrl ? (
                             <img className="menu-item-thumb" src={item.photoUrl} alt={`Фото блюда ${item.title}`} />
@@ -346,6 +363,18 @@ export function MenuManager({
                         </div>
                         <strong className="menu-item-price">{formatMoney(item.price)}</strong>
                         <div className="menu-item-actions">
+                          <label
+                            className="stop-list-toggle"
+                            title={item.isAvailable ? "Убрать в стоп-лист" : "Вернуть из стоп-листа"}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={item.isAvailable}
+                              disabled={pending === `toggle-${item.id}`}
+                              onChange={() => toggleAvailability(item)}
+                            />
+                            <span className="toggle-track" />
+                          </label>
                           <button
                             className="icon-button"
                             type="button"
