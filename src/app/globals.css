@@ -4202,11 +4202,71 @@ h1,h2,h3,.brand span,.catalog-title h1,.showcase-content h2,.profile-hero-conten
   padding-top:26px;
 }
 
-.catalog-quick-row{
+/* ── Chip slider ─────────────────────────────────────────────────────── */
+.chip-slider-wrapper{
+  position:relative;
   margin:0 0 22px;
+}
+.chip-slider-wrapper::before,
+.chip-slider-wrapper::after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:48px;
+  z-index:3;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 250ms ease;
+}
+.chip-slider-wrapper::before{
+  left:0;
+  background:linear-gradient(90deg,rgba(240,239,237,.95) 30%,transparent);
+}
+.chip-slider-wrapper::after{
+  right:0;
+  background:linear-gradient(270deg,rgba(240,239,237,.95) 30%,transparent);
+}
+.chip-slider-wrapper.has-scroll-left::before,
+.chip-slider-wrapper.has-scroll-right::after{
+  opacity:1;
+}
+.chip-slider-arrow{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:5;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  border:1px solid rgba(0,0,0,.08);
+  background:#fff;
+  color:#2B2C25;
+  box-shadow:0 2px 10px rgba(0,0,0,.1);
+  cursor:pointer;
+  transition:box-shadow .2s,transform .2s;
+}
+.chip-slider-arrow:hover{
+  box-shadow:0 4px 16px rgba(0,0,0,.15);
+  transform:translateY(-50%) scale(1.06);
+}
+.chip-slider-arrow-left{left:-4px}
+.chip-slider-arrow-right{right:-4px}
+.chip-slider-track{
+  display:flex;
+  overflow-x:auto;
+  overflow-y:hidden;
+  scroll-behavior:smooth;
+  scrollbar-width:none;
+}
+.chip-slider-track::-webkit-scrollbar{display:none}
+
+.catalog-quick-row{
   padding:6px 0 4px;
   gap:10px;
-  scrollbar-width:none;
 }
 
 .catalog-quick-row::-webkit-scrollbar{
@@ -7431,6 +7491,17 @@ svg {
   .guest-reservations-page {
     padding-top: 18px !important;
     padding-bottom: calc(42px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .chip-slider-wrapper{
+    margin:0 0 16px !important;
+  }
+  .chip-slider-arrow{
+    display:none !important;
+  }
+  .chip-slider-wrapper::before,
+  .chip-slider-wrapper::after{
+    display:none !important;
   }
 
   .catalog-quick-row,
