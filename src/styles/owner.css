@@ -465,7 +465,7 @@
 /* === owner-menu-item-row === */
 .owner-menu-item-row {
   display: grid !important;
-  grid-template-columns: 80px minmax(0, 1fr) auto auto;
+  grid-template-columns: 80px minmax(0, 1fr) minmax(80px, auto) auto;
   gap: 16px !important;
   align-items: center !important;
   min-width: 0;
