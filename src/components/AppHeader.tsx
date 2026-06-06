@@ -40,7 +40,7 @@ export async function AppHeader() {
               <ShieldCheck size={16} aria-hidden /> Админка
             </Link>
           ) : null}
-          {isStolix ? (
+          {isStolix && isAdmin ? (
             <>
               <Link className="icon-text" href="/server">
                 <ShieldCheck size={16} aria-hidden /> Сервер
