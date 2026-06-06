@@ -1,6 +1,5 @@
 import { exec } from "child_process";
 import { promisify } from "util";
-import { stat } from "fs/promises";
 
 const run = promisify(exec);
 
@@ -50,7 +49,7 @@ export async function getServerHealth() {
     sh("tail -200 /var/log/nginx/access.log 2>/dev/null"),
     sh("tail -30 /var/log/nginx/error.log 2>/dev/null"),
     sh("ps aux --sort=-%mem | head -11"),
-    sh("du -sb /opt/reserve-kursk/current/public/uploads /opt/reserve-kursk/current/.next /opt/reserve-kursk/current/prisma/*.db /var/log/nginx /var/log 2>/dev/null | sort -rn"),
+    sh("du -sb /opt/reserve-kursk/current/public/uploads /opt/reserve-kursk/current/.next /var/log/nginx /var/log 2>/dev/null | sort -rn"),
   ]);
 
   // Uptime
@@ -187,25 +186,24 @@ export async function getServerHealth() {
       let label = fullPath;
       if (fullPath.includes("/uploads")) label = "Загрузки (uploads)";
       else if (fullPath.includes("/.next")) label = "Next.js build (.next)";
-      else if (fullPath.endsWith(".db")) label = "База данных (SQLite)";
+      else if (fullPath.includes("postgresql")) label = "База данных (PostgreSQL)";
       else if (fullPath === "/var/log/nginx") label = "Логи Nginx";
       else if (fullPath === "/var/log") label = "Все логи (/var/log)";
       return { path: fullPath, bytes, label };
     });
 
-  // Database stats
+  // Database stats (PostgreSQL)
   let dbStats = { fileSize: 0, tables: [] as Array<{ name: string; rows: number }> };
   try {
-    const dbPath = "/opt/reserve-kursk/current/prisma/dev.db";
-    const dbStat = await stat(dbPath).catch(() => null);
-    if (dbStat) dbStats.fileSize = dbStat.size;
+    const dbSizeRaw = await sh(`sudo -u postgres psql -t -A -c "SELECT pg_database_size('kaifbook');" 2>/dev/null`);
+    dbStats.fileSize = parseInt(dbSizeRaw) || 0;
     const tablesRaw = await sh(
-      `sqlite3 ${dbPath} "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE '_prisma%' AND name NOT LIKE 'sqlite_%' ORDER BY name;" 2>/dev/null`,
+      `sudo -u postgres psql -t -A kaifbook -c "SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE' AND table_name NOT LIKE '_prisma%' ORDER BY table_name;" 2>/dev/null`,
     );
     const tableNames = tablesRaw.split("\n").filter((t) => t.trim());
     if (tableNames.length > 0) {
-      const countQueries = tableNames.map((t) => `SELECT '${t}' as t, COUNT(*) as c FROM "${t}"`).join(" UNION ALL ");
-      const countsRaw = await sh(`sqlite3 ${dbPath} "${countQueries};" 2>/dev/null`);
+      const countQueries = tableNames.map((t) => `SELECT '${t}' AS t, COUNT(*) AS c FROM "${t}"`).join(" UNION ALL ");
+      const countsRaw = await sh(`sudo -u postgres psql -t -A kaifbook -c "${countQueries};" 2>/dev/null`);
       dbStats.tables = countsRaw
         .split("\n")
         .filter((l) => l.trim())
