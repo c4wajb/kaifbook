@@ -1,0 +1,135 @@
+const TIME_PATTERN = /^([01]\d|2[0-3]):([0-5]\d)$/;
+export function timeToMinutes(value: string): number {
+  if (!TIME_PATTERN.test(value)) throw new Error("Time must be in HH:mm format");
+  const [hours, minutes] = value.split(":").map(Number);
+  return hours * 60 + minutes;
+}
+export function minutesToTime(value: number): string {
+  const normalized = ((value % (24 * 60)) + 24 * 60) % (24 * 60);
+  return `${String(Math.floor(normalized / 60)).padStart(2, "0")}:${String(normalized % 60).padStart(2, "0")}`;
+}
+export function addMinutesToTime(value: string, minutesToAdd: number): string {
+  const total = (timeToMinutes(value) + minutesToAdd) % (24 * 60);
+  return minutesToTime(total);
+}
+export function normalizedEndMinutes(startMinutes: number, endMinutes: number) {
+  return endMinutes <= startMinutes ? endMinutes + 24 * 60 : endMinutes;
+}
+export function timesOverlap(newStart: string, newEnd: string, existingStart: string, existingEnd: string): boolean {
+  const start = timeToMinutes(newStart);
+  const end = normalizedEndMinutes(start, timeToMinutes(newEnd));
+  const existingStartMinutes = timeToMinutes(existingStart);
+  const existingEndMinutes = normalizedEndMinutes(existingStartMinutes, timeToMinutes(existingEnd));
+  return start < existingEndMinutes && end > existingStartMinutes;
+}
+export function dateFromInput(value: string | Date): Date {
+  if (value instanceof Date) return new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()));
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) throw new Error("Date must be in YYYY-MM-DD format");
+  return new Date(`${value}T00:00:00.000Z`);
+}
+export function dateInputValue(value: Date): string { return value.toISOString().slice(0, 10); }
+export function localDateInputValue(value = new Date()): string {
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+export function todayUtcMidnight(): Date { const now = new Date(); return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())); }
+export function isPastReservationDate(value: Date): boolean { return value.getTime() < todayUtcMidnight().getTime(); }
+export function dayOfWeekFromDate(value: Date): number { return value.getUTCDay(); }
+export function formatDateRu(value: Date): string { return new Intl.DateTimeFormat("ru-RU", { day: "2-digit", month: "2-digit", year: "numeric" }).format(value); }
+
+export type WorkingHourLike = {
+  dayOfWeek: number;
+  openTime: string;
+  closeTime: string;
+  isClosed: boolean;
+};
+
+export function dayOfWeekFromInput(value: string) {
+  return dayOfWeekFromDate(dateFromInput(value));
+}
+
+export function workingHourForDate(dateInput: string, workingHours: WorkingHourLike[] | null | undefined) {
+  if (!workingHours?.length) return null;
+  const dayOfWeek = dayOfWeekFromInput(dateInput);
+  return workingHours.find((item) => item.dayOfWeek === dayOfWeek) ?? null;
+}
+
+function normalizedCloseMinutes(openMinutes: number, closeMinutes: number) {
+  return closeMinutes <= openMinutes ? closeMinutes + 24 * 60 : closeMinutes;
+}
+
+function ceilToStep(value: number, step: number) {
+  return Math.ceil(value / step) * step;
+}
+
+export function isRangeWithinWorkingHours(startTime: string, endTime: string, workingHour: WorkingHourLike | null | undefined) {
+  if (!workingHour || workingHour.isClosed) return false;
+  const openMinutes = timeToMinutes(workingHour.openTime);
+  const closeMinutes = normalizedCloseMinutes(openMinutes, timeToMinutes(workingHour.closeTime));
+  let startMinutes = timeToMinutes(startTime);
+  let endMinutes = normalizedEndMinutes(startMinutes, timeToMinutes(endTime));
+
+  if (closeMinutes > 24 * 60 && startMinutes < openMinutes) {
+    startMinutes += 24 * 60;
+    endMinutes = normalizedEndMinutes(startMinutes, timeToMinutes(endTime) + 24 * 60);
+  }
+
+  return startMinutes >= openMinutes && endMinutes <= closeMinutes;
+}
+
+export type TimeSlotOptions = {
+  date: string;
+  workingHours: WorkingHourLike[] | null | undefined;
+  stepMinutes: number;
+  minBookingDurationMinutes: number;
+  now?: Date;
+  preparationBufferMinutes?: number;
+};
+
+export function generateStartTimeSlots(options: TimeSlotOptions): string[] {
+  const workingHour = workingHourForDate(options.date, options.workingHours);
+  if (!workingHour || workingHour.isClosed) return [];
+
+  const step = options.stepMinutes || 15;
+  const openMinutes = timeToMinutes(workingHour.openTime);
+  const closeMinutes = normalizedCloseMinutes(openMinutes, timeToMinutes(workingHour.closeTime));
+  const lastStart = closeMinutes - Math.max(15, options.minBookingDurationMinutes);
+  let firstStart = openMinutes;
+
+  const now = options.now ?? new Date();
+  if (options.date === localDateInputValue(now)) {
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    firstStart = Math.max(firstStart, currentMinutes + (options.preparationBufferMinutes ?? 30));
+  }
+
+  const slots: string[] = [];
+  for (let minutes = ceilToStep(firstStart, step); minutes <= lastStart; minutes += step) {
+    slots.push(minutesToTime(minutes));
+  }
+  return Array.from(new Set(slots));
+}
+
+export function generateEndTimeSlots(options: {
+  date: string;
+  workingHours: WorkingHourLike[] | null | undefined;
+  selectedStartTime: string;
+  stepMinutes: number;
+  minBookingDurationMinutes: number;
+}) {
+  const workingHour = workingHourForDate(options.date, options.workingHours);
+  if (!workingHour || workingHour.isClosed || !options.selectedStartTime) return [];
+
+  const step = options.stepMinutes || 15;
+  const openMinutes = timeToMinutes(workingHour.openTime);
+  const closeMinutes = normalizedCloseMinutes(openMinutes, timeToMinutes(workingHour.closeTime));
+  let startMinutes = timeToMinutes(options.selectedStartTime);
+  if (closeMinutes > 24 * 60 && startMinutes < openMinutes) startMinutes += 24 * 60;
+
+  const slots: string[] = [];
+  for (let minutes = ceilToStep(startMinutes + Math.max(60, options.minBookingDurationMinutes), step); minutes <= closeMinutes; minutes += step) {
+    slots.push(minutesToTime(minutes));
+  }
+  return Array.from(new Set(slots));
+}

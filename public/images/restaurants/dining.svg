@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900" role="img" aria-label="Dining room">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff8ec"/>
+      <stop offset="0.45" stop-color="#ead9bd"/>
+      <stop offset="1" stop-color="#b86a43"/>
+    </linearGradient>
+    <radialGradient id="lamp" cx="50%" cy="19%" r="54%">
+      <stop offset="0" stop-color="#fff5cf" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#fff5cf" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="26" stdDeviation="30" flood-color="#2f211a" flood-opacity="0.24"/>
+    </filter>
+  </defs>
+  <rect width="1400" height="900" fill="url(#bg)"/>
+  <rect width="1400" height="900" fill="url(#lamp)"/>
+  <g opacity="0.14" stroke="#5d3729" stroke-width="2">
+    <path d="M0 150h1400M0 300h1400M0 450h1400M0 600h1400M0 750h1400"/>
+    <path d="M160 0v900M320 0v900M480 0v900M640 0v900M800 0v900M960 0v900M1120 0v900M1280 0v900"/>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="164" y="162" width="1072" height="520" rx="92" fill="#fffaf1" opacity="0.56"/>
+    <rect x="288" y="470" width="624" height="74" rx="34" fill="#6c4434"/><ellipse cx="600" cy="450" rx="196" ry="72" fill="#d0a06a"/><rect x="368" y="320" width="464" height="112" rx="44" fill="#fff8ec" opacity="0.86"/>
+    <path d="M240 676c140-62 284-70 432-22 178 58 362 42 548-50" fill="none" stroke="#fff8ec" stroke-width="26" stroke-linecap="round" opacity="0.5"/>
+  </g>
+</svg>

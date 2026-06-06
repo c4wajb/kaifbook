@@ -1,0 +1,7 @@
+import { NextResponse } from "next/server";
+import { setSessionCookie, hashPassword } from "@/lib/auth";
+import { jsonError, readJson } from "@/lib/api";
+import { prisma } from "@/lib/db";
+import { normalizePhone } from "@/lib/phone";
+import { registerSchema, zodError } from "@/lib/validation";
+export async function POST(request: Request) { const body = await readJson(request); const parsed = registerSchema.safeParse(body); if (!parsed.success) return jsonError(zodError(parsed.error)); if (parsed.data.role === "customer") return jsonError("Гостям регистрация не нужна. Заявка привязывается к номеру телефона.", 400); const phone = normalizePhone(parsed.data.phone); const existing = await prisma.user.findFirst({ where: { OR: [{ email: parsed.data.email }, { phone }] }, select: { id: true, email: true, phone: true } }); if (existing?.email === parsed.data.email) return jsonError("Пользователь с таким email уже есть", 409); if (existing?.phone === phone) return jsonError("Пользователь с таким телефоном уже есть", 409); const user = await prisma.user.create({ data: { email: parsed.data.email, fullName: parsed.data.fullName, phone, passwordHash: await hashPassword(parsed.data.password), role: parsed.data.role }, select: { id: true, email: true, fullName: true, phone: true, role: true, createdAt: true } }); await setSessionCookie(user); return NextResponse.json({ user }, { status: 201 }); }

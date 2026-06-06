@@ -1,0 +1,9 @@
+import { ApiError, handleApiError, ok, readJson } from "@/lib/api";
+import { getCurrentUser } from "@/lib/auth";
+import { RESTAURANT_STATUSES } from "@/lib/constants";
+import { prisma } from "@/lib/db";
+import { canCreateRestaurant } from "@/lib/permissions";
+import { restaurantDataFromPayload } from "@/lib/restaurant-data";
+import { restaurantSchema } from "@/lib/validation";
+export async function GET(request: Request) { try { const { searchParams } = new URL(request.url); const q = searchParams.get("q")?.trim(); const city = searchParams.get("city")?.trim(); const cuisine = searchParams.get("cuisine")?.trim(); const feature = searchParams.get("feature")?.trim(); const averageCheck = Number(searchParams.get("averageCheck") || 0); const restaurants = await prisma.restaurant.findMany({ where: { isActive: true, status: RESTAURANT_STATUSES.APPROVED, city: city || undefined, averageCheck: averageCheck > 0 ? { lte: averageCheck } : undefined, cuisineTypes: cuisine ? { contains: cuisine } : undefined, features: feature ? { contains: feature } : undefined, OR: q ? [{ title: { contains: q } }, { shortDescription: { contains: q } }, { description: { contains: q } }, { address: { contains: q } }, { cuisineTypes: { contains: q } }] : undefined }, orderBy: [{ city: "asc" }, { title: "asc" }] }); return ok({ restaurants }); } catch (error) { return handleApiError(error); } }
+export async function POST(request: Request) { try { const user = await getCurrentUser(); if (!user) throw new ApiError(401, "Authentication required"); if (!canCreateRestaurant(user)) throw new ApiError(403, "Only restaurant roles can create restaurants"); const payload = restaurantSchema.parse(await readJson(request)); const data = await restaurantDataFromPayload(payload); const restaurant = await prisma.restaurant.create({ data: { ...data, ownerId: user.id } }); return ok({ restaurant }, 201); } catch (error) { return handleApiError(error); } }

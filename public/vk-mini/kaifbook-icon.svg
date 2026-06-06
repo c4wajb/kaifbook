@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="1024" height="1024" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Kaifbook</title>
+  <desc id="desc">Kaifbook app icon — K monogram with booking arc and checkmark</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8A5038"/>
+      <stop offset=".5" stop-color="#6B3D2E"/>
+      <stop offset="1" stop-color="#462316"/>
+    </linearGradient>
+    <radialGradient id="shine" cx=".32" cy=".26" r=".65" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#FFF" stop-opacity=".09"/>
+      <stop offset="1" stop-color="#FFF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="letter" x1="68" y1="56" x2="150" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFF8ED"/>
+      <stop offset=".55" stop-color="#F2DBBF"/>
+      <stop offset="1" stop-color="#D4B48A"/>
+    </linearGradient>
+    <linearGradient id="arc" x1="156" y1="56" x2="210" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFBE55"/>
+      <stop offset=".5" stop-color="#E8913A"/>
+      <stop offset="1" stop-color="#B8652A"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#2A1008" flood-opacity=".2"/>
+    </filter>
+  </defs>
+
+  <rect width="256" height="256" rx="58" fill="url(#bg)" filter="url(#shadow)"/>
+  <rect width="256" height="256" rx="58" fill="url(#shine)"/>
+
+  <path d="M78 70V186" stroke="url(#letter)" stroke-width="22" stroke-linecap="round"/>
+  <path d="M94 128L154 70" stroke="url(#letter)" stroke-width="20" stroke-linecap="round"/>
+  <path d="M94 128L158 190" stroke="url(#letter)" stroke-width="20" stroke-linecap="round"/>
+
+  <path d="M164 74 A58 58 0 0 1 164 182" stroke="url(#arc)" stroke-width="14" stroke-linecap="round"/>
+  <path d="M176 122L186 134L206 110" stroke="#FFF6E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity=".92"/>
+  <path d="M170 82 A50 50 0 0 1 212 128" stroke="#FFD68A" stroke-width="3" stroke-linecap="round" opacity=".3"/>
+</svg>

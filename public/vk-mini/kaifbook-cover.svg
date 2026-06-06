@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-label="Kaifbook VK Mini App">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#FFF7EA"/>
+      <stop offset=".55" stop-color="#F4E3D0"/>
+      <stop offset="1" stop-color="#C87850"/>
+    </linearGradient>
+    <radialGradient id="glow" cx=".74" cy=".28" r=".55">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity=".78"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ibg" x1="0" y1="0" x2="126" y2="126" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8A5038"/>
+      <stop offset=".5" stop-color="#6B3D2E"/>
+      <stop offset="1" stop-color="#462316"/>
+    </linearGradient>
+    <linearGradient id="il" x1="30" y1="24" x2="80" y2="102" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFF8ED"/>
+      <stop offset="1" stop-color="#D4B48A"/>
+    </linearGradient>
+    <linearGradient id="ia" x1="76" y1="24" x2="104" y2="102" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFBE55"/>
+      <stop offset=".5" stop-color="#E8913A"/>
+      <stop offset="1" stop-color="#B8652A"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <rect width="1200" height="675" fill="url(#glow)"/>
+  <g fill="none" stroke="#E5CDB2" stroke-opacity=".42" stroke-width="1">
+    <path d="M0 130h1200M0 260h1200M0 390h1200M0 520h1200"/>
+    <path d="M150 0v675M300 0v675M450 0v675M600 0v675M750 0v675M900 0v675M1050 0v675"/>
+  </g>
+  <!-- Logo icon -->
+  <g transform="translate(86 80)">
+    <rect width="126" height="126" rx="29" fill="url(#ibg)"/>
+    <path d="M38 35V91" stroke="url(#il)" stroke-width="11" stroke-linecap="round"/>
+    <path d="M46 63L76 35" stroke="url(#il)" stroke-width="10" stroke-linecap="round"/>
+    <path d="M46 63L78 93" stroke="url(#il)" stroke-width="10" stroke-linecap="round"/>
+    <path d="M81 37 A28 28 0 0 1 81 89" stroke="url(#ia)" stroke-width="7" stroke-linecap="round"/>
+    <path d="M87 59L92 66L102 54" stroke="#FFF6E8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/>
+  </g>
+  <text x="86" y="276" fill="#2C2118" font-family="Georgia, serif" font-size="104" font-weight="700">Kaifbook</text>
+  <text x="92" y="352" fill="#6B3D2E" font-family="Arial, sans-serif" font-size="34" font-weight="700">Бронирование ресторанов в VK</text>
+  <text x="92" y="406" fill="#5D4434" font-family="Arial, sans-serif" font-size="26">Выберите ресторан, дату, время и стол без звонков.</text>
+  <g transform="translate(92 472)">
+    <rect width="270" height="68" rx="34" fill="#6B3D2E"/>
+    <text x="135" y="43" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="22" font-weight="800">Забронировать</text>
+  </g>
+</svg>

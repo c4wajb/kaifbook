@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="820" viewBox="0 0 1200 820" role="img" aria-label="Soup bowl">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff8ec"/>
+      <stop offset="0.55" stop-color="#ead9bd"/>
+      <stop offset="1" stop-color="#d0a06a"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="34%" r="58%">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.88"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="26" stdDeviation="28" flood-color="#3a2018" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="820" fill="url(#bg)"/>
+  <rect width="1200" height="820" fill="url(#glow)"/>
+  <g opacity="0.13" stroke="#7b4a34" stroke-width="2">
+    <path d="M0 160h1200M0 320h1200M0 480h1200M0 640h1200"/>
+    <path d="M160 0v820M320 0v820M480 0v820M640 0v820M800 0v820M960 0v820M1120 0v820"/>
+  </g>
+  <g filter="url(#shadow)">
+    <ellipse cx="600" cy="512" rx="330" ry="118" fill="#c48b56" opacity="0.24"/>
+    <circle cx="600" cy="390" r="238" fill="#fffaf1"/>
+    <circle cx="600" cy="390" r="198" fill="#f8ead3" stroke="#c99a68" stroke-width="16"/>
+    <circle cx="600" cy="390" r="122" fill="#fffaf1"/>
+    
+      <ellipse cx="600" cy="392" rx="185" ry="95" fill="#f4f0e8" stroke="#c89b68" stroke-width="16"/>
+      <ellipse cx="600" cy="382" rx="140" ry="62" fill="#9a2f30"/>
+      <circle cx="550" cy="365" r="17" fill="#f2c94c"/><circle cx="620" cy="395" r="15" fill="#ffdf6e"/><circle cx="673" cy="370" r="13" fill="#7db66a"/>
+      <path d="M457 476c76 52 212 60 309 0" fill="none" stroke="#7b4a34" stroke-width="22" stroke-linecap="round"/>
+    
+  </g>
+  <g fill="#2f211a" opacity="0.42">
+    <circle cx="145" cy="120" r="8"/><circle cx="181" cy="144" r="5"/><circle cx="1020" cy="118" r="7"/><circle cx="1076" cy="164" r="5"/>
+  </g>
+  <path d="M112 682c78-44 170-56 278-28 96 25 195 21 298-13 89-29 181-25 276 11" fill="none" stroke="#9a3f32" stroke-width="20" stroke-linecap="round" opacity="0.22"/>
+</svg>

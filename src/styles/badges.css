@@ -1,0 +1,86 @@
+/* ==========================================================================
+   badges.css — Tags, status badges, meta rows, and open-status indicator.
+   Merged from globals.css: last definition wins for each property.
+   ========================================================================== */
+
+/* ---- Tag row ---- */
+.tag-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tag-row span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 850;
+  background: #e9efe0;
+  color: #526338;
+}
+
+/* ---- Badge (base) ---- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 850;
+  background: #f3e5d4;
+  color: #604533;
+}
+
+/* ---- Warning / pending badges ---- */
+.badge-new,
+.badge-awaiting-restaurant-confirmation,
+.badge-awaiting-deposit-payment,
+.badge-waiting-for-payment,
+.badge-payment-expired,
+.badge-at-risk,
+.badge-expired {
+  background: #fff1cf;
+  color: #84530f;
+}
+
+/* ---- Success / confirmed badges ---- */
+.badge-confirmed,
+.badge-approved,
+.badge-seated,
+.badge-completed,
+.badge-deposit-paid,
+.badge-confirmed-by-guest,
+.badge-confirmed-by-restaurant,
+.badge-paid,
+.badge-refunded {
+  background: #dff2e8;
+  color: #1f6844;
+}
+
+/* ---- Danger / cancelled badges ---- */
+.badge-rejected,
+.badge-cancelled,
+.badge-no-show,
+.badge-cancelled-by-guest,
+.badge-cancelled-by-restaurant,
+.badge-failed {
+  background: #f8dfdc;
+  color: #983333;
+}
+
+/* ---- Meta row ---- */
+.meta-row {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* ---- Open status ---- */
+.open-status {
+  color: #4f7e4d !important;
+}

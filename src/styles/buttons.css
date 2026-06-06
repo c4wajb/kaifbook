@@ -1,0 +1,120 @@
+/* ==========================================================================
+   buttons.css — Button components, CTAs, and link-buttons.
+   Merged from globals.css: last definition wins for each property.
+   ========================================================================== */
+
+.button,
+.ghost,
+.small-button,
+.danger-button,
+.secondary-button,
+.icon-button,
+.icon-only {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 850;
+  text-align: center;
+  transition: background .16s ease, border-color .16s ease, transform .16s ease, box-shadow .16s ease;
+}
+
+/* ---- Primary ---- */
+.button {
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #6b3d2e, #bd744e);
+  color: #fff9f1;
+  box-shadow: 0 12px 26px rgba(107, 61, 46, .2);
+}
+
+.button:hover {
+  background: linear-gradient(135deg, #5c3328, #a96545);
+  transform: translateY(-1px);
+  box-shadow: 0 18px 34px rgba(107, 61, 46, .26);
+}
+
+.button.compact {
+  min-height: 40px;
+}
+
+/* ---- Client CTA ---- */
+.client-cta {
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #6b3d2e, #bd744e);
+  color: #fff9f1;
+  box-shadow: 0 12px 26px rgba(107, 61, 46, .2);
+}
+
+.client-cta:hover {
+  background: linear-gradient(135deg, #5c3328, #a96545);
+}
+
+/* ---- Ghost / Secondary / Small ---- */
+.ghost,
+.secondary-button,
+.small-button {
+  border-color: rgba(201, 169, 127, .32);
+  border-radius: 999px;
+  background: rgba(255, 253, 249, .84);
+  color: #2c2118;
+}
+
+.ghost:hover,
+.secondary-button:hover,
+.small-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(32, 35, 31, .08);
+}
+
+.small-button {
+  min-height: 36px;
+  font-size: 13px;
+}
+
+/* ---- Danger ---- */
+.danger-button {
+  padding: 0 14px;
+  color: #fff;
+  background: var(--danger);
+}
+
+/* ---- Icon buttons ---- */
+.icon-button,
+.icon-only {
+  min-height: 40px;
+  width: 40px;
+  min-width: 40px;
+  padding: 0;
+  border-color: var(--line);
+  background: var(--surface);
+}
+
+/* ---- Wide link ---- */
+.wide-link {
+  width: min(520px, 100%);
+  border-radius: 999px;
+  background: #f2f1ef;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 680px) {
+  .button,
+  .ghost,
+  .secondary-button {
+    width: 100%;
+  }
+
+  .toolbar-actions .button,
+  .toolbar-actions .ghost,
+  .row-actions .small-button,
+  .reservation-actions .small-button {
+    width: auto;
+  }
+}

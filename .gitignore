@@ -1,0 +1,44 @@
+# dependencies
+node_modules/
+
+# build
+.next/
+dist/
+tsconfig.tsbuildinfo
+
+# generated
+src/generated/prisma/
+
+# env & secrets
+.env
+.env*.local
+
+# database
+prisma/dev.db
+prisma/dev.db-journal
+
+# logs
+*.log
+
+# images & screenshots in root
+/*.jpg
+/*.png
+
+# misc
+coverage/
+.codex-screenshots/
+old_globals.css
+recovered_rules.css
+missing_selectors.txt
+recolor.py
+
+# mobile builds
+android/
+ios/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# next
+next-env.d.ts
