@@ -112,6 +112,7 @@ export default async function RestaurantsPage({ searchParams }: Props) {
   const dinnerSection = takeUnique(allRestaurants.filter((r) => hasCuisine(r, "европ") || hasCuisine(r, "стейк") || hasCuisine(r, "рус") || hasFeature(r, "бар")));
   const breakfastSection = takeUnique(allRestaurants.filter((r) => hasCuisine(r, "завтрак") || hasCuisine(r, "коф") || hasFeature(r, "завтрак")));
   const familySection = takeUnique(allRestaurants.filter((r) => hasFeature(r, "семей") || hasFeature(r, "деть")));
+  const hookahSection = takeUnique(allRestaurants.filter((r) => hasFeature(r, "кальян") || hasCuisine(r, "кальян")));
   const verandaSection = takeUnique(allRestaurants.filter((r) => hasFeature(r, "веранд") || hasFeature(r, "видовой")));
   const budgetSection = takeUnique(allRestaurants.filter((r) => r.averageCheck <= 1800));
 
@@ -159,6 +160,7 @@ export default async function RestaurantsPage({ searchParams }: Props) {
           <>
             <RestaurantSection title="Популярные" restaurants={nearbySection} showAllHref="/restaurants?view=all#restaurant-list" />
             <RestaurantSection title="Лучшие рестораны" restaurants={bestSection} showAllHref="/restaurants?view=all#restaurant-list" />
+            <RestaurantSection title="Кальянные" restaurants={hookahSection} showAllHref={categoryHref("feature", "кальян")} />
             <RestaurantSection title="Где поужинать" restaurants={dinnerSection} showAllHref={categoryHref("cuisine", "европейская")} />
             <RestaurantSection title="Завтраки" restaurants={breakfastSection} showAllHref={categoryHref("cuisine", "завтраки")} />
             <RestaurantSection title="Семейные рестораны" restaurants={familySection} showAllHref={categoryHref("feature", "с детьми")} />
