@@ -1,52 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 256 256" fill="none" role="img" aria-labelledby="title desc">
-  <title id="title">kaifbook icon</title>
-  <desc id="desc">Rounded kaifbook app icon with K monogram and orange booking loop.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 256 256" fill="none" role="img" aria-labelledby="title">
+  <title id="title">Kaifbook</title>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#FFF8EA"/>
-      <stop offset="0.52" stop-color="#F3E3C2"/>
-      <stop offset="1" stop-color="#C9975E"/>
+      <stop offset="0" stop-color="#d4623f"/>
+      <stop offset="1" stop-color="#9b3f24"/>
     </linearGradient>
-    <radialGradient id="surface" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(128 126) rotate(90) scale(134 145)">
-      <stop offset="0" stop-color="#FFFDF8"/>
-      <stop offset="0.62" stop-color="#F9F1DF"/>
-      <stop offset="1" stop-color="#EAD6AD"/>
-    </radialGradient>
-    <linearGradient id="frame" x1="16" y1="17" x2="244" y2="238" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#5A2B14"/>
-      <stop offset="0.36" stop-color="#9A653B"/>
-      <stop offset="0.65" stop-color="#D9AC72"/>
-      <stop offset="1" stop-color="#653018"/>
-    </linearGradient>
-    <linearGradient id="coffee" x1="74" y1="68" x2="182" y2="188" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#5A2812"/>
-      <stop offset="1" stop-color="#2B1208"/>
-    </linearGradient>
-    <linearGradient id="orange" x1="184" y1="70" x2="121" y2="197" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#FF9B45"/>
-      <stop offset="0.52" stop-color="#EA772B"/>
-      <stop offset="1" stop-color="#B84E1E"/>
-    </linearGradient>
-    <filter id="shadow" x="-15%" y="-15%" width="130%" height="140%" color-interpolation-filters="sRGB">
-      <feDropShadow dx="0" dy="9" stdDeviation="10" flood-color="#3A1808" flood-opacity="0.18"/>
-    </filter>
-    <filter id="letterShadow" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
-      <feDropShadow dx="3" dy="5" stdDeviation="3" flood-color="#321305" flood-opacity="0.18"/>
-    </filter>
   </defs>
-  <rect x="4" y="4" width="248" height="248" rx="64" fill="url(#bg)" filter="url(#shadow)"/>
-  <rect x="17" y="17" width="222" height="222" rx="54" fill="none" stroke="url(#frame)" stroke-width="10"/>
-  <rect x="31" y="31" width="194" height="194" rx="43" fill="url(#surface)"/>
-  <rect x="31" y="31" width="194" height="194" rx="43" fill="none" stroke="#F7E7C8" stroke-width="2" opacity="0.82"/>
-
-  <g filter="url(#letterShadow)">
-    <path d="M67 68H92V188H67V68Z" fill="url(#coffee)"/>
-    <path d="M95 132L148 68H181L125 131L184 188H149L105 145L92 160V126L95 132Z" fill="url(#coffee)"/>
-    <path d="M96 128L69 160V132L96 101V128Z" fill="#F9F1DF"/>
+  <rect width="256" height="256" rx="56" fill="url(#bg)"/>
+  <g stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M82 66V190" stroke-width="22"/>
+    <path d="M98 128L156 66" stroke-width="20"/>
+    <path d="M98 128L160 190" stroke-width="20"/>
+    <path d="M170 78A48 50 0 0 1 170 178" stroke-width="10" opacity="0.3"/>
   </g>
-
-  <path d="M191 72V137C191 175 166 197 132 197C108 197 91 187 79 171" stroke="#7B2D0E" stroke-width="34" stroke-linecap="round" stroke-linejoin="round" opacity="0.18"/>
-  <path d="M184 70V136C184 169 163 188 134 188C113 188 99 179 89 164" stroke="url(#orange)" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M189 81V133C189 158 175 176 153 181" stroke="#FFC06B" stroke-width="6" stroke-linecap="round" opacity="0.38"/>
-  <path d="M122 158L135 171L160 142" stroke="#FFF3D9" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity="0.94"/>
 </svg>

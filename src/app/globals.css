@@ -2605,9 +2605,8 @@ h1,h2,h3,.brand span,.catalog-title h1,.showcase-content h2,.profile-hero-conten
   width:38px;
   height:38px;
   flex:0 0 auto;
-  border-radius:16px;
+  border-radius:9px;
   object-fit:contain;
-  filter:drop-shadow(0 12px 24px rgba(0,0,0,.13));
 }
 .public-header .brand svg{color:var(--accent)}
 .public-header .main-nav{
