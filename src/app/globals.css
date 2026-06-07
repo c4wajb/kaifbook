@@ -12862,9 +12862,11 @@ svg {
 }
 
 /* ── Cart sidebar (desktop) ──────────────────────────────────── */
+/* top = header(82) + nav(~68) + gap(14) = 164px
+   Must match .menu-order-nav sticky bottom so sidebar never slides under nav */
 .menu-cart-sidebar {
   position: sticky;
-  top: 120px;
+  top: 164px;
   display: flex;
   flex-direction: column;
 }
@@ -14951,4 +14953,13 @@ textarea:focus {
   .catalog-page .chip-slider-wrapper::after {
     display: none !important;
   }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Menu order page: fix sidebar sticky top
+   nav occupies viewport 82–150px; sidebar must start below that zone
+   ══════════════════════════════════════════════════════════════════════ */
+.menu-cart-sidebar {
+  /* header(82) + nav(~68) + gap(14) = 164px — matches scroll-margin-top on sections */
+  top: 164px !important;
 }
