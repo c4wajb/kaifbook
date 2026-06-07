@@ -19,7 +19,6 @@ type RestaurantCardProps = {
     averageCheck: number;
     rating?: number | null;
     reviewsCount?: number | null;
-    distanceText?: string | null;
     cuisineTypes: string;
     features?: string | null;
     tags?: string | null;
@@ -115,7 +114,6 @@ export function RestaurantCard({ restaurant, compact = false, restaurantBasePath
         <div className="restaurant-card-info" aria-label="Информация о ресторане">
           <span title={`${restaurant.city}, ${restaurant.address}`}>
             <MapPin size={17} aria-hidden />
-            {restaurant.distanceText ? `${restaurant.distanceText} · ` : ""}
             {restaurant.address}
           </span>
           <span className="open-status">

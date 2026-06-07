@@ -123,7 +123,7 @@ export const getRestaurantBySlug = unstable_cache(
     });
   },
   ["restaurant-by-slug"],
-  { revalidate: 60 },
+  { revalidate: 60, tags: ["restaurant-menu"] },
 );
 
 export const getRestaurantFilterOptions = unstable_cache(

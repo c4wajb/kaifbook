@@ -41,6 +41,7 @@ const typeOptions: Option[] = [
   { label: "Кафе", value: "кафе" },
   { label: "Бар", value: "бар" },
   { label: "Кофейня", value: "кофейня" },
+  { label: "Кальян-бар", value: "кальян" },
 ];
 
 const openOptions: Option[] = [

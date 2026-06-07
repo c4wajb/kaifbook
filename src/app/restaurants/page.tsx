@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Baby, ChevronRight, Coffee, Flame, MapPin, Music, PiggyBank, Sun, UtensilsCrossed } from "lucide-react";
+import { Baby, ChevronRight, Coffee, Flame, Music, Sun, UtensilsCrossed, Wind } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Рестораны Курска — бронирование столиков онлайн | Kaifbook",
@@ -24,12 +24,11 @@ type FilterKey = "feature" | "cuisine" | "averageCheck" | "type" | "open";
 type LayoutMode = "grid" | "large";
 
 const quickFilters = [
-  { label: "Рядом", href: "/restaurants#restaurant-list", icon: MapPin },
-  { label: "Недорого", href: "/restaurants?averageCheck=1800#restaurant-list", icon: PiggyBank },
   { label: "С живой музыкой", href: "/restaurants?feature=живая%20музыка#restaurant-list", icon: Music },
   { label: "Видовой", href: "/restaurants?feature=видовой#restaurant-list", icon: Sun },
   { label: "С верандой", href: "/restaurants?feature=летняя%20веранда#restaurant-list", icon: Coffee },
   { label: "С детьми", href: "/restaurants?feature=с%20детьми#restaurant-list", icon: Baby },
+  { label: "Кальян", href: "/restaurants?feature=кальян#restaurant-list", icon: Wind },
   { label: "Завтраки", href: "/restaurants?cuisine=завтраки#restaurant-list", icon: Flame },
   { label: "Грузинская кухня", href: "/restaurants?cuisine=грузинская#restaurant-list", icon: UtensilsCrossed },
   { label: "Итальянская кухня", href: "/restaurants?cuisine=итальянская#restaurant-list", icon: UtensilsCrossed },
@@ -158,7 +157,7 @@ export default async function RestaurantsPage({ searchParams }: Props) {
           </section>
         ) : (
           <>
-            <RestaurantSection title="Рестораны рядом" restaurants={nearbySection} showAllHref="/restaurants?view=all#restaurant-list" />
+            <RestaurantSection title="Популярные" restaurants={nearbySection} showAllHref="/restaurants?view=all#restaurant-list" />
             <RestaurantSection title="Лучшие рестораны" restaurants={bestSection} showAllHref="/restaurants?view=all#restaurant-list" />
             <RestaurantSection title="Где поужинать" restaurants={dinnerSection} showAllHref={categoryHref("cuisine", "европейская")} />
             <RestaurantSection title="Завтраки" restaurants={breakfastSection} showAllHref={categoryHref("cuisine", "завтраки")} />
