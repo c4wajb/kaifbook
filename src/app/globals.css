@@ -12115,8 +12115,9 @@ svg {
 
 .menu-order-header h1 {
   margin: 8px 0 4px;
-  font-size: clamp(34px, 4vw, 52px);
-  color: #1a1a1a;
+  font-size: clamp(28px, 3.5vw, 40px);
+  font-weight: 600;
+  color: var(--ink);
 }
 
 /* ── Sticky category nav ──────────────────────────────────────── */
@@ -12127,9 +12128,10 @@ svg {
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding: 12px 0;
+  padding: 14px 0;
   margin-bottom: 20px;
-  background: linear-gradient(180deg, rgba(229,222,210,.97) 60%, rgba(229,222,210,0));
+  background: rgba(245,243,240,.97);
+  backdrop-filter: blur(8px);
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -12145,12 +12147,12 @@ svg {
   gap: 6px;
   min-height: 38px;
   padding: 0 16px;
-  border: 1px solid rgba(163, 147, 130, 0.3);
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: transparent;
-  color: #7a756f;
+  background: #fff;
+  color: var(--muted);
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
   transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
@@ -12164,7 +12166,7 @@ svg {
   height: 22px;
   padding: 0 5px;
   border-radius: 999px;
-  background: rgba(163, 147, 130, 0.14);
+  background: rgba(0,0,0,.06);
   font-size: 12px;
 }
 
@@ -12180,9 +12182,9 @@ svg {
 }
 
 .menu-order-nav button:not(.is-active):hover {
-  background: rgba(104, 93, 84, 0.08);
-  border-color: rgba(163, 147, 130, 0.5);
-  color: #1a1a1a;
+  background: var(--surface-2);
+  border-color: var(--line);
+  color: var(--ink);
 }
 
 /* ── Two-column body: menu + sidebar cart ─────────────────────── */
@@ -12200,10 +12202,11 @@ svg {
 
 .menu-order-category h2 {
   margin: 0 0 16px;
-  font-size: clamp(26px, 3vw, 36px);
-  color: #1a1a1a;
+  font-size: clamp(20px, 2.5vw, 28px);
+  font-weight: 600;
+  color: var(--ink);
   padding-bottom: 10px;
-  border-bottom: 1px solid rgba(163, 147, 130, 0.3);
+  border-bottom: 1px solid var(--line);
 }
 
 .menu-order-grid {
@@ -12216,21 +12219,22 @@ svg {
 .menu-dish-card {
   display: flex;
   flex-direction: column;
-  border-radius: 20px;
+  border-radius: 14px;
   background: #fff;
-  border: 1px solid rgba(180, 179, 173, 0.35);
+  border: 1px solid rgba(0,0,0,.08);
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
   transition: border-color 200ms ease, box-shadow 200ms ease;
 }
 
 .menu-dish-card:hover {
-  border-color: rgba(163, 147, 130, 0.6);
-  box-shadow: 0 12px 32px rgba(35, 35, 35, 0.1);
+  border-color: rgba(0,0,0,.14);
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
 }
 
 .menu-dish-card.in-cart {
-  border-color: rgba(104, 93, 84, 0.35);
-  box-shadow: 0 0 0 2px rgba(104, 93, 84, 0.1);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(192,85,53,.12);
 }
 
 .menu-dish-image {
@@ -12261,11 +12265,11 @@ svg {
   height: 28px;
   padding: 0 8px;
   border-radius: 999px;
-  background: #1a1a1a;
+  background: var(--accent);
   color: #fff;
   font-size: 13px;
-  font-weight: 900;
-  box-shadow: 0 4px 12px rgba(104, 93, 84, 0.35);
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(192,85,53,.3);
 }
 
 .menu-dish-body {
@@ -12278,8 +12282,9 @@ svg {
 
 .menu-dish-body strong {
   font-size: 15px;
-  color: #1a1a1a;
-  line-height: 1.25;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.3;
 }
 
 .menu-dish-body p {
@@ -12314,9 +12319,9 @@ svg {
 }
 
 .menu-dish-price-row b {
-  color: #1a1a1a;
+  color: var(--ink);
   font-size: 16px;
-  font-weight: 900;
+  font-weight: 700;
   white-space: nowrap;
 }
 
@@ -12327,20 +12332,19 @@ svg {
   gap: 5px;
   height: 36px;
   padding: 0 14px;
-  border: 1px solid rgba(104, 93, 84, 0.25);
-  border-radius: 999px;
-  background: transparent;
-  color: #1a1a1a;
+  border: 0;
+  border-radius: 10px;
+  background: #f0ece8;
+  color: var(--ink);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+  transition: background 160ms ease, color 160ms ease;
 }
 
 .menu-add-btn:hover {
-  background: #1a1a1a;
-  border-color: #1a1a1a;
+  background: var(--ink);
   color: #fff;
 }
 
@@ -12350,9 +12354,9 @@ svg {
   align-items: center;
   gap: 0;
   height: 36px;
-  border: 1px solid rgba(104, 93, 84, 0.25);
-  border-radius: 999px;
-  background: rgba(104, 93, 84, 0.04);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
   overflow: hidden;
 }
 
@@ -12371,15 +12375,15 @@ svg {
 }
 
 .menu-qty-control button:hover {
-  background: rgba(104, 93, 84, 0.12);
+  background: rgba(0,0,0,.06);
 }
 
 .menu-qty-control > span {
   min-width: 26px;
   text-align: center;
   font-size: 14px;
-  font-weight: 900;
-  color: #1a1a1a;
+  font-weight: 700;
+  color: var(--ink);
 }
 
 .menu-qty-control.compact {
@@ -12404,10 +12408,10 @@ svg {
 }
 
 .menu-cart-inner {
-  border: 1px solid rgba(180, 179, 173, 0.5);
-  border-radius: 24px;
-  background: #f5f3f0;
-  box-shadow: 0 18px 54px rgba(35, 35, 35, 0.07);
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0,0,0,.06);
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -12439,10 +12443,10 @@ svg {
   height: 24px;
   padding: 0 7px;
   border-radius: 999px;
-  background: rgba(104, 93, 84, 0.12);
-  color: #1a1a1a;
+  background: rgba(0,0,0,.07);
+  color: var(--ink);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 700;
 }
 
 .menu-cart-clear {
@@ -12451,17 +12455,17 @@ svg {
   justify-content: center;
   width: 34px;
   height: 34px;
-  border: 1px solid rgba(163, 147, 130, 0.3);
+  border: 1px solid var(--line);
   border-radius: 999px;
   background: transparent;
-  color: #7a756f;
+  color: var(--muted);
   cursor: pointer;
   transition: color 160ms ease, border-color 160ms ease;
 }
 
 .menu-cart-clear:hover {
-  color: #c0392b;
-  border-color: rgba(155, 64, 64, 0.3);
+  color: var(--danger);
+  border-color: var(--danger);
 }
 
 .menu-cart-empty {
@@ -12494,12 +12498,12 @@ svg {
   align-items: center;
   padding: 8px;
   border-radius: 14px;
-  background: rgba(228, 227, 224, 0.5);
+  background: var(--surface-2);
   transition: background 160ms ease;
 }
 
 .menu-cart-row:hover {
-  background: rgba(228, 227, 224, 0.85);
+  background: #e5e2dd;
 }
 
 .menu-cart-row-image {
@@ -12525,7 +12529,7 @@ svg {
 
 .menu-cart-row-info strong {
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
   color: #1a1a1a;
   line-height: 1.2;
   overflow: hidden;
@@ -12554,8 +12558,8 @@ svg {
 }
 
 .menu-cart-row-delete:hover {
-  color: #c0392b;
-  background: rgba(155, 64, 64, 0.08);
+  color: var(--danger);
+  background: var(--soft-danger);
 }
 
 /* ── Cart total / hint / button ──────────────────────────────── */
@@ -12564,25 +12568,25 @@ svg {
   align-items: center;
   justify-content: space-between;
   padding: 14px 0 0;
-  border-top: 1px solid rgba(163, 147, 130, 0.25);
+  border-top: 1px solid var(--line);
 }
 
 .menu-cart-total span {
   font-size: 15px;
-  color: #7a756f;
-  font-weight: 700;
+  color: var(--muted);
+  font-weight: 600;
 }
 
 .menu-cart-total strong {
   font-size: 20px;
-  color: #1a1a1a;
-  font-weight: 900;
+  color: var(--ink);
+  font-weight: 700;
 }
 
 .menu-cart-hint {
   padding: 10px 14px;
-  border-radius: 12px;
-  background: rgba(104, 93, 84, 0.06);
+  border-radius: 10px;
+  background: var(--surface-2);
   color: #7a756f;
   font-size: 13px;
   line-height: 1.45;
@@ -12603,7 +12607,7 @@ svg {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(35, 35, 35, 0.6);
+  background: rgba(0,0,0,.5);
   backdrop-filter: blur(6px);
   padding: 20px;
 }
@@ -12611,10 +12615,10 @@ svg {
 .menu-qr-modal {
   width: 100%;
   max-width: 400px;
-  background: #f5f3f0;
-  border-radius: 24px;
+  background: #fff;
+  border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 24px 64px rgba(35, 35, 35, 0.3);
+  box-shadow: 0 24px 64px rgba(0,0,0,.2);
   animation: cartSheetUp 220ms ease;
 }
 
@@ -12637,10 +12641,10 @@ svg {
   justify-content: center;
   width: 38px;
   height: 38px;
-  border: 1px solid rgba(163, 147, 130, 0.3);
+  border: 1px solid var(--line);
   border-radius: 999px;
   background: transparent;
-  color: #1a1a1a;
+  color: var(--ink);
   cursor: pointer;
 }
 
@@ -12648,9 +12652,9 @@ svg {
   display: flex;
   justify-content: center;
   padding: 16px;
-  background: #f5f3f0;
-  border-radius: 16px;
-  border: 1px solid rgba(180, 179, 173, 0.3);
+  background: var(--bg);
+  border-radius: 12px;
+  border: 1px solid var(--line);
 }
 
 .menu-qr-preview svg {
@@ -12697,7 +12701,7 @@ svg {
   inset: 0;
   z-index: 1100;
   display: none;
-  background: rgba(35, 35, 35, 0.6);
+  background: rgba(0,0,0,.5);
   backdrop-filter: blur(6px);
 }
 
@@ -12708,9 +12712,9 @@ svg {
   right: 0;
   max-height: 85dvh;
   padding: 22px 18px calc(18px + env(safe-area-inset-bottom));
-  border-radius: 28px 28px 0 0;
-  background: #f5f3f0;
-  box-shadow: 0 -20px 60px rgba(35, 35, 35, 0.25);
+  border-radius: 20px 20px 0 0;
+  background: #fff;
+  box-shadow: 0 -12px 40px rgba(0,0,0,.15);
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -12730,10 +12734,10 @@ svg {
   justify-content: center;
   width: 38px;
   height: 38px;
-  border: 1px solid rgba(163, 147, 130, 0.3);
+  border: 1px solid var(--line);
   border-radius: 999px;
   background: transparent;
-  color: #1a1a1a;
+  color: var(--ink);
   cursor: pointer;
 }
 
@@ -12971,11 +12975,11 @@ svg {
     min-height: 56px;
     padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
     border: 0;
-    border-top: 1px solid rgba(163, 147, 130, 0.3);
-    border-radius: 22px 22px 0 0;
-    background: rgba(251, 247, 244, 0.97);
+    border-top: 1px solid var(--line);
+    border-radius: 18px 18px 0 0;
+    background: rgba(245,243,240,.97);
     backdrop-filter: blur(12px);
-    box-shadow: 0 -8px 28px rgba(35, 35, 35, 0.12);
+    box-shadow: 0 -4px 16px rgba(0,0,0,.08);
     cursor: pointer;
     animation: cartBarSlide 240ms ease;
     font-family: inherit;
@@ -13025,6 +13029,9 @@ svg {
   .menu-order-header {
     flex-direction: column;
   }
+  .menu-order-header h1 {
+    font-size: 28px;
+  }
   .menu-order-header-actions {
     width: 100%;
   }
@@ -13032,38 +13039,78 @@ svg {
     flex: 1;
     justify-content: center;
   }
+  .menu-order-nav {
+    top: 72px;
+    padding: 10px 0;
+    margin-bottom: 14px;
+  }
+  .menu-order-nav button {
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 13px;
+  }
+  .menu-order-nav button span {
+    min-width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+  .menu-order-category h2 {
+    font-size: 18px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+  }
   .menu-order-grid {
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 10px;
+  }
+  .menu-dish-card {
+    border-radius: 12px;
+  }
+  .menu-dish-image {
+    aspect-ratio: 1 / 1;
   }
   .menu-dish-body {
-    padding: 10px;
+    padding: 8px 10px 10px;
+    gap: 2px;
   }
   .menu-dish-body strong {
-    font-size: 14px;
+    font-size: 13px;
+  }
+  .menu-dish-body p {
+    font-size: 11px;
+    -webkit-line-clamp: 2;
   }
   .menu-dish-footer {
     flex-direction: column;
     align-items: stretch;
-    gap: 8px;
+    gap: 6px;
+    padding-top: 6px;
   }
   .menu-dish-price-row {
     flex-direction: row;
     align-items: baseline;
-    gap: 8px;
+    gap: 6px;
+  }
+  .menu-dish-price-row b {
+    font-size: 14px;
+  }
+  .menu-dish-weight {
+    font-size: 11px;
   }
   .menu-add-btn,
   .menu-qty-control {
     justify-content: center;
     width: 100%;
+    height: 32px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+  .menu-qty-control button {
+    width: 30px;
   }
 }
 
-@media (max-width: 440px) {
-  .menu-order-grid {
-    grid-template-columns: 1fr;
-  }
-}
+/* 440px — keep 2 columns on narrow screens */
 
 
 /* Server Dashboard */
