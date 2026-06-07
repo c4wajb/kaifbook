@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { PrettySelect } from "@/components/PrettySelect";
 
 const STORAGE_KEY = "kaifbook_age_confirmed";
 const MIN_AGE = 18;
@@ -50,11 +51,19 @@ export function AgeGate() {
     }
   }, []);
 
-  const years = useMemo(() => {
+  const dayOptions = useMemo(
+    () => Array.from({ length: 31 }, (_, i) => ({ value: String(i + 1), label: String(i + 1) })),
+    [],
+  );
+  const monthOptions = useMemo(
+    () => MONTHS.map((name, i) => ({ value: String(i + 1), label: name })),
+    [],
+  );
+  const yearOptions = useMemo(() => {
     const current = new Date().getFullYear();
-    const list: number[] = [];
+    const list: { value: string; label: string }[] = [];
     for (let y = current; y >= current - 100; y -= 1) {
-      list.push(y);
+      list.push({ value: String(y), label: String(y) });
     }
     return list;
   }, []);
@@ -109,30 +118,33 @@ export function AgeGate() {
           Заведение предлагает табачную продукцию. Укажите дату рождения, чтобы подтвердить, что вам исполнилось 18 лет.
         </p>
         <div className="age-gate-fields">
-          <select aria-label="День рождения" value={day} onChange={(event) => setDay(event.target.value)}>
-            <option value="">День</option>
-            {Array.from({ length: 31 }, (_, i) => i + 1).map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </select>
-          <select aria-label="Месяц рождения" value={month} onChange={(event) => setMonth(event.target.value)}>
-            <option value="">Месяц</option>
-            {MONTHS.map((name, i) => (
-              <option key={name} value={i + 1}>
-                {name}
-              </option>
-            ))}
-          </select>
-          <select aria-label="Год рождения" value={year} onChange={(event) => setYear(event.target.value)}>
-            <option value="">Год</option>
-            {years.map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </select>
+          <PrettySelect
+            name="age-day"
+            label="День рождения"
+            hideLabel
+            placeholder="День"
+            options={dayOptions}
+            value={day}
+            onChange={setDay}
+          />
+          <PrettySelect
+            name="age-month"
+            label="Месяц рождения"
+            hideLabel
+            placeholder="Месяц"
+            options={monthOptions}
+            value={month}
+            onChange={setMonth}
+          />
+          <PrettySelect
+            name="age-year"
+            label="Год рождения"
+            hideLabel
+            placeholder="Год"
+            options={yearOptions}
+            value={year}
+            onChange={setYear}
+          />
         </div>
         {error ? <p className="age-gate-error">{error}</p> : null}
         <button className="button" type="button" onClick={confirm}>

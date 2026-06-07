@@ -14055,10 +14055,12 @@ svg {
 .age-gate-actions .button-outline{min-height:46px;padding:0 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink);font-size:15px;font-weight:600}
 .age-gate-actions .button-outline:hover{background:var(--surface-2)}
 @media(max-width:480px){.age-gate-actions{grid-template-columns:1fr}}
-/* Age gate — date-of-birth fields */
-.age-gate-fields{display:flex;gap:10px}
-.age-gate-fields select{flex:1;min-width:0;min-height:48px;padding:0 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink);font-size:15px;font-weight:600;cursor:pointer;text-align:center;text-align-last:center}
-.age-gate-fields select:focus{outline:none;border-color:var(--ink)}
+/* Age gate — date-of-birth fields (custom PrettySelect dropdowns) */
+.age-gate-fields{display:flex;gap:10px;text-align:left}
+.age-gate-fields .pretty-select-field{flex:1;min-width:0}
+.age-gate-fields .pretty-select-trigger.is-placeholder strong{color:#6b6157;font-weight:600}
+/* dropdown fits its content (month names) instead of the narrow field width */
+.age-gate-fields .pretty-select-menu{left:0;right:auto;width:max-content;min-width:100%;max-width:min(260px,72vw);overflow-x:hidden}
 .age-gate-error{margin:0;color:#c0392b;font-size:14px;font-weight:600}
 .age-gate-modal>.button{min-height:48px;width:100%;font-size:15px;text-decoration:none}
 @media(max-width:420px){.age-gate-fields{flex-direction:column}}

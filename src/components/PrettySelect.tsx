@@ -13,14 +13,35 @@ type Props = {
   label: string;
   options: PrettySelectOption[];
   defaultValue?: string;
+  /** Controlled value. When provided, the component is controlled and `onChange` is called on selection. */
+  value?: string;
+  onChange?: (value: string) => void;
+  /** Shown in the trigger while no option is selected (instead of falling back to the first option). */
+  placeholder?: string;
+  /** Visually hide the field label (still exposed to assistive tech via aria-label on the trigger). */
+  hideLabel?: boolean;
 };
 
-export function PrettySelect({ name, label, options, defaultValue = "" }: Props) {
+export function PrettySelect({
+  name,
+  label,
+  options,
+  defaultValue = "",
+  value,
+  onChange,
+  placeholder,
+  hideLabel = false,
+}: Props) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(defaultValue);
+  const [internalValue, setInternalValue] = useState(defaultValue);
   const rootRef = useRef<HTMLDivElement>(null);
   const id = useId();
-  const selected = options.find((option) => option.value === value) ?? options[0];
+
+  const isControlled = value !== undefined;
+  const currentValue = isControlled ? value : internalValue;
+  const matched = options.find((option) => option.value === currentValue);
+  const selected = matched ?? (placeholder !== undefined ? undefined : options[0]);
+  const triggerLabel = selected?.label ?? placeholder ?? "Выбрать";
 
   useEffect(() => {
     if (!open) return;
@@ -41,20 +62,27 @@ export function PrettySelect({ name, label, options, defaultValue = "" }: Props)
     };
   }, [open]);
 
+  function choose(optionValue: string) {
+    if (!isControlled) setInternalValue(optionValue);
+    onChange?.(optionValue);
+    setOpen(false);
+  }
+
   return (
     <label className="pretty-select-field">
-      <span>{label}</span>
-      <input type="hidden" name={name} value={selected?.value ?? ""} />
+      {hideLabel ? null : <span>{label}</span>}
+      <input type="hidden" name={name} value={selected?.value ?? currentValue ?? ""} />
       <div className="pretty-select" ref={rootRef}>
         <button
           aria-controls={id}
           aria-expanded={open}
           aria-haspopup="listbox"
-          className={`pretty-select-trigger ${open ? "open" : ""}`}
+          aria-label={hideLabel ? label : undefined}
+          className={`pretty-select-trigger ${open ? "open" : ""}${selected ? "" : " is-placeholder"}`}
           type="button"
           onClick={() => setOpen((current) => !current)}
         >
-          <strong>{selected?.label ?? "Выбрать"}</strong>
+          <strong>{triggerLabel}</strong>
           <ChevronDown size={16} aria-hidden />
         </button>
         {open ? (
@@ -68,10 +96,7 @@ export function PrettySelect({ name, label, options, defaultValue = "" }: Props)
                   key={option.value || "empty"}
                   role="option"
                   type="button"
-                  onClick={() => {
-                    setValue(option.value);
-                    setOpen(false);
-                  }}
+                  onClick={() => choose(option.value)}
                 >
                   <span className="filter-radio-dot" />
                   <span>{option.label}</span>
