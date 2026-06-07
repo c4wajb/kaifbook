@@ -15288,3 +15288,27 @@ body {
   .server-tabs { gap: 4px; }
   .server-tabs button { padding: 0 12px; font-size: 13px; min-height: 34px; }
 }
+
+/* ============================================================================
+   RESPONSIVE HARDENING — audit 2026-06-08 (PC + mobile)
+   ============================================================================ */
+
+/* Headings: break a word only when it is too long to fit, so long single
+   Russian words (e.g. "конфиденциальности", "Пользовательское") in legal-page
+   and other titles never force horizontal scroll on narrow phones.
+   `break-word` leaves normal multi-word wrapping untouched. */
+h1, h2, h3, h4 { overflow-wrap: break-word; }
+
+/* Banner carousel dots: keep the small visual indicator, but enlarge the
+   touch/click hit area to a comfortable size (~17×29px) via a transparent
+   pseudo-element. Horizontal growth is limited to the 4px gap so neighbouring
+   dots don't overlap; vertical growth is free (no vertical neighbours). */
+.banner-dots button { position: relative; }
+.banner-dots button::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  bottom: -10px;
+  left: -4px;
+  right: -4px;
+}

@@ -5,4 +5,4 @@ import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import "./globals.css";
 export const metadata: Metadata = { title: "Kaifbook", description: "MVP цифровой системы бронирования ресторанов" };
 export const viewport: Viewport = { width: "device-width", initialScale: 1, maximumScale: 1, userScalable: false };
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="ru"><body><AppHeader /><main>{children}</main><AppFooter /><ScrollToTopButton /></body></html>; }
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="ru" data-scroll-behavior="smooth"><body><AppHeader /><main>{children}</main><AppFooter /><ScrollToTopButton /></body></html>; }
