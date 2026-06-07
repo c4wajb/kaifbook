@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarCheck, CalendarDays, CheckCircle2, CreditCard, ExternalLink, MessageCircle, Send, ShieldCheck, X } from "lucide-react";
+import { CalendarDays, CheckCircle2, CreditCard, ExternalLink, MessageCircle, Send, ShieldCheck, X } from "lucide-react";
 import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PrettySelect } from "@/components/PrettySelect";
@@ -796,15 +796,6 @@ export function ReservationForm({
   return (
     <>
       <form className="panel reservation-form" onSubmit={submit}>
-        <div className="section-heading compact-heading">
-          <div>
-            <p className="eyebrow">Бронирование</p>
-            <h2>Бронирование без регистрации</h2>
-            <p>Выберите дату, время и стол. Мы привяжем заявку к телефону, аккаунт создавать не нужно.</p>
-          </div>
-          <CalendarCheck size={24} aria-hidden />
-        </div>
-
         <div className="form-grid two booking-contact-fields">
           <DatePickerField
             label="Дата"

@@ -28,9 +28,7 @@ export default async function ReservePage({ params }: Props) {
           <span aria-hidden>←</span>
           <span>К ресторану</span>
         </Link>
-        <p className="eyebrow">Бронирование</p>
         <h1>{restaurant.title}</h1>
-        <p>Выберите дату, время и стол. Если вы уже вошли в личный кабинет, заявка сохранится в ваших бронях.</p>
       </div>
       <ReservationForm
         authenticatedGuest={Boolean(guestSession)}

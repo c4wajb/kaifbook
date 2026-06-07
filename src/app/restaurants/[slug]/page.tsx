@@ -235,12 +235,6 @@ export default async function RestaurantPage({ params }: Props) {
           </section>
 
           <section className="profile-section booking-workspace" id="reserve">
-            <div className="section-heading compact-heading">
-              <div>
-                <p className="eyebrow">Бронирование столика</p>
-                <h2>Выберите свободный стол</h2>
-              </div>
-            </div>
             <ReservationForm
               authenticatedGuest={Boolean(guestSession)}
               bookingIntervalMinutes={restaurant.settings?.bookingIntervalMinutes ?? 15}
