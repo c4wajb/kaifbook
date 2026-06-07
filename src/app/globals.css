@@ -12104,6 +12104,14 @@ svg {
   padding-top: 36px;
   padding-bottom: 72px;
 }
+/* White full-bleed bg for menu page */
+.menu-order-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: #fff;
+}
 
 .menu-order-header {
   display: flex;
@@ -12123,15 +12131,15 @@ svg {
 /* ── Sticky category nav ──────────────────────────────────────── */
 .menu-order-nav {
   position: sticky;
-  top: 72px;
+  top: 82px;
   z-index: 30;
   display: flex;
   gap: 8px;
   overflow-x: auto;
   padding: 14px 0;
   margin-bottom: 20px;
-  background: rgba(245,243,240,.97);
-  backdrop-filter: blur(8px);
+  background: #fff;
+  border-bottom: 1px solid var(--line);
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -12147,12 +12155,12 @@ svg {
   gap: 6px;
   min-height: 38px;
   padding: 0 16px;
-  border: 1px solid var(--line);
+  border: 1px solid #e5e5e5;
   border-radius: 999px;
-  background: #fff;
-  color: var(--muted);
+  background: #fafafa;
+  color: #666;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
   transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
@@ -12166,8 +12174,9 @@ svg {
   height: 22px;
   padding: 0 5px;
   border-radius: 999px;
-  background: rgba(0,0,0,.06);
+  background: rgba(0,0,0,.05);
   font-size: 12px;
+  font-weight: 500;
 }
 
 .menu-order-nav button.is-active {
@@ -12177,14 +12186,14 @@ svg {
 }
 
 .menu-order-nav button.is-active span {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255,255,255,.2);
   color: #fff;
 }
 
 .menu-order-nav button:not(.is-active):hover {
-  background: var(--surface-2);
-  border-color: var(--line);
-  color: var(--ink);
+  background: #f0f0f0;
+  border-color: #ddd;
+  color: #333;
 }
 
 /* ── Two-column body: menu + sidebar cart ─────────────────────── */
@@ -12204,9 +12213,9 @@ svg {
   margin: 0 0 16px;
   font-size: clamp(20px, 2.5vw, 28px);
   font-weight: 600;
-  color: var(--ink);
+  color: #1a1a1a;
   padding-bottom: 10px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid #eee;
 }
 
 .menu-order-grid {
@@ -12221,15 +12230,13 @@ svg {
   flex-direction: column;
   border-radius: 14px;
   background: #fff;
-  border: 1px solid rgba(0,0,0,.08);
+  border: 1px solid #eee;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,.04);
-  transition: border-color 200ms ease, box-shadow 200ms ease;
+  transition: box-shadow 200ms ease;
 }
 
 .menu-dish-card:hover {
-  border-color: rgba(0,0,0,.14);
-  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+  box-shadow: 0 6px 20px rgba(0,0,0,.07);
 }
 
 .menu-dish-card.in-cart {
@@ -12242,7 +12249,7 @@ svg {
   width: 100%;
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  background: #edebe7;
+  background: #f5f5f5;
 }
 
 .menu-dish-image img {
@@ -12332,15 +12339,15 @@ svg {
   gap: 5px;
   height: 36px;
   padding: 0 14px;
-  border: 0;
+  border: 1px solid #e5e5e5;
   border-radius: 10px;
-  background: #f0ece8;
-  color: var(--ink);
+  background: #fff;
+  color: #333;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 160ms ease, color 160ms ease;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
 }
 
 .menu-add-btn:hover {
@@ -13040,7 +13047,7 @@ svg {
     justify-content: center;
   }
   .menu-order-nav {
-    top: 72px;
+    top: 92px;
     padding: 10px 0;
     margin-bottom: 14px;
   }
