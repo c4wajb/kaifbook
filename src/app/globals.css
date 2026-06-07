@@ -1120,18 +1120,7 @@ main{
   box-shadow:0 28px 70px rgba(31,26,22,.26);
   color:#fff6e9;
 }
-.profile-facts.premium-facts::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background:
-    linear-gradient(90deg,rgba(212,175,135,.08) 1px,transparent 1px),
-    linear-gradient(0deg,rgba(212,175,135,.055) 1px,transparent 1px);
-  background-size:64px 64px;
-  mask-image:linear-gradient(90deg,transparent,black 16%,black 84%,transparent);
-  opacity:.35;
-}
+/* (decorative 64px grid overlay removed — distracting on the dark facts block) */
 .premium-fact-panel{
   position:relative;
   z-index:1;
@@ -14058,6 +14047,9 @@ svg {
 /* Age gate — date-of-birth fields (custom PrettySelect dropdowns) */
 .age-gate-fields{display:flex;gap:10px;text-align:left}
 .age-gate-fields .pretty-select-field{flex:1;min-width:0}
+.age-gate-fields .age-gate-day-input{flex:1;min-width:0;min-height:46px;padding:0 14px;border:1px solid #ddd2c0;border-radius:8px;background:#f5f3f0;color:#221f19;font-size:14px;font-weight:700;text-align:center}
+.age-gate-fields .age-gate-day-input::placeholder{color:#6b6157;font-weight:600}
+.age-gate-fields .age-gate-day-input:focus{outline:none;border-color:#7a756f;box-shadow:0 0 0 3px rgba(190,104,66,.15)}
 .age-gate-fields .pretty-select-trigger.is-placeholder strong{color:#6b6157;font-weight:600}
 /* dropdown fits its content (month names) instead of the narrow field width */
 .age-gate-fields .pretty-select-menu{left:0;right:auto;width:max-content;min-width:100%;max-width:min(260px,72vw);overflow-x:hidden}

@@ -51,10 +51,6 @@ export function AgeGate() {
     }
   }, []);
 
-  const dayOptions = useMemo(
-    () => Array.from({ length: 31 }, (_, i) => ({ value: String(i + 1), label: String(i + 1) })),
-    [],
-  );
   const monthOptions = useMemo(
     () => MONTHS.map((name, i) => ({ value: String(i + 1), label: name })),
     [],
@@ -84,7 +80,7 @@ export function AgeGate() {
     const d = Number(day);
     const m = Number(month);
     const y = Number(year);
-    if (d > daysInMonth(y, m)) {
+    if (!Number.isInteger(d) || d < 1 || d > daysInMonth(y, m)) {
       setError("Проверьте дату — такого дня в этом месяце нет.");
       return;
     }
@@ -118,14 +114,15 @@ export function AgeGate() {
           Заведение предлагает табачную продукцию. Укажите дату рождения, чтобы подтвердить, что вам исполнилось 18 лет.
         </p>
         <div className="age-gate-fields">
-          <PrettySelect
-            name="age-day"
-            label="День рождения"
-            hideLabel
+          <input
+            className="age-gate-day-input"
+            type="text"
+            inputMode="numeric"
+            maxLength={2}
             placeholder="День"
-            options={dayOptions}
+            aria-label="День рождения"
             value={day}
-            onChange={setDay}
+            onChange={(event) => setDay(event.target.value.replace(/\D/g, "").slice(0, 2))}
           />
           <PrettySelect
             name="age-month"
