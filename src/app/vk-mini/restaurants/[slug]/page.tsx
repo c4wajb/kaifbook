@@ -2,7 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CalendarCheck, Clock3, MapPin, Star, WalletCards } from "lucide-react";
+import { AgeGate } from "@/components/AgeGate";
 import { VkMiniAppShell } from "@/components/VkMiniAppShell";
+import { isAdultOnlyRestaurant } from "@/lib/adult-content";
 import { formatList, formatMoney } from "@/lib/format";
 import { parseStringList } from "@/lib/json-fields";
 import { getRestaurantBySlug } from "@/lib/public-data";
@@ -16,6 +18,7 @@ export default async function VkMiniRestaurantPage({ params }: Props) {
   const { slug } = await params;
   const restaurant = await getRestaurantBySlug(slug);
   if (!restaurant) notFound();
+  const requiresAgeGate = isAdultOnlyRestaurant(restaurant);
 
   const gallery = parseStringList(restaurant.galleryPhotos);
   const heroImage = restaurant.mainPhotoUrl || gallery[0] || fallbackImage;
@@ -25,6 +28,7 @@ export default async function VkMiniRestaurantPage({ params }: Props) {
 
   return (
     <VkMiniAppShell active="home">
+      {requiresAgeGate ? <AgeGate /> : null}
       <section className="vk-mini-place-hero">
         <Image src={heroImage} alt={restaurant.title} fill priority sizes="100vw" />
         <div className="vk-mini-place-overlay" />

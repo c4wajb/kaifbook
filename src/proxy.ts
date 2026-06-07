@@ -50,7 +50,7 @@ export function proxy(request: NextRequest) {
     }
 
     if (officeHosts.has(host)) {
-      if (pathname === "/") return redirectTo(officeOrigin, request, "/owner/dashboard");
+      if (pathname === "/") return redirectTo(officeOrigin, request, "/owner/login");
       if (pathname === "/server") {
         return NextResponse.rewrite(new URL("/stolix/server", request.url));
       }

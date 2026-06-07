@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AgeGate } from "@/components/AgeGate";
 import { ReservationForm } from "@/components/ReservationForm";
+import { isAdultOnlyRestaurant } from "@/lib/adult-content";
 import { getCurrentUser } from "@/lib/auth";
 import { getRestaurantBySlug } from "@/lib/public-data";
 
@@ -12,6 +14,7 @@ export default async function ReservePage({ params }: Props) {
   const { slug } = await params;
   const restaurant = await getRestaurantBySlug(slug);
   if (!restaurant) notFound();
+  const requiresAgeGate = isAdultOnlyRestaurant(restaurant);
 
   const currentUser = await getCurrentUser();
   const guestSession = currentUser?.role === "customer" && currentUser.phone ? currentUser : null;
@@ -19,6 +22,7 @@ export default async function ReservePage({ params }: Props) {
 
   return (
     <div className="page public-reserve-page">
+      {requiresAgeGate ? <AgeGate /> : null}
       <div className="page-title">
         <Link className="booking-top-return" href={`/restaurants/${restaurant.slug}`} aria-label="Вернуться к ресторану">
           <span aria-hidden>←</span>

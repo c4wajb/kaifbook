@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { AgeGate } from "@/components/AgeGate";
 import { MenuOrderPage } from "@/components/MenuOrderPage";
+import { isAdultOnlyRestaurant } from "@/lib/adult-content";
 import { getRestaurantBySlug } from "@/lib/public-data";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -21,6 +23,7 @@ export default async function MenuPage({ params }: Props) {
   const { slug } = await params;
   const restaurant = await getRestaurantBySlug(slug);
   if (!restaurant) notFound();
+  const requiresAgeGate = isAdultOnlyRestaurant(restaurant);
 
   const filledCategories = restaurant.menuCategories
     .filter((c) => c.items.length > 0)
@@ -38,11 +41,14 @@ export default async function MenuPage({ params }: Props) {
     }));
 
   return (
-    <MenuOrderPage
-      restaurantSlug={restaurant.slug}
-      restaurantTitle={restaurant.title}
-      categories={filledCategories}
-      showQr
-    />
+    <>
+      {requiresAgeGate ? <AgeGate /> : null}
+      <MenuOrderPage
+        restaurantSlug={restaurant.slug}
+        restaurantTitle={restaurant.title}
+        categories={filledCategories}
+        showQr
+      />
+    </>
   );
 }

@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AgeGate } from "@/components/AgeGate";
 import { ReservationForm } from "@/components/ReservationForm";
 import { VkMiniAppShell } from "@/components/VkMiniAppShell";
 import { getCurrentUser } from "@/lib/auth";
+import { isAdultOnlyRestaurant } from "@/lib/adult-content";
 import { getRestaurantBySlug } from "@/lib/public-data";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -13,6 +15,7 @@ export default async function VkMiniBookingPage({ params }: Props) {
   const { slug } = await params;
   const restaurant = await getRestaurantBySlug(slug);
   if (!restaurant) notFound();
+  const requiresAgeGate = isAdultOnlyRestaurant(restaurant);
 
   const currentUser = await getCurrentUser();
   const guestSession = currentUser?.role === "customer" && currentUser.phone ? currentUser : null;
@@ -20,6 +23,7 @@ export default async function VkMiniBookingPage({ params }: Props) {
 
   return (
     <VkMiniAppShell active="home">
+      {requiresAgeGate ? <AgeGate /> : null}
       <Link className="booking-top-return vk-mini-back" href={`/vk-mini/restaurants/${restaurant.slug}`} aria-label="Вернуться к ресторану">
         <span aria-hidden>←</span>
         <span>К ресторану</span>

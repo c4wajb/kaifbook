@@ -3,10 +3,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BadgeRussianRuble, Clock3, MapPin, Phone, PhoneCall, Star, Utensils, WalletCards } from "lucide-react";
+import { AgeGate } from "@/components/AgeGate";
 import { MenuSection } from "@/components/MenuSection";
 import { ReservationForm } from "@/components/ReservationForm";
 import { RestaurantGallery } from "@/components/RestaurantGallery";
 import { YandexMap } from "@/components/YandexMap";
+import { isAdultOnlyRestaurant } from "@/lib/adult-content";
 import { getCurrentUser } from "@/lib/auth";
 import { DAY_LABELS } from "@/lib/constants";
 import { formatList, formatMoney } from "@/lib/format";
@@ -44,6 +46,7 @@ export default async function RestaurantPage({ params }: Props) {
   const { slug } = await params;
   const restaurant = await getRestaurantBySlug(slug);
   if (!restaurant) notFound();
+  const requiresAgeGate = isAdultOnlyRestaurant(restaurant);
   const currentUser = await getCurrentUser();
   const guestSession = currentUser?.role === "customer" && currentUser.phone ? currentUser : null;
   const initialCustomerName = guestSession?.fullName && guestSession.fullName !== "Гость Kaifbook" ? guestSession.fullName : "";
@@ -58,6 +61,7 @@ export default async function RestaurantPage({ params }: Props) {
   const ratingText = restaurant.rating > 0 ? restaurant.rating.toFixed(1).replace(".", ",") : null;
   return (
     <div className="restaurant-profile">
+      {requiresAgeGate ? <AgeGate /> : null}
       <section className="restaurant-profile-hero">
         <Image src={heroImage} alt={restaurant.title} fill priority loading="eager" sizes="100vw" />
         <div className="profile-hero-overlay" />
