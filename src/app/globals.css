@@ -14795,3 +14795,160 @@ textarea:focus {
     scroll-margin-top: 156px;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   Home / Catalog: warm header + compact chip zone + premium chip style
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Header: swap cold grey → warm cream, soften border & shadow ── */
+.app-header.public-header {
+  background: #FFF8EF !important;
+  border-bottom: 1px solid rgba(201, 130, 50, 0.16) !important;
+  box-shadow: 0 2px 14px rgba(88, 52, 20, 0.07) !important;
+}
+
+.public-header .brand {
+  color: #2A1D16 !important;
+}
+
+/* "Мои брони" pill button — cream fill, amber border */
+.public-header .main-nav a {
+  min-height: 42px !important;
+  padding: 0 22px !important;
+  border: 1.5px solid rgba(201, 130, 50, 0.30) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  color: #4E3A2F !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 8px rgba(88, 52, 20, 0.08) !important;
+  transition: background 0.16s ease, border-color 0.16s ease,
+              box-shadow 0.16s ease, transform 0.14s ease !important;
+}
+
+.public-header .main-nav a:hover {
+  background: #FFF2DE !important;
+  border-color: rgba(201, 130, 50, 0.52) !important;
+  box-shadow: 0 6px 18px rgba(88, 52, 20, 0.14) !important;
+  transform: translateY(-1px) !important;
+  color: #2A1D16 !important;
+}
+
+/* ── 2. Catalog page: compress the 44px top gap down to ~14px ───────── */
+.catalog-page {
+  padding-top: 14px !important;
+}
+
+/* ── 3. Chip slider container ──────────────────────────────────────── */
+.catalog-page .chip-slider-wrapper {
+  margin-bottom: 24px !important;
+}
+
+/* Fade gradients match warm page background */
+.catalog-page .chip-slider-wrapper::before {
+  background: linear-gradient(to right, #FFF8EF 30%, transparent) !important;
+  width: 56px !important;
+}
+.catalog-page .chip-slider-wrapper::after {
+  background: linear-gradient(to left, #FFF8EF 30%, transparent) !important;
+  width: 56px !important;
+}
+
+/* Scroll arrow buttons */
+.catalog-page .chip-slider-arrow {
+  border: 1.5px solid rgba(201, 130, 50, 0.24) !important;
+  background: #FFF8EF !important;
+  color: #C98232 !important;
+  box-shadow: 0 2px 10px rgba(88, 52, 20, 0.10) !important;
+}
+.catalog-page .chip-slider-arrow:hover {
+  background: #FFF2DE !important;
+  border-color: rgba(201, 130, 50, 0.44) !important;
+  box-shadow: 0 4px 16px rgba(88, 52, 20, 0.18) !important;
+}
+
+/* ── 4. Chip track ─────────────────────────────────────────────────── */
+.catalog-page .catalog-quick-row {
+  gap: 10px !important;
+  padding: 4px 0 8px !important;
+}
+
+/* ── 5. Chip links — 44px, warm palette, consistent sizing ──────────── */
+/* Applies to ALL layout modes including catalog-layout-grid (home page) */
+.catalog-page .catalog-quick-row a {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  flex: 0 0 auto !important;
+  min-height: 44px !important;
+  padding: 0 18px !important;
+  border-radius: 999px !important;
+  border: 1.5px solid rgba(201, 130, 50, 0.18) !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  color: #4E3A2F !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  box-shadow: 0 2px 8px rgba(88, 52, 20, 0.07) !important;
+  transition: background 0.16s ease, border-color 0.16s ease,
+              box-shadow 0.16s ease, transform 0.14s ease,
+              color 0.16s ease !important;
+}
+
+.catalog-page .catalog-quick-row a svg {
+  opacity: 0.55 !important;
+  flex-shrink: 0 !important;
+  color: #C98232 !important;
+}
+
+.catalog-page .catalog-quick-row a:hover {
+  background: #FFF2DE !important;
+  border-color: rgba(201, 130, 50, 0.42) !important;
+  box-shadow: 0 6px 18px rgba(88, 52, 20, 0.12) !important;
+  transform: translateY(-1px) !important;
+  color: #2A1D16 !important;
+}
+
+.catalog-page .catalog-quick-row a:hover svg {
+  opacity: 0.85 !important;
+}
+
+.catalog-page .catalog-quick-row a.active {
+  background: var(--accent, #C98232) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 6px 20px rgba(201, 130, 50, 0.28) !important;
+  transform: none !important;
+}
+
+.catalog-page .catalog-quick-row a.active svg {
+  opacity: 1 !important;
+  color: rgba(255, 255, 255, 0.90) !important;
+}
+
+/* ── 6. Mobile ─────────────────────────────────────────────────────── */
+@media (max-width: 680px) {
+  .catalog-page {
+    padding-top: 10px !important;
+  }
+
+  .public-header .main-nav a {
+    min-height: 38px !important;
+    padding: 0 16px !important;
+    font-size: 13px !important;
+  }
+
+  .catalog-page .catalog-quick-row a {
+    min-height: 38px !important;
+    padding: 0 14px !important;
+    font-size: 13px !important;
+  }
+
+  /* Remove fades on mobile — horizontal scroll is obvious */
+  .catalog-page .chip-slider-wrapper::before,
+  .catalog-page .chip-slider-wrapper::after {
+    display: none !important;
+  }
+}
