@@ -185,12 +185,9 @@ export function MenuOrderPage({ restaurantSlug, restaurantTitle, categories, sho
 
   const scrollToCategory = (catId: string) => {
     const el = categoryRefs.current.get(catId);
-    if (!el) return;
-    // Use the nav's actual bottom edge so the offset is always exact,
-    // regardless of header or nav height changes across breakpoints.
-    const navBottom = navRef.current ? navRef.current.getBoundingClientRect().bottom : 160;
-    const top = el.getBoundingClientRect().top + window.scrollY - navBottom - 12;
-    window.scrollTo({ top, behavior: "smooth" });
+    // scrollIntoView respects the CSS scroll-margin-top set on .menu-order-category,
+    // which accounts for the sticky header + sticky nav at every breakpoint.
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const cartItems = Array.from(cart.values());
