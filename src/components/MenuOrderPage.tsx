@@ -147,23 +147,45 @@ export function MenuOrderPage({ restaurantSlug, restaurantTitle, categories, sho
     setMobileCartOpen(false);
   }, []);
 
-  // Intersection observer for sticky nav highlighting
+  // Measure the real app-header height and publish as --header-h so CSS can use it
+  // for the chip-nav sticky top and scroll-margin-top without guessing.
   useEffect(() => {
+    const header = document.querySelector(".app-header") as HTMLElement | null;
+    if (!header) return;
+    const publish = () => {
+      document.documentElement.style.setProperty(
+        "--header-h",
+        `${Math.round(header.getBoundingClientRect().height)}px`
+      );
+    };
+    publish();
+    const ro = new ResizeObserver(publish);
+    ro.observe(header);
+    return () => ro.disconnect();
+  }, []);
+
+  // Intersection observer for sticky nav highlighting.
+  // rootMargin is derived at mount from the actual measured header + nav heights.
+  useEffect(() => {
+    const headerH = parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue("--header-h") || "64"
+    );
+    const navH = navRef.current ? navRef.current.getBoundingClientRect().height : 54;
+    const offset = Math.round(headerH + navH + 14);
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActiveCategory(entry.target.id);
-          }
+          if (entry.isIntersecting) setActiveCategory(entry.target.id);
         }
       },
-      { rootMargin: "-130px 0px -60% 0px", threshold: 0 }
+      { rootMargin: `-${offset}px 0px -60% 0px`, threshold: 0 }
     );
     categoryRefs.current.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, [categories]);
 
-  // Scroll active nav pill into view (horizontal only, no page jump)
+  // Scroll active chip into view — just ensure it is visible with a 16px safe edge,
+  // do NOT aggressively center (that cuts off the neighbouring chip on the left).
   useEffect(() => {
     if (!activeCategory || !navRef.current) return;
     const nav = navRef.current;
@@ -171,8 +193,12 @@ export function MenuOrderPage({ restaurantSlug, restaurantTitle, categories, sho
     if (!activeBtn) return;
     const navRect = nav.getBoundingClientRect();
     const btnRect = activeBtn.getBoundingClientRect();
-    const scrollLeft = nav.scrollLeft + (btnRect.left - navRect.left) - (navRect.width / 2) + (btnRect.width / 2);
-    nav.scrollTo({ left: scrollLeft, behavior: "smooth" });
+    const SAFE = 16;
+    if (btnRect.left < navRect.left + SAFE) {
+      nav.scrollBy({ left: btnRect.left - navRect.left - SAFE, behavior: "smooth" });
+    } else if (btnRect.right > navRect.right - SAFE) {
+      nav.scrollBy({ left: btnRect.right - navRect.right + SAFE, behavior: "smooth" });
+    }
   }, [activeCategory]);
 
   // Lock body scroll when mobile cart or QR modal is open
