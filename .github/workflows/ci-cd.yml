@@ -1,0 +1,92 @@
+name: CI/CD
+
+# CI (lint, typecheck, build) runs on every push and PR.
+# Deploy runs only after CI passes, on push to main or a manual dispatch.
+#
+# Required repository secrets for the deploy job (Settings → Secrets → Actions):
+#   VPS_HOST     — server host/IP
+#   VPS_USER     — ssh user (e.g. root)
+#   VPS_SSH_KEY  — private SSH key whose public half is in the server's authorized_keys
+# Optional: protect the "production" environment with a required reviewer for an
+# approval gate before each deploy (Settings → Environments → production).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-cd-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Lint, typecheck & build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Build
+        run: npx next build
+        env:
+          # Dummy values — the build does not connect to a DB, but these satisfy
+          # env reads during module evaluation. Never use real secrets here.
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+          SESSION_SECRET: ci-build-only-not-a-real-secret
+          NEXT_TELEMETRY_DISABLED: '1'
+
+  deploy:
+    name: Deploy to VPS
+    needs: build
+    # Only on main (push or manual dispatch from main) — never on pull requests.
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    steps:
+      - name: Check deploy secrets
+        id: check
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          if [ -z "$VPS_HOST" ]; then
+            echo "::notice::VPS_HOST secret is not set — skipping deploy. Add VPS_HOST / VPS_USER / VPS_SSH_KEY in repo secrets to enable auto-deploy."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Secrets are passed via env (not inlined into the script) to avoid shell
+      # injection and to keep them out of the command line.
+      - name: Deploy over SSH (runs deploy.sh on the server)
+        if: steps.check.outputs.ready == 'true'
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes \
+            "$VPS_USER@$VPS_HOST" 'bash /opt/reserve-kursk/deploy.sh'
