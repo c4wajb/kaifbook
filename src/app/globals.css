@@ -14963,3 +14963,67 @@ textarea:focus {
   /* header(82) + nav(~68) + gap(14) = 164px — matches scroll-margin-top on sections */
   top: 164px !important;
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   Mobile menu page — horizontal-overflow fix + layout polish
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* 1. Prevent any element from leaking past the viewport horizontally.
+      'clip' (unlike 'hidden') does NOT create a scroll container, so
+      position:sticky keeps resolving against the viewport correctly. */
+body {
+  overflow-x: clip;
+}
+
+/* 2. Bind the nav's inline size to its containing block so overflow-x:auto
+      creates a real scroll context for the chips instead of letting the
+      nav expand to fit all of them. */
+.menu-order-nav {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto !important;
+}
+
+/* 3. Mobile (≤ 680px) — compact header, edge-to-edge chip scroll row */
+@media (max-width: 680px) {
+  .menu-order-page {
+    padding-top: 18px !important;
+  }
+
+  .menu-order-header {
+    gap: 10px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .menu-order-header h1 {
+    font-size: 22px !important;
+    margin: 2px 0 !important;
+  }
+
+  .menu-order-header p.muted {
+    font-size: 13px !important;
+    margin: 0 !important;
+  }
+
+  /* Bleed the chip nav to the viewport edges.
+     At ≤680px the .page has 10px left/right margin (width: 100% - 20px),
+     so -10px compensates exactly. Chips then scroll inside this full-width strip. */
+  .menu-order-nav {
+    margin-left: -10px !important;
+    margin-right: -10px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  /* Reduce section gap on mobile */
+  .menu-order-categories {
+    gap: 24px !important;
+  }
+}
+
+/* 4. Very narrow phones (≤ 360px) — single-column card grid */
+@media (max-width: 360px) {
+  .menu-order-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
