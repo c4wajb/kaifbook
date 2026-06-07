@@ -13706,11 +13706,11 @@ svg {
 }
 
 .restaurant-card-book-button {
-  min-height: 40px !important;
-  border: 1.5px solid #1a1a1a !important;
-  border-radius: 8px !important;
-  background: transparent !important;
-  color: #1a1a1a !important;
+  min-height: 42px !important;
+  border: none !important;
+  border-radius: 10px !important;
+  background: #f0ece8 !important;
+  color: #3a3a3a !important;
   font-size: 13px !important;
   font-weight: 500 !important;
   letter-spacing: .01em !important;
