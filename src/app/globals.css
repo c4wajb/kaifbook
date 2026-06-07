@@ -13585,3 +13585,201 @@ svg {
 .age-gate-actions .button-outline{min-height:46px;padding:0 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink);font-size:15px;font-weight:800}
 .age-gate-actions .button-outline:hover{background:var(--surface-2)}
 @media(max-width:480px){.age-gate-actions{grid-template-columns:1fr}}
+
+/* ── Card typography & hierarchy refresh ── */
+.restaurant-card h3,
+.restaurant-card-title-block h3,
+.catalog-layout-grid .restaurant-card h3 {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-size: clamp(17px, 1.6vw, 20px) !important;
+  font-weight: 600 !important;
+  letter-spacing: -.01em !important;
+  color: #1a1a1a !important;
+}
+
+.restaurant-card-title-block,
+.catalog-layout-grid .restaurant-card-title-block {
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.restaurant-card-title-block h3,
+.catalog-layout-grid .restaurant-card h3 {
+  min-height: 0 !important;
+  max-height: calc(2 * 1.3em) !important;
+  padding-bottom: 0 !important;
+  line-height: 1.3 !important;
+}
+
+.restaurant-card-title-block p,
+.catalog-layout-grid .restaurant-card-title-block p {
+  display: none !important;
+}
+
+.luxury-card-body {
+  gap: 10px !important;
+  padding: 16px 18px 18px !important;
+}
+
+.restaurant-card-compact .luxury-card-body {
+  padding: 14px 16px 16px !important;
+}
+
+.restaurant-card-badges {
+  display: none !important;
+}
+
+.restaurant-card-chips {
+  gap: 6px !important;
+}
+
+.restaurant-card-chips span {
+  min-height: 24px !important;
+  padding: 0 9px !important;
+  border: none !important;
+  border-radius: 6px !important;
+  background: rgba(0, 0, 0, .05) !important;
+  color: #666 !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  letter-spacing: .01em !important;
+}
+
+.restaurant-card-info {
+  gap: 6px !important;
+  margin-top: 4px !important;
+  color: #888 !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+}
+
+.restaurant-card-info svg {
+  color: #aaa !important;
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.restaurant-card-info span {
+  gap: 6px !important;
+}
+
+.restaurant-card-info span:last-child {
+  color: #555 !important;
+  font-weight: 500 !important;
+}
+
+.open-status {
+  color: #5a8a58 !important;
+}
+
+.restaurant-card-cuisine-badge {
+  padding: 5px 10px !important;
+  border: none !important;
+  background: rgba(0, 0, 0, .45) !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  letter-spacing: .02em !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.restaurant-card-rating-badge {
+  min-height: 28px !important;
+  padding: 0 10px !important;
+  border: none !important;
+  background: rgba(255, 255, 255, .88) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,.1) !important;
+}
+
+.restaurant-card-rating-badge small {
+  font-weight: 400 !important;
+  color: #999 !important;
+}
+
+.restaurant-card-rating-badge svg {
+  width: 12px !important;
+  height: 12px !important;
+  color: #e0a84b !important;
+  fill: #e0a84b !important;
+}
+
+.restaurant-card-book-button {
+  min-height: 40px !important;
+  border: 1.5px solid #1a1a1a !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  color: #1a1a1a !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  letter-spacing: .01em !important;
+  box-shadow: none !important;
+  transition: background .18s ease, color .18s ease !important;
+}
+
+.restaurant-card-book-button:hover {
+  background: #1a1a1a !important;
+  color: #fff !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.luxury-restaurant-card {
+  border: 1px solid rgba(0,0,0,.08) !important;
+  border-radius: 14px !important;
+  background: #fff !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04) !important;
+  transition: box-shadow .2s ease, border-color .2s ease !important;
+}
+
+.luxury-restaurant-card:hover {
+  transform: none !important;
+  border-color: rgba(0,0,0,.14) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.08) !important;
+}
+
+.restaurant-card .card-image-link,
+.restaurant-card-compact .card-image-link {
+  border-radius: 0 !important;
+}
+
+.catalog-section h2 {
+  font-size: clamp(20px, 2.2vw, 26px) !important;
+  font-weight: 600 !important;
+  letter-spacing: -.01em !important;
+  color: #1a1a1a !important;
+}
+
+.show-all-link {
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  color: #888 !important;
+  border-color: transparent !important;
+  background: transparent !important;
+}
+
+.show-all-link:hover {
+  color: #1a1a1a !important;
+}
+
+@media (max-width: 680px) {
+  .restaurant-card h3,
+  .restaurant-card-title-block h3,
+  .catalog-layout-grid .restaurant-card h3 {
+    font-size: clamp(15px, 4.2vw, 18px) !important;
+  }
+
+  .restaurant-card-book-button {
+    min-height: 38px !important;
+    font-size: 12px !important;
+  }
+
+  .luxury-card-body {
+    padding: 12px 14px 14px !important;
+  }
+
+  .catalog-section h2 {
+    font-size: 20px !important;
+  }
+}

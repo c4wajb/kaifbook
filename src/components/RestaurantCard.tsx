@@ -95,17 +95,9 @@ export function RestaurantCard({ restaurant, compact = false, restaurantBasePath
           {!compact && restaurant.shortDescription ? <p>{restaurant.shortDescription}</p> : null}
         </div>
 
-        {badges.length ? (
-          <div className="restaurant-card-badges" aria-label="Бейджи">
-            {badges.slice(0, compact ? 2 : 3).map((badge) => (
-              <span key={badge}>{badge}</span>
-            ))}
-          </div>
-        ) : null}
-
-        {features.length || tags.length ? (
+        {features.length ? (
           <div className="restaurant-card-chips" aria-label="Особенности">
-            {[...features, ...tags].slice(0, compact ? 2 : 3).map((feature) => (
+            {features.slice(0, compact ? 2 : 3).map((feature) => (
               <span key={feature}>{feature}</span>
             ))}
           </div>
