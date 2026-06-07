@@ -1984,7 +1984,7 @@ select:disabled{
   .catalog-title{margin-bottom:30px}
   .restaurant-showcase,.showcase-content{min-height:350px}
   .showcase-content{padding:24px}
-  .restaurant-rail,.restaurants-grid{grid-template-columns:1fr}
+  .restaurant-rail,.restaurants-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
   .restaurant-filter-bar{margin-bottom:34px}
   .filter-search,.filter-pill,.filter-submit,.filter-reset{width:100%}
   .filter-dropdown,.filter-trigger{width:100%}
@@ -2937,7 +2937,7 @@ h1,h2,h3,.brand span,.catalog-title h1,.showcase-content h2,.profile-hero-conten
     grid-template-columns:1fr;
   }
   .filter-search,.filter-dropdown,.filter-trigger,.filter-submit,.filter-reset{width:100%}
-  .restaurant-rail,.restaurants-grid{grid-template-columns:1fr}
+  .restaurant-rail,.restaurants-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .restaurant-profile-hero,.profile-hero-content{min-height:440px}
   .public-reserve-page{grid-template-columns:1fr}
 }
@@ -13733,6 +13733,8 @@ svg {
 }
 
 .luxury-restaurant-card {
+  display: flex !important;
+  flex-direction: column !important;
   border: 1px solid rgba(0,0,0,.08) !important;
   border-radius: 14px !important;
   background: #fff !important;
@@ -13777,8 +13779,11 @@ svg {
     font-size: clamp(14px, 3.6vw, 18px) !important;
     line-height: 1.25 !important;
     min-height: 0 !important;
-    max-height: calc(2 * 1.25em) !important;
     padding-bottom: 0 !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
   }
 
   .luxury-card-body,
@@ -13803,6 +13808,12 @@ svg {
   .restaurant-card-info {
     gap: 4px !important;
     font-size: 11px !important;
+  }
+
+  .restaurant-card-info span {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
   }
 
   .restaurant-card-info svg {
