@@ -184,6 +184,20 @@ export function MenuOrderPage({ restaurantSlug, restaurantTitle, categories, sho
     return () => observer.disconnect();
   }, [categories]);
 
+  // When scrolled to page bottom, always activate the last category.
+  // IntersectionObserver's -60% bottom margin can miss short last sections.
+  useEffect(() => {
+    if (!categories.length) return;
+    const lastId = categories[categories.length - 1].id;
+    const onScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) {
+        setActiveCategory(lastId);
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [categories]);
+
   // Scroll active chip into view — just ensure it is visible with a 16px safe edge,
   // do NOT aggressively center (that cuts off the neighbouring chip on the left).
   useEffect(() => {
