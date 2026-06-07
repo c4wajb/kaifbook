@@ -14984,7 +14984,20 @@ body {
   overflow-x: auto !important;
 }
 
-/* 3. Mobile (≤ 680px) — compact header, edge-to-edge chip scroll row */
+/* 3. ≤720px — public header switches to flex row, min-height 62px.
+      Snap nav top to match, and recalculate scroll-margin accordingly.
+      header(62) + nav(~66) + gap(10) = ~138px */
+@media (max-width: 720px) {
+  .menu-order-nav {
+    top: 62px !important;
+  }
+  .menu-order-category {
+    scroll-margin-top: 140px;
+  }
+}
+
+/* 4. Mobile (≤ 680px) — compact header, edge-to-edge chip scroll row.
+      Nav pills shrink to 34px → total sticky area ≈ 62+54 = 116px */
 @media (max-width: 680px) {
   .menu-order-page {
     padding-top: 18px !important;
@@ -15009,10 +15022,16 @@ body {
      At ≤680px the .page has 10px left/right margin (width: 100% - 20px),
      so -10px compensates exactly. Chips then scroll inside this full-width strip. */
   .menu-order-nav {
+    top: 62px !important;
     margin-left: -10px !important;
     margin-right: -10px !important;
     padding-left: 10px !important;
     padding-right: 10px !important;
+  }
+
+  /* header(62) + nav(54) + gap(14) = 130px */
+  .menu-order-category {
+    scroll-margin-top: 130px !important;
   }
 
   /* Reduce section gap on mobile */
@@ -15021,7 +15040,7 @@ body {
   }
 }
 
-/* 4. Very narrow phones (≤ 360px) — single-column card grid */
+/* 5. Very narrow phones (≤ 360px) — single-column card grid */
 @media (max-width: 360px) {
   .menu-order-grid {
     grid-template-columns: 1fr !important;

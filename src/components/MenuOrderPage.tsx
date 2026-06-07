@@ -157,7 +157,7 @@ export function MenuOrderPage({ restaurantSlug, restaurantTitle, categories, sho
           }
         }
       },
-      { rootMargin: "-164px 0px -60% 0px", threshold: 0 }
+      { rootMargin: "-130px 0px -60% 0px", threshold: 0 }
     );
     categoryRefs.current.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
