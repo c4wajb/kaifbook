@@ -14745,3 +14745,53 @@ textarea:focus {
     transition: none !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   Menu page: sticky header restore + sticky nav correct offset
+   ══════════════════════════════════════════════════════════════════ */
+
+/* 1. Restore sticky behavior on the public header.
+      An earlier rule set position:relative which caused the header to
+      scroll away, leaving a floating gap above the sticky nav. */
+.app-header.public-header {
+  position: sticky !important;
+  top: 0 !important;
+}
+
+/* 2. Category nav: explicit top + solid background + subtle shadow
+      so it clearly separates from the content scrolling beneath it. */
+.menu-order-nav {
+  top: 82px !important;
+  background: #fff !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  /* Ensure the pills have breathing room from page edges */
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* 3. scroll-margin-top on each category section so that
+      scrollIntoView() (and hash navigation) lands below the sticky layers.
+      Desktop: 82px header + ~70px nav + 12px gap = 164px */
+.menu-order-category {
+  scroll-margin-top: 164px;
+}
+
+/* 4. Tablet (≤980px): header grows to 92px, fix nav top to match */
+@media (max-width: 980px) {
+  .menu-order-nav {
+    top: 92px !important;
+  }
+  /* 92px header + ~70px nav + 12px gap */
+  .menu-order-category {
+    scroll-margin-top: 174px;
+  }
+}
+
+/* 5. Mobile (≤680px): nav pills are shorter (~54px), header stays 92px */
+@media (max-width: 680px) {
+  /* 92px header + ~54px nav + 10px gap */
+  .menu-order-category {
+    scroll-margin-top: 156px;
+  }
+}

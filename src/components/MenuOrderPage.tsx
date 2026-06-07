@@ -157,7 +157,7 @@ export function MenuOrderPage({ restaurantSlug, restaurantTitle, categories, sho
           }
         }
       },
-      { rootMargin: "-120px 0px -60% 0px", threshold: 0 }
+      { rootMargin: "-164px 0px -60% 0px", threshold: 0 }
     );
     categoryRefs.current.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
@@ -185,10 +185,12 @@ export function MenuOrderPage({ restaurantSlug, restaurantTitle, categories, sho
 
   const scrollToCategory = (catId: string) => {
     const el = categoryRefs.current.get(catId);
-    if (el) {
-      const y = el.getBoundingClientRect().top + window.scrollY - 110;
-      window.scrollTo({ top: y, behavior: "smooth" });
-    }
+    if (!el) return;
+    // Use the nav's actual bottom edge so the offset is always exact,
+    // regardless of header or nav height changes across breakpoints.
+    const navBottom = navRef.current ? navRef.current.getBoundingClientRect().bottom : 160;
+    const top = el.getBoundingClientRect().top + window.scrollY - navBottom - 12;
+    window.scrollTo({ top, behavior: "smooth" });
   };
 
   const cartItems = Array.from(cart.values());
