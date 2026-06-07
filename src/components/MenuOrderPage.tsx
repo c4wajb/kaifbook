@@ -188,7 +188,7 @@ export function MenuOrderPage({ restaurantSlug, restaurantTitle, categories, sho
   // IntersectionObserver's -60% bottom margin can miss short last sections.
   useEffect(() => {
     if (!categories.length) return;
-    const lastId = categories[categories.length - 1].id;
+    const lastId = `cat-${categories[categories.length - 1].id}`;
     const onScroll = () => {
       if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) {
         setActiveCategory(lastId);
