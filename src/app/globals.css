@@ -4246,6 +4246,469 @@ h1,h2,h3,.brand span,.catalog-title h1,.showcase-content h2,.profile-hero-conten
   display:none;
 }
 
+/* design-system-2026-placeholder */
+
+/* ── 1. Design tokens ─────────────────────────────────────────────────── */
+:root {
+  /* Warm restaurant accent: amber-caramel, not harsh brick */
+  --accent:       #C98232;
+  --accent-dark:  #B8732B;
+  --accent-soft:  #F6DFBF;
+
+  /* Warmer neutrals */
+  --bg:           #FFF8EF;
+  --muted:        #6F5A4A;
+  --line:         #EAD8C2;
+
+  /* Radius scale */
+  --r-card:   24px;
+  --r-btn:    16px;
+  --r-pill:   999px;
+
+  /* Warm shadow tokens (brown-based, not cold black) */
+  --sh-card:       0 16px 48px rgba(88, 52, 20, 0.10);
+  --sh-btn:        0 8px 22px rgba(88, 52, 20, 0.12);
+  --sh-btn-hover:  0 14px 32px rgba(88, 52, 20, 0.18);
+  --sh-btn-active: 0 4px 12px rgba(88, 52, 20, 0.08);
+
+  /* Unified button transition */
+  --t-btn: background 0.18s ease, border-color 0.18s ease,
+           box-shadow 0.18s ease, transform 0.15s ease,
+           opacity 0.15s ease;
+}
+
+/* ── 2. Body: warm cream background ──────────────────────────────────── */
+body {
+  background: var(--bg);
+}
+
+/* ── 3. Button base: breathing room & transitions ────────────────────── */
+.button,
+.ghost,
+.secondary-button,
+.small-button,
+.danger-button,
+.icon-button,
+.icon-only {
+  gap: 10px;
+  transition: var(--t-btn);
+}
+
+/* ── 4. Primary CTA — warm amber, pill ───────────────────────────────── */
+.button,
+.client-cta {
+  min-height: 50px;
+  padding: 0 28px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: var(--sh-btn);
+}
+
+.button:hover,
+.client-cta:hover {
+  background: var(--accent-dark);
+  box-shadow: var(--sh-btn-hover);
+  transform: translateY(-1px);
+}
+
+.button:active,
+.client-cta:active {
+  background: #9C6120;
+  box-shadow: var(--sh-btn-active);
+  transform: translateY(0) scale(0.98);
+}
+
+.button:focus-visible,
+.client-cta:focus-visible {
+  outline: 3px solid rgba(201, 130, 50, 0.4);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(201, 130, 50, 0.14);
+}
+
+.button:disabled,
+.button[disabled],
+.client-cta:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+  pointer-events: none;
+}
+
+.button.compact {
+  min-height: 42px;
+  padding: 0 20px;
+}
+
+/* ── 5. Secondary / Ghost — warm light fill ──────────────────────────── */
+.ghost,
+.secondary-button {
+  min-height: 46px;
+  padding: 0 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  background: rgba(255, 248, 239, 0.94);
+  color: #2A1D16;
+  font-weight: 650;
+  box-shadow: 0 4px 14px rgba(88, 52, 20, 0.07);
+}
+
+.ghost:hover,
+.secondary-button:hover {
+  background: var(--accent-soft);
+  border-color: rgba(201, 130, 50, 0.38);
+  box-shadow: 0 8px 22px rgba(88, 52, 20, 0.12);
+  transform: translateY(-1px);
+}
+
+.ghost:active,
+.secondary-button:active {
+  background: #F0D5A0;
+  box-shadow: var(--sh-btn-active);
+  transform: translateY(0) scale(0.98);
+}
+
+.ghost:focus-visible,
+.secondary-button:focus-visible {
+  outline: 3px solid rgba(201, 130, 50, 0.32);
+  outline-offset: 3px;
+}
+
+.ghost:disabled,
+.secondary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* ── 6. Small button ─────────────────────────────────────────────────── */
+.small-button {
+  min-height: 38px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  background: rgba(255, 248, 239, 0.92);
+  color: #2A1D16;
+  font-size: 13px;
+  font-weight: 650;
+  box-shadow: 0 3px 10px rgba(88, 52, 20, 0.06);
+}
+
+.small-button:hover {
+  background: var(--accent-soft);
+  border-color: rgba(201, 130, 50, 0.35);
+  box-shadow: 0 6px 16px rgba(88, 52, 20, 0.10);
+  transform: translateY(-1px);
+}
+
+.small-button:active {
+  background: #F0D5A0;
+  box-shadow: 0 2px 6px rgba(88, 52, 20, 0.07);
+  transform: scale(0.98);
+}
+
+.small-button:focus-visible {
+  outline: 3px solid rgba(201, 130, 50, 0.28);
+  outline-offset: 3px;
+}
+
+.small-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* ── 7. Danger button ────────────────────────────────────────────────── */
+.danger-button {
+  min-height: 46px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--danger, #b54040);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(181, 64, 64, 0.20);
+}
+
+.danger-button:hover {
+  background: #9e3030;
+  box-shadow: 0 12px 28px rgba(181, 64, 64, 0.26);
+  transform: translateY(-1px);
+}
+
+.danger-button:active {
+  background: #8a2828;
+  box-shadow: 0 3px 10px rgba(181, 64, 64, 0.14);
+  transform: translateY(0) scale(0.98);
+}
+
+.danger-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* ── 8. Icon buttons ─────────────────────────────────────────────────── */
+.icon-button,
+.icon-only {
+  width: 42px;
+  min-width: 42px;
+  min-height: 42px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r-btn);
+  background: rgba(255, 248, 239, 0.92);
+  box-shadow: 0 3px 10px rgba(88, 52, 20, 0.07);
+}
+
+.icon-button:hover,
+.icon-only:hover {
+  background: var(--accent-soft);
+  border-color: rgba(201, 130, 50, 0.35);
+  box-shadow: 0 6px 16px rgba(88, 52, 20, 0.12);
+  transform: translateY(-1px);
+}
+
+.icon-button:active,
+.icon-only:active {
+  transform: scale(0.94);
+  box-shadow: none;
+}
+
+/* ── 9. Restaurant card book button ──────────────────────────────────── */
+/* Warm amber + 16px radius — consistent with card's 24px container */
+.restaurant-card-book-button {
+  min-height: 52px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: var(--r-btn);
+  background: var(--accent);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: var(--sh-btn);
+  transition: var(--t-btn);
+}
+
+.restaurant-card-book-button:hover {
+  background: var(--accent-dark);
+  box-shadow: var(--sh-btn-hover);
+  transform: translateY(-1px);
+}
+
+.restaurant-card-book-button:active {
+  background: #9C6120;
+  box-shadow: var(--sh-btn-active);
+  transform: translateY(0) scale(0.98);
+}
+
+.restaurant-card-book-button:focus-visible {
+  outline: 3px solid rgba(201, 130, 50, 0.38);
+  outline-offset: 3px;
+}
+
+/* ── 10. Restaurant cards ─────────────────────────────────────────────── */
+/* Unified radius: card 24px contains button 16px — no conflict */
+.luxury-restaurant-card,
+.restaurant-card,
+.restaurant-card.restaurant-card-compact {
+  border-radius: var(--r-card);
+  background: #FFFFFF;
+  border: 1px solid rgba(88, 52, 20, 0.12);
+  box-shadow: var(--sh-card);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.luxury-restaurant-card:hover,
+.restaurant-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 30px 72px rgba(88, 52, 20, 0.16);
+  border-color: rgba(201, 130, 50, 0.26);
+}
+
+/* Top corners of media match card radius */
+.luxury-card-media {
+  border-radius: var(--r-card) var(--r-card) 0 0;
+}
+
+.luxury-card-body {
+  padding: 22px;
+  gap: 14px;
+}
+
+.restaurant-card-compact .luxury-card-body {
+  padding: 18px;
+}
+
+/* ── 11. Card text & info ─────────────────────────────────────────────── */
+.restaurant-card h3,
+.restaurant-card-title-block h3 {
+  color: #2A1D16;
+}
+
+.restaurant-card-title-block p {
+  color: #6F5A4A;
+}
+
+.restaurant-card-info {
+  color: #6F5A4A;
+}
+
+.restaurant-card-info svg {
+  color: var(--accent);
+}
+
+.restaurant-card-chips span {
+  background: rgba(246, 223, 191, 0.55);
+  border-color: rgba(201, 130, 50, 0.20);
+  color: #2A1D16;
+}
+
+/* ── 12. Quick filter chips ───────────────────────────────────────────── */
+.catalog-quick-row a,
+.quick-filter-row a {
+  min-height: 38px;
+  padding: 0 18px;
+  gap: 7px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 248, 239, 0.95);
+  border: 1px solid var(--line);
+  color: #2A1D16;
+  font-size: 13px;
+  font-weight: 650;
+  box-shadow: 0 3px 10px rgba(88, 52, 20, 0.07);
+  transition: background 0.16s ease, transform 0.16s ease,
+              box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.catalog-quick-row a:hover,
+.quick-filter-row a:hover {
+  background: var(--accent-soft);
+  border-color: rgba(201, 130, 50, 0.36);
+  box-shadow: 0 6px 16px rgba(88, 52, 20, 0.12);
+  transform: translateY(-1px);
+}
+
+.catalog-quick-row a.active,
+.quick-filter-row a.active {
+  background: var(--accent);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(88, 52, 20, 0.22);
+}
+
+/* ── 13. Global focus-visible ─────────────────────────────────────────── */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(201, 130, 50, 0.36);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(201, 130, 50, 0.12);
+}
+
+/* ── 14. Panels & surfaces ────────────────────────────────────────────── */
+.panel,
+.auth-panel,
+.pricing-card,
+.metric-card {
+  background: #FFFFFF;
+  border-color: var(--line);
+  box-shadow: var(--sh-card);
+}
+
+/* ── 15. Form inputs ──────────────────────────────────────────────────── */
+input,
+select,
+textarea {
+  border-color: var(--line);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(201, 130, 50, 0.14);
+}
+
+/* ── 16. Filter submit ────────────────────────────────────────────────── */
+.filter-submit {
+  background: var(--accent) !important;
+  border: 1px solid transparent !important;
+  box-shadow: var(--sh-btn) !important;
+}
+
+.filter-submit:hover {
+  background: var(--accent-dark) !important;
+  box-shadow: var(--sh-btn-hover) !important;
+  transform: translateY(-1px);
+}
+
+/* ── 17. Public nav hover ─────────────────────────────────────────────── */
+.public-header .main-nav a:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 8px 20px rgba(88, 52, 20, 0.18);
+}
+
+/* ── 18. Section headings ─────────────────────────────────────────────── */
+.catalog-section h2 {
+  color: #2A1D16;
+}
+
+.show-all-link {
+  border-radius: var(--r-pill);
+}
+
+/* ── 19. Mobile ───────────────────────────────────────────────────────── */
+@media (max-width: 680px) {
+  .button,
+  .client-cta {
+    min-height: 48px;
+    padding: 0 22px;
+  }
+
+  .restaurant-card-book-button {
+    min-height: 48px;
+    padding: 0 20px;
+  }
+
+  .ghost,
+  .secondary-button {
+    min-height: 44px;
+    padding: 0 18px;
+  }
+
+  .small-button {
+    min-height: 36px;
+    padding: 0 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .ghost,
+  .secondary-button,
+  .small-button,
+  .danger-button,
+  .icon-button,
+  .icon-only,
+  .restaurant-card-book-button {
+    transition: none;
+  }
+}
+
 .catalog-quick-row a{
   gap:6px;
   min-height:34px;
@@ -13874,5 +14337,411 @@ svg {
 
   .catalog-layout-grid .restaurant-card-chips {
     display: none !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   FINAL VISUAL OVERRIDE — Warm Restaurant Design System 2026
+   This block is intentionally last to win the cascade.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Primary button — warm amber with all states ─────────────────── */
+.button,
+.client-cta {
+  min-height: 50px;
+  padding: 0 28px;
+  border: 0;
+  border-radius: var(--r-pill, 999px);
+  background: var(--accent, #C98232);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: var(--sh-btn, 0 8px 22px rgba(88,52,20,.12));
+  gap: 10px;
+  transition: background 0.18s ease, box-shadow 0.18s ease,
+              transform 0.15s ease, opacity 0.15s ease;
+}
+
+.button:hover,
+.client-cta:hover {
+  background: var(--accent-dark, #B8732B) !important;
+  box-shadow: var(--sh-btn-hover, 0 14px 32px rgba(88,52,20,.18)) !important;
+  transform: translateY(-1px);
+}
+
+.button:active,
+.client-cta:active {
+  background: #9C6120 !important;
+  box-shadow: var(--sh-btn-active, 0 4px 12px rgba(88,52,20,.08)) !important;
+  transform: translateY(0) scale(0.98);
+}
+
+.button:focus-visible,
+.client-cta:focus-visible {
+  outline: 3px solid rgba(201, 130, 50, 0.4);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(201, 130, 50, 0.14) !important;
+}
+
+.button:disabled,
+.button[disabled],
+.client-cta:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none !important;
+  transform: none !important;
+  pointer-events: none;
+}
+
+.button.compact {
+  min-height: 42px;
+  padding: 0 20px;
+}
+
+/* ── Secondary / Ghost ───────────────────────────────────────────── */
+.ghost,
+.secondary-button {
+  min-height: 46px;
+  padding: 0 22px;
+  border: 1px solid var(--line, #EAD8C2);
+  border-radius: var(--r-pill, 999px);
+  background: rgba(255, 248, 239, 0.94);
+  color: #2A1D16;
+  font-weight: 650;
+  box-shadow: 0 4px 14px rgba(88, 52, 20, 0.07);
+  gap: 10px;
+  transition: background 0.18s ease, border-color 0.18s ease,
+              box-shadow 0.18s ease, transform 0.15s ease;
+}
+
+.ghost:hover,
+.secondary-button:hover {
+  background: var(--accent-soft, #F6DFBF);
+  border-color: rgba(201, 130, 50, 0.38);
+  box-shadow: 0 8px 22px rgba(88, 52, 20, 0.12);
+  transform: translateY(-1px);
+}
+
+.ghost:active,
+.secondary-button:active {
+  background: #F0D5A0;
+  box-shadow: 0 4px 12px rgba(88, 52, 20, 0.08);
+  transform: translateY(0) scale(0.98);
+}
+
+.ghost:focus-visible,
+.secondary-button:focus-visible {
+  outline: 3px solid rgba(201, 130, 50, 0.32);
+  outline-offset: 3px;
+}
+
+.ghost:disabled,
+.secondary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* ── Small button ────────────────────────────────────────────────── */
+.small-button {
+  min-height: 38px;
+  padding: 0 16px;
+  border: 1px solid var(--line, #EAD8C2);
+  border-radius: var(--r-pill, 999px);
+  background: rgba(255, 248, 239, 0.92);
+  color: #2A1D16;
+  font-size: 13px;
+  font-weight: 650;
+  box-shadow: 0 3px 10px rgba(88, 52, 20, 0.06);
+  gap: 10px;
+  transition: background 0.18s ease, border-color 0.18s ease,
+              box-shadow 0.18s ease, transform 0.15s ease;
+}
+
+.small-button:hover {
+  background: var(--accent-soft, #F6DFBF);
+  border-color: rgba(201, 130, 50, 0.35);
+  box-shadow: 0 6px 16px rgba(88, 52, 20, 0.10);
+  transform: translateY(-1px);
+}
+
+.small-button:active {
+  background: #F0D5A0;
+  box-shadow: 0 2px 6px rgba(88, 52, 20, 0.07);
+  transform: scale(0.98);
+}
+
+.small-button:focus-visible {
+  outline: 3px solid rgba(201, 130, 50, 0.28);
+  outline-offset: 3px;
+}
+
+.small-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* ── Danger button ───────────────────────────────────────────────── */
+.danger-button {
+  min-height: 46px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: var(--r-pill, 999px);
+  background: var(--danger, #b54040);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(181, 64, 64, 0.20);
+  gap: 10px;
+  transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.15s ease;
+}
+
+.danger-button:hover {
+  background: #9e3030;
+  box-shadow: 0 12px 28px rgba(181, 64, 64, 0.26);
+  transform: translateY(-1px);
+}
+
+.danger-button:active {
+  background: #8a2828;
+  box-shadow: 0 3px 10px rgba(181, 64, 64, 0.14);
+  transform: translateY(0) scale(0.98);
+}
+
+.danger-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* ── Icon buttons ────────────────────────────────────────────────── */
+.icon-button,
+.icon-only {
+  width: 42px;
+  min-width: 42px;
+  min-height: 42px;
+  padding: 0;
+  border: 1px solid var(--line, #EAD8C2);
+  border-radius: var(--r-btn, 16px);
+  background: rgba(255, 248, 239, 0.92);
+  box-shadow: 0 3px 10px rgba(88, 52, 20, 0.07);
+  transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.15s ease;
+}
+
+.icon-button:hover,
+.icon-only:hover {
+  background: var(--accent-soft, #F6DFBF);
+  border-color: rgba(201, 130, 50, 0.35);
+  box-shadow: 0 6px 16px rgba(88, 52, 20, 0.12);
+  transform: translateY(-1px);
+}
+
+.icon-button:active,
+.icon-only:active {
+  transform: scale(0.94);
+  box-shadow: none;
+}
+
+/* ── Restaurant card book button — warm amber, 16px radius ───────── */
+/* 16px harmonises with card's 24px container, no more pill-in-card conflict */
+.restaurant-card-book-button {
+  min-height: 52px !important;
+  padding: 0 24px !important;
+  border: 0 !important;
+  border-radius: var(--r-btn, 16px) !important;
+  background: var(--accent, #C98232) !important;
+  color: #fff !important;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: var(--sh-btn, 0 8px 22px rgba(88,52,20,.12)) !important;
+  transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.15s ease !important;
+}
+
+.restaurant-card-book-button:hover {
+  background: var(--accent-dark, #B8732B) !important;
+  box-shadow: var(--sh-btn-hover, 0 14px 32px rgba(88,52,20,.18)) !important;
+  transform: translateY(-1px) !important;
+}
+
+.restaurant-card-book-button:active {
+  background: #9C6120 !important;
+  box-shadow: var(--sh-btn-active, 0 4px 12px rgba(88,52,20,.08)) !important;
+  transform: translateY(0) scale(0.98) !important;
+}
+
+.restaurant-card-book-button:focus-visible {
+  outline: 3px solid rgba(201, 130, 50, 0.38);
+  outline-offset: 3px;
+}
+
+/* ── Restaurant cards — warm radius system ───────────────────────── */
+/* Card 24px + book button 16px = unified, no visual conflict */
+.luxury-restaurant-card,
+.restaurant-card,
+.restaurant-card.restaurant-card-compact {
+  border-radius: var(--r-card, 24px) !important;
+  background: #FFFFFF !important;
+  border: 1px solid rgba(88, 52, 20, 0.12) !important;
+  box-shadow: var(--sh-card, 0 16px 48px rgba(88,52,20,.10)) !important;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease !important;
+}
+
+.luxury-restaurant-card:hover,
+.restaurant-card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 0 30px 72px rgba(88, 52, 20, 0.16) !important;
+  border-color: rgba(201, 130, 50, 0.26) !important;
+}
+
+.luxury-card-media {
+  border-radius: var(--r-card, 24px) var(--r-card, 24px) 0 0 !important;
+}
+
+.luxury-card-body {
+  padding: 22px !important;
+  gap: 14px !important;
+}
+
+.restaurant-card-compact .luxury-card-body {
+  padding: 18px !important;
+}
+
+/* ── Card text ───────────────────────────────────────────────────── */
+.restaurant-card h3,
+.restaurant-card-title-block h3 {
+  color: #2A1D16;
+}
+
+.restaurant-card-title-block p {
+  color: #6F5A4A;
+}
+
+.restaurant-card-info {
+  color: #6F5A4A;
+}
+
+.restaurant-card-info svg {
+  color: var(--accent, #C98232);
+}
+
+.restaurant-card-chips span {
+  background: rgba(246, 223, 191, 0.55);
+  border-color: rgba(201, 130, 50, 0.20);
+  color: #2A1D16;
+}
+
+/* ── Quick filter chips (standard catalog) ───────────────────────── */
+/* Does not apply to .catalog-layout-grid (compact mode override kept) */
+.catalog-page:not(.catalog-layout-grid) .catalog-quick-row a,
+.quick-filter-row a {
+  min-height: 38px;
+  padding: 0 18px;
+  gap: 7px;
+  border-radius: var(--r-pill, 999px);
+  background: rgba(255, 248, 239, 0.95);
+  border: 1px solid var(--line, #EAD8C2);
+  color: #2A1D16;
+  font-size: 13px;
+  font-weight: 650;
+  box-shadow: 0 3px 10px rgba(88, 52, 20, 0.07);
+  transition: background 0.16s ease, transform 0.16s ease,
+              box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.catalog-page:not(.catalog-layout-grid) .catalog-quick-row a:hover,
+.quick-filter-row a:hover {
+  background: var(--accent-soft, #F6DFBF);
+  border-color: rgba(201, 130, 50, 0.36);
+  box-shadow: 0 6px 16px rgba(88, 52, 20, 0.12);
+  transform: translateY(-1px);
+}
+
+.catalog-page:not(.catalog-layout-grid) .catalog-quick-row a.active,
+.quick-filter-row a.active {
+  background: var(--accent, #C98232);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(88, 52, 20, 0.22);
+}
+
+/* ── Global focus-visible — warm amber ring ──────────────────────── */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(201, 130, 50, 0.36);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(201, 130, 50, 0.12);
+}
+
+/* ── Panels / surfaces ───────────────────────────────────────────── */
+.panel,
+.auth-panel {
+  background: #FFFFFF;
+  border-color: var(--line, #EAD8C2);
+  box-shadow: var(--sh-card, 0 16px 48px rgba(88,52,20,.10));
+}
+
+/* ── Form inputs ─────────────────────────────────────────────────── */
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent, #C98232);
+  box-shadow: 0 0 0 4px rgba(201, 130, 50, 0.14);
+}
+
+/* ── Filter submit ───────────────────────────────────────────────── */
+.filter-submit {
+  background: var(--accent, #C98232) !important;
+  border: 1px solid transparent !important;
+  box-shadow: var(--sh-btn, 0 8px 22px rgba(88,52,20,.12)) !important;
+}
+
+.filter-submit:hover {
+  background: var(--accent-dark, #B8732B) !important;
+  transform: translateY(-1px);
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────── */
+@media (max-width: 680px) {
+  .button,
+  .client-cta {
+    min-height: 48px;
+    padding: 0 22px;
+  }
+
+  .restaurant-card-book-button {
+    min-height: 48px !important;
+    padding: 0 20px !important;
+  }
+
+  .ghost,
+  .secondary-button {
+    min-height: 44px;
+    padding: 0 18px;
+  }
+
+  .small-button {
+    min-height: 36px;
+    padding: 0 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .ghost,
+  .secondary-button,
+  .small-button,
+  .danger-button,
+  .icon-button,
+  .icon-only,
+  .restaurant-card-book-button {
+    transition: none !important;
   }
 }
