@@ -113,8 +113,6 @@ export default async function RestaurantsPage({ searchParams }: Props) {
   const breakfastSection = takeUnique(allRestaurants.filter((r) => hasCuisine(r, "завтрак") || hasCuisine(r, "коф") || hasFeature(r, "завтрак")));
   const familySection = takeUnique(allRestaurants.filter((r) => hasFeature(r, "семей") || hasFeature(r, "деть")));
   const hookahSection = takeUnique(allRestaurants.filter((r) => hasFeature(r, "кальян") || hasCuisine(r, "кальян")));
-  const verandaSection = takeUnique(allRestaurants.filter((r) => hasFeature(r, "веранд") || hasFeature(r, "видовой")));
-  const budgetSection = takeUnique(allRestaurants.filter((r) => r.averageCheck <= 1800));
 
   return (
     <div className={`page client-page catalog-page catalog-layout-${layoutMode}`}>
@@ -164,8 +162,6 @@ export default async function RestaurantsPage({ searchParams }: Props) {
             <RestaurantSection title="Где поужинать" restaurants={dinnerSection} showAllHref={categoryHref("cuisine", "европейская")} />
             <RestaurantSection title="Завтраки" restaurants={breakfastSection} showAllHref={categoryHref("cuisine", "завтраки")} />
             <RestaurantSection title="Семейные рестораны" restaurants={familySection} showAllHref={categoryHref("feature", "с детьми")} />
-            <RestaurantSection title="С верандой" restaurants={verandaSection} showAllHref={categoryHref("feature", "летняя веранда")} />
-            <RestaurantSection title="Недорого" restaurants={budgetSection} showAllHref={categoryHref("averageCheck", "1800")} />
           </>
         )}
       </div>
