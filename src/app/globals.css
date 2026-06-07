@@ -6862,11 +6862,6 @@ h1,h2,h3,.brand span,.catalog-title h1,.showcase-content h2,.profile-hero-conten
 }
 
 /* Mobile public adaptive repair: compact header, scrollable tabs and readable hall scheme. */
-html,
-body{
-  max-width:100%;
-  overflow-x:hidden;
-}
 img,
 video,
 canvas,
@@ -7339,10 +7334,9 @@ svg{
 
 /* Comprehensive mobile responsive pass. Keep this block last: it normalizes public catalog, booking,
    guest pages and Kaifbook Office without touching business logic. */
-html,
 body {
-  max-width: 100%;
-  overflow-x: hidden;
+  max-width: 100vw;
+  overflow-x: clip;
 }
 
 img,
