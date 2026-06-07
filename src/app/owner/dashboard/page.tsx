@@ -65,7 +65,7 @@ export default async function OwnerDashboardPage() {
     <div className="page owner-layout">
       <div className="page-title">
         <p className="eyebrow">Кабинет ресторана</p>
-        <h1>Dashboard</h1>
+        <h1>Сводка</h1>
         <p>Операционная картина для владельца: новые заявки, загрузка, гости, конверсия и точки роста.</p>
       </div>
 

@@ -15312,3 +15312,14 @@ h1, h2, h3, h4 { overflow-wrap: break-word; }
   left: -4px;
   right: -4px;
 }
+
+/* Restaurant-detail hero CTA: full-width is right on touch screens, but on
+   desktop a ~975px-wide button looks unrefined. Size it to content (left-
+   aligned under the meta) from the desktop breakpoint up; keep it generous. */
+@media (min-width: 981px) {
+  .profile-hero-content .client-cta {
+    justify-self: start;
+    min-width: 300px;
+    padding-inline: 44px;
+  }
+}
