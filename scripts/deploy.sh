@@ -29,7 +29,9 @@ UPLOADS_MOVED=0
 if [ -e public/uploads ]; then mv public/uploads /tmp/uploads_backup; UPLOADS_MOVED=1; fi
 restore_uploads() { if [ "$UPLOADS_MOVED" = "1" ] && [ ! -e public/uploads ]; then mv /tmp/uploads_backup public/uploads; fi; }
 trap restore_uploads EXIT
-npx next build
+# The Next build worker occasionally flakes (MODULE_NOT_FOUND) on the first run;
+# retry once before giving up.
+npx next build || { echo 'build failed — retrying once...'; rm -rf .next; npx next build; }
 restore_uploads
 trap - EXIT
 
