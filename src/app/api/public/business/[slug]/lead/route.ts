@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { jsonError, readJson } from "@/lib/api";
 import { prisma } from "@/lib/db";
+import { getClientIp, isRateLimited, HOUR, RATE_LIMIT_MESSAGE } from "@/lib/rate-limit";
 import { cleanOptional, leadSchema, zodError } from "@/lib/validation";
 
 type Params = {
@@ -8,6 +9,9 @@ type Params = {
 };
 
 export async function POST(request: Request, { params }: Params) {
+  if (isRateLimited([{ key: `biz-lead:ip:${getClientIp(request)}`, rule: { limit: 5, windowMs: HOUR } }])) {
+    return jsonError(RATE_LIMIT_MESSAGE, 429);
+  }
   const { slug } = await params;
   const business = await prisma.business.findUnique({
     where: { slug },

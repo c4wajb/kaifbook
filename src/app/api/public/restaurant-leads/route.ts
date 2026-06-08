@@ -1,9 +1,14 @@
 import { handleApiError, ok, readJson } from "@/lib/api";
 import { prisma } from "@/lib/db";
+import { enforceRateLimit, getClientIp, HOUR } from "@/lib/rate-limit";
 import { restaurantLeadSchema } from "@/lib/validation";
 
 export async function POST(request: Request) {
   try {
+    enforceRateLimit(
+      [{ key: `lead:ip:${getClientIp(request)}`, rule: { limit: 5, windowMs: HOUR } }],
+      "Слишком много заявок. Пожалуйста, попробуйте позже.",
+    );
     const payload = restaurantLeadSchema.parse(await readJson(request));
     const lead = await prisma.restaurantLead.create({
       data: {

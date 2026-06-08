@@ -4,6 +4,7 @@ import { RESTAURANT_STATUSES } from "@/lib/constants";
 import { EXTERNAL_PAYMENT_DISCLAIMER } from "@/lib/external-payments";
 import { prisma } from "@/lib/db";
 import { normalizePhone } from "@/lib/phone";
+import { enforceRateLimit, getClientIp, HOUR } from "@/lib/rate-limit";
 import { createReservation } from "@/lib/reservations";
 import { reservationSchema } from "@/lib/validation";
 
@@ -18,6 +19,14 @@ export async function POST(request: Request, context: C) {
     });
     if (!restaurant) throw new ApiError(404, "Ресторан не найден.");
     const payload = reservationSchema.parse(await readJson(request));
+    const customerPhone = normalizePhone(payload.customerPhone);
+    enforceRateLimit(
+      [
+        { key: `reservation:ip:${getClientIp(request)}`, rule: { limit: 12, windowMs: HOUR } },
+        { key: `reservation:phone:${customerPhone}`, rule: { limit: 6, windowMs: HOUR } },
+      ],
+      "Слишком много заявок. Пожалуйста, попробуйте позже.",
+    );
     const currentUser = await getCurrentUser();
     const sessionUserId =
       currentUser?.role === "customer" &&
