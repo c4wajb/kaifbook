@@ -2,7 +2,13 @@ import { RESERVATION_STATUSES } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 
 const ACTIVE_VISIT_STATUSES = [RESERVATION_STATUSES.CONFIRMED, RESERVATION_STATUSES.SEATED, RESERVATION_STATUSES.COMPLETED] as const;
-const LOST_STATUSES = [RESERVATION_STATUSES.CANCELLED, RESERVATION_STATUSES.REJECTED, RESERVATION_STATUSES.NO_SHOW] as const;
+const LOST_STATUSES = [
+  RESERVATION_STATUSES.CANCELLED,
+  RESERVATION_STATUSES.CANCELLED_BY_GUEST,
+  RESERVATION_STATUSES.CANCELLED_BY_RESTAURANT,
+  RESERVATION_STATUSES.REJECTED,
+  RESERVATION_STATUSES.NO_SHOW,
+] as const;
 
 function startOfDay(date = new Date()) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -49,7 +55,9 @@ export async function getRestaurantAnalytics(restaurantId: string) {
     prisma.restaurant.findUnique({ where: { id: restaurantId }, include: { settings: true } }),
     prisma.reservation.findMany({ where: { restaurantId, reservationDate: { gte: last30 } }, orderBy: [{ reservationDate: "asc" }, { startTime: "asc" }] }),
     prisma.guest.count({ where: { restaurantId, reservationsCount: { gt: 1 } } }),
-    prisma.guest.count({ where: { restaurantId, createdAt: { gte: last30 } } }),
+    // Truly new guests: created in the window AND with only one reservation so
+    // far, so newGuests and repeatGuests stay mutually exclusive.
+    prisma.guest.count({ where: { restaurantId, createdAt: { gte: last30 }, reservationsCount: { lte: 1 } } }),
     prisma.restaurantTable.findMany({ where: { restaurantId, isActive: true }, select: { seats: true } }),
     prisma.restaurantPageEvent.findMany({ where: { restaurantId, createdAt: { gte: last30 } }, select: { type: true, source: true, createdAt: true } }),
     prisma.recommendation.findMany({ where: { restaurantId, isRead: false }, orderBy: [{ priority: "desc" }, { createdAt: "desc" }], take: 8 }),

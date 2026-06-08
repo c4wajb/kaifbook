@@ -9,7 +9,7 @@ import { ReservationSearchBox } from "@/components/ReservationSearchBox";
 import { EXTERNAL_PAYMENT_STATUSES, RESERVATION_STATUSES, STAFF_ROLES, VERIFICATION_STATUSES } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 import { externalPaymentStatusLabel } from "@/lib/external-payments";
-import { formatMoney, reservationDateLabel, statusLabel } from "@/lib/format";
+import { formatGuests, formatMoney, reservationDateLabel, statusLabel } from "@/lib/format";
 import { requireOwnerPageUser } from "@/lib/page-auth";
 import { canAccessRestaurant } from "@/lib/permissions";
 import { dateFromInput } from "@/lib/time";
@@ -277,8 +277,7 @@ export default async function ReservationsPage({ params, searchParams }: Props) 
                   <div>
                     <span className="reservation-action-label">{reservationActionLabel(reservation)}</span>
                     <h3>
-                      {reservation.customerName} · {reservation.guestsCount}{" "}
-                      {reservation.guestsCount === 1 ? "гость" : "гостей"}
+                      {reservation.customerName} · {formatGuests(reservation.guestsCount)}
                     </h3>
                     <p>
                       Создана {reservationDateLabel(reservation.createdAt)} · {reservation.customerPhone}

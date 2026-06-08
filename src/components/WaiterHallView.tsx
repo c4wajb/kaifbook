@@ -2,6 +2,7 @@
 
 import { CSSProperties, useState } from "react";
 import { X } from "lucide-react";
+import { formatGuests } from "@/lib/format";
 
 type Table = {
   id: string;
@@ -162,7 +163,7 @@ export function WaiterHallView({ hall, reservations }: Props) {
                   <div className="waiter-reservation-card" key={r.id}>
                     <strong>{r.customerName}</strong>
                     <span>{r.customerPhone}</span>
-                    <span>{r.guestsCount} гост. · {r.startTime}–{r.endTime}</span>
+                    <span>{formatGuests(r.guestsCount)} · {r.startTime}–{r.endTime}</span>
                     <span className={`badge badge-${r.status.replaceAll("_", "-")}`}>{statusLabel(r.status)}</span>
                   </div>
                 ))}

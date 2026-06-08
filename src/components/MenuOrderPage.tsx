@@ -43,11 +43,18 @@ function QrModal({ slug, onClose }: { slug: string; onClose: () => void }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/restaurants/${slug}/menu-qr`)
+    const controller = new AbortController();
+    fetch(`/api/restaurants/${slug}/menu-qr`, { signal: controller.signal })
       .then((r) => r.json())
       .then((d) => setQrSvg(d.svg))
-      .catch(() => setQrSvg(null))
-      .finally(() => setLoading(false));
+      .catch((error) => {
+        if ((error as { name?: string })?.name !== "AbortError") setQrSvg(null);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+    // Cancel the in-flight request if the modal closes before it resolves.
+    return () => controller.abort();
   }, [slug]);
 
   const handleDownload = () => {

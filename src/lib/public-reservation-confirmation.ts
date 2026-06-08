@@ -27,8 +27,24 @@ export async function getReservationByConfirmationToken(token: string) {
   return reservation;
 }
 
+// Terminal states — a confirmation-token action must not move a reservation out
+// of these (e.g. re-confirming a completed booking or re-cancelling a cancelled one).
+const CLOSED_STATUSES = [
+  RESERVATION_STATUSES.CANCELLED,
+  RESERVATION_STATUSES.CANCELLED_BY_GUEST,
+  RESERVATION_STATUSES.CANCELLED_BY_RESTAURANT,
+  RESERVATION_STATUSES.NO_SHOW,
+  RESERVATION_STATUSES.REJECTED,
+  RESERVATION_STATUSES.COMPLETED,
+] as string[];
+
+function assertActionable(status: string, message: string) {
+  if (CLOSED_STATUSES.includes(status)) throw new ApiError(409, message);
+}
+
 export async function acceptReservationByToken(token: string) {
   const reservation = await getReservationByConfirmationToken(token);
+  assertActionable(reservation.status, "Эта бронь уже закрыта и не может быть подтверждена.");
   const paidOrRestaurantConfirmedStatuses = [
     RESERVATION_STATUSES.DEPOSIT_PAID,
     RESERVATION_STATUSES.CONFIRMED_BY_RESTAURANT,
@@ -70,6 +86,7 @@ export async function acceptReservationByToken(token: string) {
 
 export async function cancelReservationByToken(token: string) {
   const reservation = await getReservationByConfirmationToken(token);
+  assertActionable(reservation.status, "Эта бронь уже закрыта и не может быть отменена.");
   const updated = await prisma.reservation.update({
     where: { id: reservation.id },
     data: {
@@ -96,6 +113,7 @@ export async function cancelReservationByToken(token: string) {
 
 export async function rescheduleReservationByToken(token: string, payload: z.infer<typeof reservationRescheduleSchema>) {
   const reservation = await getReservationByConfirmationToken(token);
+  assertActionable(reservation.status, "Эта бронь уже закрыта и не может быть перенесена.");
   const input = {
     hallId: reservation.hallId,
     tableId: reservation.tableId,

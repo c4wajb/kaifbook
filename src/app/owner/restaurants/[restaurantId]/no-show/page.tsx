@@ -2,6 +2,7 @@ import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { OwnerTabs } from "@/components/OwnerTabs";
 import { prisma } from "@/lib/db";
+import { formatGuests } from "@/lib/format";
 import { getNoShowDepositAnalytics } from "@/lib/no-show-analytics";
 import { requireOwnerPageUser } from "@/lib/page-auth";
 import { canManageRestaurant } from "@/lib/permissions";
@@ -83,7 +84,7 @@ export default async function NoShowAnalyticsPage({ params }: Props) {
           {waitlist.map((entry) => (
             <div className="reservation-row" key={entry.id}>
               <div>
-                <strong>{entry.guestName} · {entry.guestsCount} гост.</strong>
+                <strong>{entry.guestName} · {formatGuests(entry.guestsCount)}</strong>
                 <p>{entry.desiredDate.toLocaleDateString("ru-RU")} {entry.desiredStartTime}-{entry.desiredEndTime || ""}{entry.preferredTableType ? ` · ${entry.preferredTableType.title}` : ""}</p>
                 {entry.comment ? <p>{entry.comment}</p> : null}
               </div>

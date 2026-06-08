@@ -3,6 +3,7 @@ import { hashPassword } from "@/lib/auth";
 import { EXTERNAL_PAYMENT_STATUSES, RESERVATION_STATUSES, RESTAURANT_STATUSES } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 import { DEFAULT_EXTERNAL_PAYMENT_TERMS, applyExternalDepositToPricing, hasExternalDepositEnabled } from "@/lib/external-payments";
+import { formatGuests } from "@/lib/format";
 import { expireOverdueDepositPayments } from "@/lib/payments";
 import { normalizePhone, phoneAccountEmail } from "@/lib/phone";
 import { calculateReservationPrice } from "@/lib/reservation-pricing";
@@ -120,6 +121,16 @@ export async function validateReservationBusinessRules(restaurantId: string, inp
   const workingHour = restaurant.workingHours.find((item) => item.dayOfWeek === dayOfWeekFromDate(reservationDate)) ?? null;
   if (!isWithinWorkingHours(input.startTime, endTime, workingHour)) throw new ApiError(400, "В это время ресторан закрыт. Выберите другое время.");
 
+  // Minimum advance notice (the client filters slots by this, but the API must
+  // enforce it too so a direct request can't book too close to the visit time).
+  const minAdvance = restaurant.settings?.minAdvanceBookingMinutes ?? 0;
+  if (!options.allowInactiveRestaurant && minAdvance > 0) {
+    const [startHour, startMinute] = input.startTime.split(":").map(Number);
+    const startInstant = new Date(reservationDate.getUTCFullYear(), reservationDate.getUTCMonth(), reservationDate.getUTCDate(), startHour, startMinute, 0, 0);
+    const minutesUntilStart = (startInstant.getTime() - Date.now()) / 60000;
+    if (minutesUntilStart < minAdvance) throw new ApiError(400, `Бронировать можно минимум за ${minAdvance} минут до визита. Выберите время позже.`);
+  }
+
   let table: { id: string; hallId: string; seats: number; isActive: boolean; minGuests: number | null; maxGuests: number | null } | null = null;
   if (input.tableId && restaurant.settings?.allowTableSelection !== false) {
     await expireOverdueDepositPayments(restaurantId);
@@ -234,7 +245,7 @@ export async function createReservation(restaurantId: string, input: Reservation
         reservationId: created.id,
         type: "reservation_new",
         title: "Новая заявка на стол",
-        message: `${created.customerName}, ${created.guestsCount} гост., ${created.startTime}`,
+        message: `${created.customerName}, ${formatGuests(created.guestsCount)}, ${created.startTime}`,
       },
     });
 
@@ -264,15 +275,16 @@ export async function createReservation(restaurantId: string, input: Reservation
 }
 
 async function getOrCreateGuest(input: { restaurantId: string; name: string; phone: string; email?: string | null }) {
-  const existing = await prisma.guest.findUnique({ where: { restaurantId_phone: { restaurantId: input.restaurantId, phone: input.phone } }, select: { id: true, name: true, email: true } });
-  if (existing) {
-    if (existing.name !== input.name || (!existing.email && input.email)) {
-      await prisma.guest.update({ where: { id: existing.id }, data: { name: input.name, email: input.email || existing.email } });
-    }
-    return existing;
-  }
-
-  return prisma.guest.create({ data: { restaurantId: input.restaurantId, name: input.name, phone: input.phone, email: input.email || null, tags: "[]" }, select: { id: true } });
+  // Atomic upsert avoids a race where two concurrent reservations with the same
+  // (restaurantId, phone) both pass a findUnique check and then both create,
+  // hitting the unique constraint. Email is only overwritten when a new one is
+  // provided (so an existing email is preserved on later bookings).
+  return prisma.guest.upsert({
+    where: { restaurantId_phone: { restaurantId: input.restaurantId, phone: input.phone } },
+    update: { name: input.name, ...(input.email ? { email: input.email } : {}) },
+    create: { restaurantId: input.restaurantId, name: input.name, phone: input.phone, email: input.email || null, tags: "[]" },
+    select: { id: true },
+  });
 }
 
 export async function refreshGuestStats(guestId: string) {
@@ -313,9 +325,12 @@ export async function refreshGuestStats(guestId: string) {
 }
 
 async function getOrCreateCustomerUser(input: { fullName: string; phone: string; email?: string | null }) {
-  const existingByPhone = await prisma.user.findFirst({ where: { phone: input.phone }, select: { id: true, role: true, fullName: true } });
+  // Only ever reuse a CUSTOMER account by phone — otherwise a guest booking with
+  // the same phone as an owner/admin/staff member would be attributed to that
+  // privileged account instead of a customer one.
+  const existingByPhone = await prisma.user.findFirst({ where: { phone: input.phone, role: "customer" }, select: { id: true, fullName: true } });
   if (existingByPhone) {
-    if (existingByPhone.role === "customer" && existingByPhone.fullName !== input.fullName) {
+    if (existingByPhone.fullName !== input.fullName) {
       await prisma.user.update({ where: { id: existingByPhone.id }, data: { fullName: input.fullName } });
     }
     return existingByPhone.id;

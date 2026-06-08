@@ -4,7 +4,7 @@ import { Badge } from "@/components/Badge";
 import { GuestTagsEditor } from "@/components/GuestTagsEditor";
 import { OwnerTabs } from "@/components/OwnerTabs";
 import { prisma } from "@/lib/db";
-import { formatDate, reservationDateLabel } from "@/lib/format";
+import { formatDate, formatGuests, reservationDateLabel } from "@/lib/format";
 import { parseStringList } from "@/lib/json-fields";
 import { STAFF_ROLES } from "@/lib/constants";
 import { requireOwnerPageUser } from "@/lib/page-auth";
@@ -66,7 +66,7 @@ export default async function GuestPage({ params }: Props) {
               <div className="reservation-row" key={reservation.id}>
                 <div>
                   <strong>{reservationDateLabel(reservation.reservationDate)} · {reservation.startTime}-{reservation.endTime}</strong>
-                  <p>{reservation.guestsCount} гост. {reservation.occasion ? `· ${reservation.occasion}` : ""}</p>
+                  <p>{formatGuests(reservation.guestsCount)} {reservation.occasion ? `· ${reservation.occasion}` : ""}</p>
                   <p>{reservation.hall?.title || "зал не выбран"}{reservation.table ? ` · стол ${reservation.table.number}` : ""}</p>
                   {reservation.comment ? <p>{reservation.comment}</p> : null}
                 </div>

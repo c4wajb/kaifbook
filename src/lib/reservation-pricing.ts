@@ -29,7 +29,10 @@ export type ReservationPriceResult = {
 type TableWithType = RestaurantTable & { tableType: TableType | null };
 
 function dayOfWeek(date: Date) {
-  return date.getDay();
+  // Reservation dates are stored at UTC midnight (see dateFromInput in time.ts),
+  // so the day-of-week must be read in UTC — matching dayOfWeekFromDate used by
+  // working-hours validation. getDay() would shift the day on a non-UTC server.
+  return date.getUTCDay();
 }
 
 function ruleMatches(rule: BookingPricingRule, input: ReservationPriceInput, date: Date, table: TableWithType | null) {

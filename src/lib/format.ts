@@ -10,6 +10,25 @@ export function formatList(value: unknown): string {
   return parseStringList(value).join(", ");
 }
 
+/**
+ * Russian plural selection. forms = [one, few, many]:
+ * 1 → one (гость), 2–4 → few (гостя), 0/5–20 → many (гостей), with the usual
+ * teen exceptions (11–14 → many).
+ */
+export function pluralizeRu(count: number, forms: [string, string, string]): string {
+  const n = Math.abs(count) % 100;
+  const n1 = n % 10;
+  if (n > 10 && n < 20) return forms[2];
+  if (n1 > 1 && n1 < 5) return forms[1];
+  if (n1 === 1) return forms[0];
+  return forms[2];
+}
+
+/** "2 гостя", "5 гостей", "1 гость". */
+export function formatGuests(count: number): string {
+  return `${count} ${pluralizeRu(count, ["гость", "гостя", "гостей"])}`;
+}
+
 export function reservationDateLabel(value: Date): string {
   return formatDateRu(value);
 }

@@ -62,6 +62,12 @@ export async function POST(request: Request, context: C) {
       data: { restaurantId, userId: user.id, role: staffRole },
     });
 
+    // Promote a plain customer account to its staff role so page-level guards
+    // (which check User.role) actually let them in. Owners/admins are left as-is.
+    if (user.role === ROLES.CUSTOMER) {
+      await prisma.user.update({ where: { id: user.id }, data: { role: staffRole } });
+    }
+
     return ok({ access, userId: user.id }, 201);
   } catch (error) {
     return handleApiError(error);
