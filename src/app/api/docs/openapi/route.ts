@@ -966,9 +966,10 @@ const spec = {
 };
 
 export async function GET() {
+  // Same-origin only — the in-app API docs page fetches this without CORS.
+  // A wildcard ACAO would let any site script-read the full API surface.
   return NextResponse.json(spec, {
     headers: {
-      "Access-Control-Allow-Origin": "*",
       "Cache-Control": "public, max-age=3600",
     },
   });

@@ -5,12 +5,13 @@ import { jwtVerify, SignJWT } from "jose";
 import type { User } from "@prisma/client";
 import { ADMIN_ROLES } from "@/lib/constants";
 import { prisma } from "@/lib/db";
+import { getSessionSecret } from "@/lib/secrets";
 
 const SESSION_COOKIE = "restaurant_mvp_session";
 const encoder = new TextEncoder();
 
 function getSecret() {
-  return encoder.encode(process.env.SESSION_SECRET ?? "local-dev-secret-change-me");
+  return encoder.encode(getSessionSecret());
 }
 
 function shouldUseSecureCookie() {

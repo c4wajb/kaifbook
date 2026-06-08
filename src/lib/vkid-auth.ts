@@ -5,6 +5,7 @@ import { setSessionCookie } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getOrCreateGuestUser } from "@/lib/guest-phone-auth";
 import { normalizePhone } from "@/lib/phone";
+import { getSessionSecret } from "@/lib/secrets";
 
 const VK_ID_SESSION_TTL_MINUTES = 10;
 const VK_ID_PROVIDER = "vk_id";
@@ -83,7 +84,7 @@ function sha256Base64Url(value: string) {
 }
 
 function encryptionKey() {
-  return createHash("sha256").update(process.env.SESSION_SECRET ?? "local-dev-secret-change-me").digest();
+  return createHash("sha256").update(getSessionSecret()).digest();
 }
 
 function encryptVerifier(value: string) {

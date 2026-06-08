@@ -2,6 +2,7 @@ import { createHash, createHmac, timingSafeEqual } from "crypto";
 import { SignJWT } from "jose";
 import { z } from "zod";
 import { handleApiError, ok, readJson } from "@/lib/api";
+import { getSessionSecret } from "@/lib/secrets";
 
 export const runtime = "nodejs";
 
@@ -10,7 +11,7 @@ const launchParamsSchema = z.object({
 });
 
 function getJwtSecret() {
-  return new TextEncoder().encode(process.env.VK_APP_SECRET || process.env.SESSION_SECRET || "local-dev-secret-change-me");
+  return new TextEncoder().encode(process.env.VK_APP_SECRET || getSessionSecret());
 }
 
 function safeCompare(first: string, second: string) {
