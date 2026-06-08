@@ -41,9 +41,9 @@ export function AppFooter() {
 
         <section className="footer-column footer-contacts">
           <h2>Контакты</h2>
-          <a href="mailto:hello@kaifbook.ru">
+          <a href="mailto:admin@kaifbook.ru">
             <Mail size={16} aria-hidden />
-            hello@kaifbook.ru
+            admin@kaifbook.ru
           </a>
           <a href="tel:+70000000000">
             <Phone size={16} aria-hidden />
