@@ -2,8 +2,11 @@ module.exports = {
   apps: [
     {
       name: "kaifbook",
-      script: "node_modules/next/dist/bin/next",
-      args: "start",
+      // Run the optimized standalone server (matches output: "standalone").
+      // cwd is pinned to this release dir so the standalone server loads .env
+      // (via @next/env from process.cwd()) and finds its copied static/public.
+      script: ".next/standalone/server.js",
+      cwd: __dirname,
       instances: 1,
       exec_mode: "fork",
       interpreter: "node",

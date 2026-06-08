@@ -1,0 +1,55 @@
+#!/bin/bash
+# Production deploy for the VPS. Runs in-place in the current release dir and
+# serves via the Next.js standalone server under PM2 (ecosystem.config.js).
+# The live copy lives at /opt/reserve-kursk/deploy.sh — keep them in sync.
+set -euo pipefail
+cd /opt/reserve-kursk/current
+
+echo '[1/6] Pulling latest code...'
+git pull origin main
+
+echo '[2/6] Installing dependencies...'
+# Drop stale npm temp dirs that can wedge a re-run (ENOTEMPTY), then install.
+# Fall back to a full clean reinstall if npm ci still fails.
+find node_modules -maxdepth 1 -name '.*-*' -type d -exec rm -rf {} + 2>/dev/null || true
+npm ci --omit=dev || { echo 'npm ci failed — clean reinstall...'; rm -rf node_modules; npm ci --omit=dev; }
+
+echo '[3/6] Running database migrations...'
+npx prisma migrate deploy
+
+echo '[4/6] Building...'
+# Turbopack can't follow the uploads symlink (points outside the project), so
+# move it aside for the build and ALWAYS restore it — even if the build fails.
+UPLOADS_MOVED=0
+if [ -e public/uploads ]; then mv public/uploads /tmp/uploads_backup; UPLOADS_MOVED=1; fi
+restore_uploads() { if [ "$UPLOADS_MOVED" = "1" ] && [ ! -e public/uploads ]; then mv /tmp/uploads_backup public/uploads; fi; }
+trap restore_uploads EXIT
+npx next build
+restore_uploads
+trap - EXIT
+
+echo '[5/6] Assembling standalone bundle...'
+# The standalone server resolves static assets and public/ relative to itself.
+rm -rf .next/standalone/.next/static .next/standalone/public
+cp -r .next/static .next/standalone/.next/static
+cp -r public .next/standalone/public
+
+echo '[6/6] Reloading PM2 (zero-downtime)...'
+pm2 reload ecosystem.config.js --update-env 2>/dev/null || pm2 start ecosystem.config.js
+pm2 save
+
+echo 'Health check...'
+sleep 3
+OK=0
+for i in 1 2 3 4 5 6; do
+  if curl -fsS -o /dev/null http://127.0.0.1:3000/restaurants; then OK=1; break; fi
+  sleep 2
+done
+if [ "$OK" != "1" ]; then
+  echo 'ERROR: app is not responding after deploy.'
+  pm2 logs kaifbook --lines 25 --nostream || true
+  exit 1
+fi
+
+echo 'Deploy complete!'
+pm2 list
