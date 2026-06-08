@@ -1,7 +1,7 @@
 "use client";
 
 import { Copy, ExternalLink, MapPin } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type YandexMapProps = {
   title: string;
@@ -14,7 +14,32 @@ type YandexMapProps = {
 
 export function YandexMap({ title, city, address, latitude, longitude, yandexOrgId }: YandexMapProps) {
   const [copied, setCopied] = useState(false);
+  const [mapVisible, setMapVisible] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const addressText = useMemo(() => `${city}, ${address}`.trim(), [address, city]);
+
+  // Load the heavy Yandex map widget only when the block is about to enter the
+  // viewport (or on click). Visitors who never scroll to "Как добраться" don't
+  // pay for the third-party script at all.
+  useEffect(() => {
+    if (mapVisible) return;
+    const node = containerRef.current;
+    if (!node || typeof IntersectionObserver === "undefined") {
+      setMapVisible(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setMapVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "300px" },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [mapVisible]);
 
   const hasCoords = latitude != null && longitude != null;
 
@@ -48,16 +73,28 @@ export function YandexMap({ title, city, address, latitude, longitude, yandexOrg
   }
 
   return (
-    <div className="yandex-map">
-      <iframe
-        allowFullScreen
-        aria-label={`Карта Яндекс: ${title}`}
-        className="yandex-map-frame"
-        loading="lazy"
-        referrerPolicy="no-referrer-when-downgrade"
-        src={mapUrl}
-        title={`Как добраться до ${title}`}
-      />
+    <div className="yandex-map" ref={containerRef}>
+      {mapVisible ? (
+        <iframe
+          allowFullScreen
+          aria-label={`Карта Яндекс: ${title}`}
+          className="yandex-map-frame"
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          src={mapUrl}
+          title={`Как добраться до ${title}`}
+        />
+      ) : (
+        <button
+          type="button"
+          className="yandex-map-frame yandex-map-placeholder"
+          onClick={() => setMapVisible(true)}
+          aria-label={`Показать карту: ${title}`}
+        >
+          <MapPin size={26} aria-hidden />
+          <span>Показать карту</span>
+        </button>
+      )}
       <div className="map-address-card">
         <span className="map-card-icon">
           <MapPin size={18} aria-hidden />

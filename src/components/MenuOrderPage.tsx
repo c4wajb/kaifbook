@@ -289,7 +289,7 @@ export function MenuOrderPage({ restaurantSlug, restaurantTitle, categories, sho
         <div className="menu-order-main">
           {categories.length > 0 ? (
             <div className="menu-order-categories">
-              {categories.map((category) => (
+              {categories.map((category, categoryIndex) => (
                 <section
                   className="menu-order-category"
                   key={category.id}
@@ -300,7 +300,7 @@ export function MenuOrderPage({ restaurantSlug, restaurantTitle, categories, sho
                 >
                   <h2>{category.title}</h2>
                   <div className="menu-order-grid">
-                    {category.items.map((item) => {
+                    {category.items.map((item, itemIndex) => {
                       const inCart = cart.get(item.id);
                       return (
                         <article className={`menu-dish-card${inCart ? " in-cart" : ""}`} key={item.id}>
@@ -310,6 +310,7 @@ export function MenuOrderPage({ restaurantSlug, restaurantTitle, categories, sho
                               alt={item.title}
                               fill
                               sizes="(max-width: 760px) 50vw, 260px"
+                              priority={categoryIndex === 0 && itemIndex < 4}
                             />
                             {inCart && <span className="menu-dish-badge">{inCart.qty}</span>}
                           </div>

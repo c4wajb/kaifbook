@@ -140,8 +140,8 @@ export default async function RestaurantsPage({ searchParams }: Props) {
             </div>
             {listingRestaurants.length ? (
               <div className="restaurants-grid">
-                {listingRestaurants.map((restaurant) => (
-                  <RestaurantCard key={restaurant.id} restaurant={restaurant} />
+                {listingRestaurants.map((restaurant, index) => (
+                  <RestaurantCard key={restaurant.id} restaurant={restaurant} priority={index < 2} />
                 ))}
               </div>
             ) : (

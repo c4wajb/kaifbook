@@ -31,6 +31,8 @@ type RestaurantCardProps = {
   restaurantBasePath?: string;
   bookingPath?: "reserve" | "book" | "booking";
   variant?: "default" | "mini";
+  /** Eagerly load the card image — set only for the first above-the-fold card. */
+  priority?: boolean;
 };
 
 function todayHours(hours?: WorkingHour[]) {
@@ -40,7 +42,7 @@ function todayHours(hours?: WorkingHour[]) {
   return `Сегодня до ${current.closeTime}`;
 }
 
-export function RestaurantCard({ restaurant, compact = false, restaurantBasePath = "/restaurants", bookingPath = "reserve", variant = "default" }: RestaurantCardProps) {
+export function RestaurantCard({ restaurant, compact = false, restaurantBasePath = "/restaurants", bookingPath = "reserve", variant = "default", priority = false }: RestaurantCardProps) {
   const router = useRouter();
   const cuisines = parseStringList(restaurant.cuisineTypes).filter(Boolean);
   const features = parseStringList(restaurant.features || "[]").filter(Boolean);
@@ -78,7 +80,7 @@ export function RestaurantCard({ restaurant, compact = false, restaurantBasePath
     >
       <Link className="card-image-link luxury-card-media" href={cardHref} aria-label={`Открыть ${restaurant.title}`}>
         <span className="image-loading-surface" aria-hidden />
-        <RestaurantCardGallery images={photos} restaurantName={restaurant.title} autoplayActive={hovered} priority={!compact} />
+        <RestaurantCardGallery images={photos} restaurantName={restaurant.title} autoplayActive={hovered} priority={priority} />
         <span className="restaurant-card-cuisine-badge">{cuisineBadge}</span>
         {rating ? (
           <span className="restaurant-card-rating-badge">

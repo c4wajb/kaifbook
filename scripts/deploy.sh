@@ -1,12 +1,17 @@
 #!/bin/bash
 # Production deploy for the VPS. Runs in-place in the current release dir and
 # serves via the Next.js standalone server under PM2 (ecosystem.config.js).
-# The live copy lives at /opt/reserve-kursk/deploy.sh — keep them in sync.
+# Canonical source: scripts/deploy.sh in the repo. The live copy at
+# /opt/reserve-kursk/deploy.sh self-syncs from it on every deploy (see below),
+# so edits to scripts/deploy.sh take effect on the NEXT deploy.
 set -euo pipefail
 cd /opt/reserve-kursk/current
 
 echo '[1/6] Pulling latest code...'
 git pull origin main
+
+# Keep the live deploy script in sync with the repo for the next run.
+install -m 755 scripts/deploy.sh /opt/reserve-kursk/deploy.sh 2>/dev/null || true
 
 echo '[2/6] Installing dependencies...'
 # Drop stale npm temp dirs that can wedge a re-run (ENOTEMPTY), then install.

@@ -15338,3 +15338,21 @@ h1, h2, h3, h4 { overflow-wrap: break-word; }
     scroll-margin-top: 76px;
   }
 }
+
+/* Lazy map facade: shown until the Yandex map widget is loaded (on scroll-near
+   or click). Fills the same box as the iframe, so there is no layout shift. */
+.yandex-map-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #6f665a;
+  background: linear-gradient(135deg, #efeae3, #e4ded5);
+  font-size: 15px;
+  font-weight: 600;
+}
+.yandex-map-placeholder:hover {
+  color: var(--lux-terracotta, #be6842);
+}
