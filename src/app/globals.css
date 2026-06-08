@@ -15324,3 +15324,17 @@ h1, h2, h3, h4 { overflow-wrap: break-word; }
     padding-inline: 44px;
   }
 }
+
+/* Restaurant-detail anchor nav (#about/#gallery/#menu/#reviews/#route): the
+   target sections sit under the sticky app header (82px desktop / 62px mobile).
+   Without scroll-margin-top the clicked heading lands behind the header and the
+   jump overshoots ("scrolls too far"). Offset by the header height + a small gap
+   so the heading lands just below it. */
+.profile-section {
+  scroll-margin-top: 96px;
+}
+@media (max-width: 680px) {
+  .profile-section {
+    scroll-margin-top: 76px;
+  }
+}
