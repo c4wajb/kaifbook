@@ -14870,12 +14870,43 @@ textarea:focus {
   box-shadow: 0 4px 16px rgba(88, 52, 20, 0.18) !important;
 }
 
-/* Cleaner header: the quick-filter chip row scrolls on its own, so drop the
-   redundant edge-fade gradients and the scroll arrows that overlapped the
-   leftmost/rightmost chips and stacked extra shadows on top. */
+/* Quick-filter chip row: clean scroll arrows sit in side gutters (flex layout)
+   so they never overlap the chips, and the muddy edge-fade gradients are gone.
+   Arrows are hidden on mobile (touch scroll) by the max-width:680px block. */
+.chip-slider-wrapper { display: flex; align-items: center; gap: 9px; }
 .chip-slider-wrapper::before,
 .chip-slider-wrapper::after { display: none !important; }
-.chip-slider-arrow { display: none !important; }
+.chip-slider-track { flex: 1 1 auto; min-width: 0; }
+
+.catalog-page .chip-slider-arrow,
+.chip-slider-arrow {
+  position: static !important;
+  transform: none !important;
+  flex: 0 0 auto;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 999px !important;
+  border: 1.5px solid rgba(201, 130, 50, 0.30) !important;
+  background: #FFF8EF !important;
+  color: #C98232 !important;
+  box-shadow: 0 2px 6px rgba(88, 52, 20, 0.10) !important;
+  cursor: pointer;
+  transition: background .16s ease, border-color .16s ease,
+              box-shadow .16s ease, transform .14s ease !important;
+}
+.catalog-page .chip-slider-arrow:hover,
+.chip-slider-arrow:hover {
+  background: #FFF2DE !important;
+  border-color: rgba(201, 130, 50, 0.58) !important;
+  box-shadow: 0 4px 12px rgba(88, 52, 20, 0.16) !important;
+  transform: scale(1.08) !important;
+}
+.chip-slider-arrow:disabled {
+  opacity: 0.32 !important;
+  box-shadow: none !important;
+  transform: none !important;
+  pointer-events: none !important;
+}
 
 /* ── 4. Chip track ─────────────────────────────────────────────────── */
 .catalog-page .catalog-quick-row {

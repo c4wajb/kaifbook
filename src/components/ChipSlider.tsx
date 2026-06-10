@@ -35,19 +35,34 @@ export function ChipSlider({ children, className = "" }: { children: React.React
     canScrollRight ? "has-scroll-right" : "",
   ].filter(Boolean).join(" ");
 
+  // Show both arrows whenever the row overflows, disabling the side that can't
+  // scroll. This reserves the side gutters so the chips don't shift as you
+  // scroll. When everything fits, no arrows render and the row is full width.
+  const overflowing = canScrollLeft || canScrollRight;
+
   return (
     <div className={wrapperCls}>
-      {canScrollLeft && (
-        <button className="chip-slider-arrow chip-slider-arrow-left" onClick={() => scroll(-1)} aria-label="Влево">
-          <ChevronLeft size={20} />
+      {overflowing && (
+        <button
+          className="chip-slider-arrow chip-slider-arrow-left"
+          onClick={() => scroll(-1)}
+          disabled={!canScrollLeft}
+          aria-label="Прокрутить влево"
+        >
+          <ChevronLeft size={18} />
         </button>
       )}
       <div ref={trackRef} className={`chip-slider-track ${className}`}>
         {children}
       </div>
-      {canScrollRight && (
-        <button className="chip-slider-arrow chip-slider-arrow-right" onClick={() => scroll(1)} aria-label="Вправо">
-          <ChevronRight size={20} />
+      {overflowing && (
+        <button
+          className="chip-slider-arrow chip-slider-arrow-right"
+          onClick={() => scroll(1)}
+          disabled={!canScrollRight}
+          aria-label="Прокрутить вправо"
+        >
+          <ChevronRight size={18} />
         </button>
       )}
     </div>
