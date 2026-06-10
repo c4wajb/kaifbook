@@ -14873,10 +14873,14 @@ textarea:focus {
 /* Quick-filter chip row: clean scroll arrows sit in side gutters (flex layout)
    so they never overlap the chips, and the muddy edge-fade gradients are gone.
    Arrows are hidden on mobile (touch scroll) by the max-width:680px block. */
-.chip-slider-wrapper { display: flex; align-items: center; gap: 9px; }
+.chip-slider-wrapper { display: flex; align-items: center; gap: 16px; }
 .chip-slider-wrapper::before,
 .chip-slider-wrapper::after { display: none !important; }
 .chip-slider-track { flex: 1 1 auto; min-width: 0; }
+/* Keep a little breathing room so a clipped edge chip never sits flush against
+   an arrow. */
+.catalog-page .catalog-quick-row,
+.chip-slider-track.quick-filter-row { scroll-padding-inline: 4px; }
 
 .catalog-page .chip-slider-arrow,
 .chip-slider-arrow {
