@@ -14870,6 +14870,13 @@ textarea:focus {
   box-shadow: 0 4px 16px rgba(88, 52, 20, 0.18) !important;
 }
 
+/* Cleaner header: the quick-filter chip row scrolls on its own, so drop the
+   redundant edge-fade gradients and the scroll arrows that overlapped the
+   leftmost/rightmost chips and stacked extra shadows on top. */
+.chip-slider-wrapper::before,
+.chip-slider-wrapper::after { display: none !important; }
+.chip-slider-arrow { display: none !important; }
+
 /* ── 4. Chip track ─────────────────────────────────────────────────── */
 .catalog-page .catalog-quick-row {
   gap: 10px !important;
