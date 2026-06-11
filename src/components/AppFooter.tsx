@@ -57,7 +57,10 @@ export function AppFooter() {
       </div>
       <div className="footer-bottom">
         <span>© {new Date().getFullYear()} Kaifbook</span>
-        <span>TODO: заменить демо-контакты на реальные перед запуском.</span>
+        <span className="footer-legal-links">
+          <Link href="/terms">Пользовательское соглашение</Link>
+          <Link href="/privacy">Политика конфиденциальности</Link>
+        </span>
       </div>
     </footer>
   );
