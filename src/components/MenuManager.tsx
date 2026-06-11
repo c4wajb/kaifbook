@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, EyeOff, ImageIcon, Pencil, Plus, Trash2, X } from "lucide-react";
+import { Eye, EyeOff, ImageIcon, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, startTransition, useState } from "react";
 
@@ -90,6 +90,7 @@ export function MenuManager({
   const [itemFormKey, setItemFormKey] = useState(0);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [availOverrides, setAvailOverrides] = useState<Record<string, boolean>>({});
+  const [search, setSearch] = useState("");
 
   async function submitCategory(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -232,6 +233,27 @@ export function MenuManager({
 
   const hasMenuItems = categories.some((category) => category.items.length > 0);
 
+  // Client-side search over the menu so owners with long menus can jump to a
+  // dish instead of scrolling. Matches dish title/description, or shows the
+  // whole category when its name matches.
+  const query = search.trim().toLowerCase();
+  const visibleCategories = query
+    ? categories
+        .map((category) => {
+          const categoryMatches = category.title.toLowerCase().includes(query);
+          const items = categoryMatches
+            ? category.items
+            : category.items.filter(
+                (item) =>
+                  item.title.toLowerCase().includes(query) ||
+                  (item.description || "").toLowerCase().includes(query),
+              );
+          return { ...category, items };
+        })
+        .filter((category) => category.items.length > 0)
+    : categories;
+  const foundCount = visibleCategories.reduce((sum, category) => sum + category.items.length, 0);
+
   return (
     <div className="grid-layout two-columns menu-manager">
       <section className="panel menu-category-panel">
@@ -334,7 +356,35 @@ export function MenuManager({
             <h2>Меню на сайте</h2>
             <p>Блюда сгруппированы по категориям и отображаются гостям на странице ресторана.</p>
           </div>
+          {hasMenuItems ? (
+            <div className="menu-search">
+              <Search size={16} aria-hidden />
+              <input
+                type="search"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Поиск по блюдам"
+                aria-label="Поиск по блюдам"
+              />
+              {search ? (
+                <button
+                  type="button"
+                  className="menu-search-clear"
+                  onClick={() => setSearch("")}
+                  aria-label="Очистить поиск"
+                  title="Очистить"
+                >
+                  <X size={15} aria-hidden />
+                </button>
+              ) : null}
+            </div>
+          ) : null}
         </div>
+        {query ? (
+          <p className="menu-search-count">
+            {foundCount > 0 ? `Найдено: ${foundCount}` : "Ничего не найдено"}
+          </p>
+        ) : null}
         {error ? <p className="form-error">{error}</p> : null}
         {message ? <p className="form-success">{message}</p> : null}
 
@@ -343,9 +393,14 @@ export function MenuManager({
             <h3>Меню пока не добавлено</h3>
             <p>Добавьте первые позиции, чтобы гости могли посмотреть блюда ресторана.</p>
           </div>
+        ) : visibleCategories.length === 0 ? (
+          <div className="empty-state menu-search-empty">
+            <h3>Ничего не найдено</h3>
+            <p>По запросу «{search.trim()}» блюд не найдено. Попробуйте другое название.</p>
+          </div>
         ) : (
           <div className="menu-preview">
-            {categories.map((category) => (
+            {visibleCategories.map((category) => (
               <section className="owner-menu-category" key={category.id}>
                 <h3>{category.title}</h3>
                 {category.items.length === 0 ? (
