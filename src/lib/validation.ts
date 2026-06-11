@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { contentTones, contentTypes, leadStatuses, PAYMENT_MODES, ROLES, TABLE_SHAPES } from "@/lib/constants";
 import { isSafeExternalPaymentUrl } from "@/lib/external-payments";
+import { isAllowedImageHostUrl } from "@/lib/image-hosts";
 import { isValidRuPhone, normalizePhone } from "@/lib/phone";
 
 export const registerSchema = z.object({
@@ -26,13 +27,9 @@ const internalUploadPathPattern =
 function isAllowedImageSource(value: string) {
   if (!value) return true;
   if (internalUploadPathPattern.test(value)) return true;
-
-  try {
-    const url = new URL(value);
-    return url.protocol === "http:" || url.protocol === "https:";
-  } catch {
-    return false;
-  }
+  // Absolute URLs must be https on a host whitelisted in next.config.ts
+  // (built from the same list) — anything else breaks at /_next/image.
+  return isAllowedImageHostUrl(value);
 }
 
 const imageSourceSchema = z

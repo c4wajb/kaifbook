@@ -5,9 +5,30 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 export function RestaurantGallery({ title, photos }: { title: string; photos: string[] }) {
-  const images = useMemo(() => photos.filter(Boolean).filter((photo, index, list) => list.indexOf(photo) === index), [photos]);
+  // Photos that failed to load are dropped from the grid instead of showing
+  // broken tiles (same pattern as RestaurantCardGallery).
+  const [brokenImages, setBrokenImages] = useState<string[]>([]);
+  const images = useMemo(
+    () =>
+      photos
+        .filter(Boolean)
+        .filter((photo, index, list) => list.indexOf(photo) === index)
+        .filter((photo) => !brokenImages.includes(photo)),
+    [photos, brokenImages],
+  );
   const [active, setActive] = useState<number | null>(null);
   const activePhoto = active === null ? null : images[active];
+
+  function markBroken(photo: string) {
+    setBrokenImages((current) => (current.includes(photo) ? current : [...current, photo]));
+  }
+
+  // Keep the lightbox index valid when a broken photo gets removed.
+  useEffect(() => {
+    if (active !== null && active >= images.length) {
+      setActive(images.length ? images.length - 1 : null);
+    }
+  }, [active, images.length]);
 
   useEffect(() => {
     if (active === null) return;
@@ -29,7 +50,7 @@ export function RestaurantGallery({ title, photos }: { title: string; photos: st
       <div className={`profile-gallery enhanced-gallery gallery-count-${Math.min(images.length, 6)}`}>
         {images.slice(0, 6).map((photo, index) => (
           <button className="gallery-item gallery-tile" key={`${photo}-${index}`} type="button" onClick={() => setActive(index)}>
-            <Image src={photo} alt={`${title}: фото ${index + 1}`} fill sizes="(max-width: 760px) 100vw, (max-width: 1180px) 50vw, 33vw" />
+            <Image src={photo} alt={`${title}: фото ${index + 1}`} fill sizes="(max-width: 760px) 100vw, (max-width: 1180px) 50vw, 33vw" onError={() => markBroken(photo)} />
           </button>
         ))}
       </div>
@@ -55,7 +76,7 @@ export function RestaurantGallery({ title, photos }: { title: string; photos: st
           ) : null}
 
           <div className="lightbox-image" onClick={(event) => event.stopPropagation()}>
-            <Image src={activePhoto} alt={`${title}: увеличенное фото`} fill sizes="100vw" />
+            <Image src={activePhoto} alt={`${title}: увеличенное фото`} fill sizes="100vw" onError={() => markBroken(activePhoto)} />
           </div>
 
           {images.length > 1 ? (

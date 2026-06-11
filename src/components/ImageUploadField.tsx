@@ -3,6 +3,8 @@
 import { ImageIcon, LinkIcon, Loader2, Plus, Trash2, Upload } from "lucide-react";
 import { ChangeEvent, DragEvent, useEffect, useMemo, useRef, useState } from "react";
 
+import { isAllowedImageHostUrl } from "@/lib/image-hosts";
+
 const ACCEPTED_IMAGE_TYPES = "image/jpeg,image/png,image/webp,image/avif";
 
 type ImageUploadFieldProps = {
@@ -43,6 +45,19 @@ function normalizeUrl(value: string) {
   return value.trim();
 }
 
+// Accept only values that can actually be an image src: a site-local path
+// ("/uploads/...", "/images/...") or an https URL on a host whitelisted in
+// next.config.ts — anything else either renders as a broken <img> (plain
+// text) or gets rejected by /_next/image with a 400 (foreign host).
+function isLikelyImageUrl(value: string) {
+  if (!value) return false;
+  if (value.startsWith("/")) return !value.includes(" ");
+  return isAllowedImageHostUrl(value);
+}
+
+const URL_ERROR =
+  "Эта ссылка не подойдёт: вставьте адрес изображения с kaifbook.ru / unsplash.com или загрузите файл с компьютера.";
+
 export function ImageUploadField({
   restaurantId,
   name,
@@ -57,10 +72,12 @@ export function ImageUploadField({
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [imgFailed, setImgFailed] = useState(false);
 
   useEffect(() => {
     setImageUrl(value || "");
     setUrlInput(value || "");
+    setImgFailed(false);
   }, [value]);
 
   async function handleFiles(files: FileList | File[]) {
@@ -77,6 +94,7 @@ export function ImageUploadField({
       const [uploadedUrl] = await uploadImages(restaurantId, [selected[0]]);
       setImageUrl(uploadedUrl || "");
       setUrlInput(uploadedUrl || "");
+      setImgFailed(false);
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : "Не удалось загрузить изображение.");
     } finally {
@@ -87,6 +105,12 @@ export function ImageUploadField({
 
   function applyUrl() {
     const nextUrl = normalizeUrl(urlInput);
+    if (nextUrl && !isLikelyImageUrl(nextUrl)) {
+      setError(URL_ERROR);
+      return;
+    }
+    setError(null);
+    setImgFailed(false);
     setImageUrl(nextUrl);
     setUrlInput(nextUrl);
   }
@@ -106,7 +130,7 @@ export function ImageUploadField({
       </div>
 
       <div
-        className={`image-upload-dropzone${isDragging ? " is-dragging" : ""}${imageUrl ? " has-image" : ""}`}
+        className={`image-upload-dropzone${isDragging ? " is-dragging" : ""}${imageUrl && !imgFailed ? " has-image" : ""}`}
         onDragOver={(event) => {
           event.preventDefault();
           setIsDragging(true);
@@ -114,13 +138,13 @@ export function ImageUploadField({
         onDragLeave={() => setIsDragging(false)}
         onDrop={onDrop}
       >
-        {imageUrl ? (
-          <img src={imageUrl} alt="" />
+        {imageUrl && !imgFailed ? (
+          <img src={imageUrl} alt="" onError={() => setImgFailed(true)} />
         ) : (
           <div className="image-upload-placeholder">
             <ImageIcon size={24} aria-hidden />
-            <strong>Перетащите фото сюда</strong>
-            <span>или выберите файл на компьютере</span>
+            <strong>{imgFailed ? "Не удалось загрузить изображение" : "Перетащите фото сюда"}</strong>
+            <span>{imgFailed ? "Проверьте ссылку или загрузите другой файл" : "или выберите файл на компьютере"}</span>
           </div>
         )}
       </div>
@@ -153,6 +177,7 @@ export function ImageUploadField({
               setImageUrl("");
               setUrlInput("");
               setError(null);
+              setImgFailed(false);
             }}
           >
             <Trash2 size={16} aria-hidden />
@@ -224,6 +249,10 @@ export function ImageGalleryUploadField({
   function addUrl() {
     const nextUrl = normalizeUrl(urlInput);
     if (!nextUrl) return;
+    if (!isLikelyImageUrl(nextUrl)) {
+      setError(URL_ERROR);
+      return;
+    }
     setImages((current) => [...current, nextUrl]);
     setUrlInput("");
     setError(null);
@@ -299,7 +328,16 @@ export function ImageGalleryUploadField({
         <div className="gallery-upload-grid">
           {images.map((url, index) => (
             <div className="gallery-upload-card" key={`${url}-${index}`}>
-              <img src={url} alt="" />
+              <img
+                src={url}
+                alt=""
+                onError={(event) => {
+                  const img = event.currentTarget;
+                  if (img.dataset.fallback) return;
+                  img.dataset.fallback = "1";
+                  img.src = "/images/restaurant-fallback.svg";
+                }}
+              />
               <button
                 type="button"
                 aria-label="Удалить изображение"

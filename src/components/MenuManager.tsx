@@ -438,7 +438,17 @@ export function MenuManager({
                       <article className={`menu-item-row owner-menu-item-row ${!avail ? "menu-item-stopped" : ""}`} key={item.id}>
                         <div className="menu-item-image-wrap">
                           {item.photoUrl ? (
-                            <img className="menu-item-thumb" src={item.photoUrl} alt={`Фото блюда ${item.title}`} />
+                            <img
+                              className="menu-item-thumb"
+                              src={item.photoUrl}
+                              alt={`Фото блюда ${item.title}`}
+                              onError={(event) => {
+                                const img = event.currentTarget;
+                                if (img.dataset.fallback) return;
+                                img.dataset.fallback = "1";
+                                img.src = "/images/stock/menu/dish-fallback.jpg";
+                              }}
+                            />
                           ) : (
                             <div className="menu-item-thumb menu-item-placeholder" aria-hidden>
                               <ImageIcon size={22} />

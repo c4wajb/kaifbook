@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { ALLOWED_IMAGE_HOSTS } from "./src/lib/image-hosts";
 
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -7,40 +8,12 @@ const nextConfig: NextConfig = {
     deviceSizes: [640, 828, 1080, 1280],
     imageSizes: [64, 128, 256, 384],
     minimumCacheTTL: 2592000,
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "kaifbook.ru",
-      },
-      {
-        protocol: "https",
-        hostname: "www.kaifbook.ru",
-      },
-      {
-        protocol: "https",
-        hostname: "stolix.ru",
-      },
-      {
-        protocol: "https",
-        hostname: "www.stolix.ru",
-      },
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-      },
-      {
-        protocol: "https",
-        hostname: "welcomekursk.ru",
-      },
-      {
-        protocol: "https",
-        hostname: "static.tildacdn.com",
-      },
-      {
-        protocol: "https",
-        hostname: "butylochnaya.ru",
-      },
-    ],
+    // Built from the shared whitelist so config and validation cannot drift:
+    // validation.ts rejects any host that next/image would refuse to serve.
+    remotePatterns: ALLOWED_IMAGE_HOSTS.map((hostname) => ({
+      protocol: "https" as const,
+      hostname,
+    })),
   },
 };
 

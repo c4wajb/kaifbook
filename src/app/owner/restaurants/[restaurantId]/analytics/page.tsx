@@ -16,6 +16,8 @@ export default async function RestaurantAnalyticsPage({ params }: Props) {
   const analytics = await getRestaurantAnalytics(restaurantId);
   const maxDailyGuests = Math.max(1, ...analytics.charts.reservationsByDay.map((item) => item.guests));
   const maxWeekdayGuests = Math.max(1, ...analytics.charts.weekdayLoad.map((item) => item.guests));
+  const hasDailyData = analytics.charts.reservationsByDay.some((item) => item.guests > 0);
+  const hasWeekdayData = analytics.charts.weekdayLoad.some((item) => item.guests > 0);
 
   return (
     <div className="page owner-layout">
@@ -36,28 +38,36 @@ export default async function RestaurantAnalyticsPage({ params }: Props) {
       <section className="grid-layout two-columns">
         <div className="panel">
           <h2>Динамика гостей</h2>
-          <div className="chart-list">
-            {analytics.charts.reservationsByDay.map((item) => (
-              <div className="chart-row" key={item.key}>
-                <span>{item.label}</span>
-                <div className="chart-bar"><span style={{ width: `${Math.max(4, (item.guests / maxDailyGuests) * 100)}%` }} /></div>
-                <strong>{item.guests}</strong>
-              </div>
-            ))}
-          </div>
+          {hasDailyData ? (
+            <div className="chart-list">
+              {analytics.charts.reservationsByDay.map((item) => (
+                <div className="chart-row" key={item.key}>
+                  <span>{item.label}</span>
+                  <div className="chart-bar"><span style={{ width: item.guests ? `${Math.max(4, (item.guests / maxDailyGuests) * 100)}%` : "0" }} /></div>
+                  <strong>{item.guests}</strong>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state">Пока нет гостей за последние 14 дней — график появится после первых подтверждённых броней.</div>
+          )}
         </div>
 
         <div className="panel">
           <h2>Загрузка по дням недели</h2>
-          <div className="chart-list">
-            {analytics.charts.weekdayLoad.map((item) => (
-              <div className="chart-row" key={item.label}>
-                <span>{item.label}</span>
-                <div className="chart-bar"><span style={{ width: `${Math.max(4, (item.guests / maxWeekdayGuests) * 100)}%` }} /></div>
-                <strong>{item.guests}</strong>
-              </div>
-            ))}
-          </div>
+          {hasWeekdayData ? (
+            <div className="chart-list">
+              {analytics.charts.weekdayLoad.map((item) => (
+                <div className="chart-row" key={item.label}>
+                  <span>{item.label}</span>
+                  <div className="chart-bar"><span style={{ width: item.guests ? `${Math.max(4, (item.guests / maxWeekdayGuests) * 100)}%` : "0" }} /></div>
+                  <strong>{item.guests}</strong>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state">Пока нет данных по дням недели — график появится после первых подтверждённых броней.</div>
+          )}
         </div>
       </section>
 

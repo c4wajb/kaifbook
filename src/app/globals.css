@@ -8,7 +8,7 @@
 .button,.ghost,.small-button,.danger-button,.secondary-button,.icon-button,.icon-only{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;border:1px solid transparent;border-radius:8px;font-weight:600;text-align:center}.button{padding:0 16px;color:#fff;background:var(--accent)}.button.compact{min-height:38px;padding:0 12px}.button.full,.full{width:100%}.ghost{padding:0 12px;border-color:var(--line);background:var(--surface)}.small-button{min-height:34px;padding:0 10px;border-color:var(--line);background:var(--surface);font-size:13px}.secondary-button{padding:0 14px;border-color:var(--line);background:var(--surface);color:var(--ink)}.danger-button{padding:0 14px;color:#fff;background:var(--danger)}.icon-button,.icon-only{width:38px;min-width:38px;padding:0;border-color:var(--line);background:var(--surface)}
 .filters,.panel,.restaurant-card{border:1px solid var(--line);border-radius:8px;background:var(--surface);box-shadow:var(--shadow)}.filters{display:grid;grid-template-columns:1.4fr repeat(4,minmax(130px,1fr)) auto;gap:12px;align-items:end;padding:16px;margin-bottom:26px}label{display:grid;gap:7px;color:var(--muted);font-size:13px;font-weight:600}input,select,textarea{width:100%;min-height:42px;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:#fff;color:var(--ink);font-weight:600}textarea{resize:vertical}
 .restaurants-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.restaurant-card{overflow:hidden}.card-image-link{display:block;aspect-ratio:1.45}.restaurant-card-body{display:grid;gap:15px;padding:18px}.restaurant-card h2,.panel h2,.section-heading h2{margin:0;font-size:22px}.restaurant-card p,.panel p{margin:8px 0 0;color:var(--muted);line-height:1.5}.meta-row{display:grid;gap:8px;color:var(--muted);font-size:14px}.tag-row{display:flex;gap:8px;flex-wrap:wrap}.tag-row span,.badge{display:inline-flex;align-items:center;min-height:28px;padding:0 9px;border-radius:999px;background:var(--surface-2);color:var(--accent);font-size:12px;font-weight:600}.badge-new,.badge-awaiting-restaurant-confirmation,.badge-awaiting-deposit-payment{background:#edebe7;color:var(--warning)}.badge-confirmed,.badge-approved,.badge-seated,.badge-deposit-paid,.badge-confirmed-by-guest,.badge-confirmed-by-restaurant{background:#e5e2dd;color:var(--success)}.badge-rejected,.badge-cancelled,.badge-no-show,.badge-cancelled-by-guest,.badge-cancelled-by-restaurant,.badge-payment-expired{background:#F0E0DE;color:var(--danger)}
-.restaurant-detail{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,.75fr);gap:24px;align-items:start}.restaurant-hero,.wide-form,.stack-form,.reservation-form,.owner-layout{display:grid;gap:16px}.restaurant-hero{gap:20px}.restaurant-hero-image-wrap{aspect-ratio:1.9}.panel{padding:20px}.panel+.panel{margin-top:18px}.section-heading,.editor-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}.compact-heading{margin-bottom:14px}.menu-public{display:grid;gap:20px}.menu-item-row,.list-row,.reservation-row,.admin-row{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}.menu-item-row:last-child,.list-row:last-child,.reservation-row:last-child,.admin-row:last-child{border-bottom:0}.hours-table,.stack-list,.admin-table,.reservation-list{display:grid;gap:8px}.hours-line{display:flex;justify-content:space-between;gap:12px;color:var(--muted)}.auth-panel{display:grid;gap:16px;margin-top:42px}.form-grid{display:grid;gap:14px}.form-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.form-error,.form-success,.form-note{margin:0;padding:11px 12px;border-radius:8px;font-weight:700}.form-error{color:var(--danger);background:#F0E0DE}.form-success{color:var(--success);background:#e5e2dd}.form-note{color:var(--muted);background:var(--surface-2)}.tabs{display:flex;gap:8px;flex-wrap:wrap;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}.tabs a{padding:9px 12px;border-radius:8px;color:var(--muted);font-weight:600}.grid-layout{display:grid;gap:18px}.two-columns{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)}.full-span{grid-column:1/-1}.inline-form{display:grid;grid-template-columns:minmax(0,1fr) 110px 42px;gap:10px;align-items:center}.hall-create-form{display:grid;grid-template-columns:minmax(0,1fr) 120px 120px auto;gap:10px;align-items:center}
+.restaurant-detail{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,.75fr);gap:24px;align-items:start}.restaurant-hero,.wide-form,.stack-form,.reservation-form,.owner-layout{display:grid;gap:16px}.restaurant-hero{gap:20px}.restaurant-hero-image-wrap{aspect-ratio:1.9}.panel{padding:20px}.panel+.panel{margin-top:18px}.section-heading,.editor-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}.compact-heading{margin-bottom:14px}.menu-public{display:grid;gap:20px}.menu-item-row,.list-row,.reservation-row,.admin-row{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}.menu-item-row:last-child,.list-row:last-child,.reservation-row:last-child,.admin-row:last-child{border-bottom:0}.hours-table,.stack-list,.admin-table,.reservation-list{display:grid;gap:8px}.hours-line{display:flex;justify-content:space-between;gap:12px;color:var(--muted)}.auth-panel{display:grid;gap:16px;margin-top:42px}.form-grid{display:grid;gap:14px}.form-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.form-error,.form-success,.form-note{margin:0;padding:11px 12px;border-radius:8px;font-weight:700}.form-error{color:var(--danger);background:#F0E0DE}.form-success{color:var(--success);background:#e5e2dd}.form-note{color:var(--muted);background:var(--surface-2)}.tabs{display:flex;gap:8px;flex-wrap:wrap;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}.tabs a{padding:9px 12px;border-radius:8px;color:var(--muted);font-weight:600}.grid-layout{display:grid;gap:18px}.two-columns{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)}.two-columns.even{grid-template-columns:repeat(2,minmax(0,1fr))}.full-span{grid-column:1/-1}.inline-form{display:grid;grid-template-columns:minmax(0,1fr) 110px 42px;gap:10px;align-items:center}.hall-create-form{display:grid;grid-template-columns:minmax(0,1fr) 120px 120px auto;gap:10px;align-items:center}
 .hall-editor{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px}.hall-board{position:relative;width:100%;aspect-ratio:var(--hall-ratio);min-height:320px;overflow:hidden;border:1px dashed #c5c0ba;border-radius:8px;background:#f5f3f0;touch-action:none}.hall-table{position:absolute;display:grid;place-items:center;gap:2px;border:2px solid #1a1a1a;border-radius:8px;background:#ddd9d4;color:var(--ink);box-shadow:0 8px 20px rgba(0,0,0,.18);touch-action:none}.public-board .hall-table{pointer-events:none}.hall-table span{font-size:12px;color:var(--muted)}.hall-table.selected{border-color:#b54040;background:#f0ede9}.hall-table.disabled{opacity:.45}.table-circle{border-radius:999px}.check-row{display:flex;align-items:center;gap:9px;color:var(--ink)}.check-row input{width:18px;min-height:18px}.hours-list{display:grid;gap:12px}.hours-row{display:grid;grid-template-columns:150px 1fr 1fr 110px;gap:12px;align-items:center;padding-bottom:12px;border-bottom:1px solid var(--line)}.reservation-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.page-title{display:grid;gap:10px;margin-bottom:24px}.empty-state{padding:28px;border:1px dashed var(--line);border-radius:8px;color:var(--muted);background:rgba(255,255,255,.55)}
 @media(max-width:980px){.app-header{grid-template-columns:1fr;gap:12px;padding:14px 16px}.main-nav,.header-actions{justify-content:flex-start}.hero,.restaurant-detail,.hall-editor,.two-columns{grid-template-columns:1fr}.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.restaurants-grid,.dashboard-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hall-create-form{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:680px){.page{width:min(100% - 20px,1180px);padding-top:22px}.hero{min-height:0}.hero-media{min-height:260px}.filters,.restaurants-grid,.form-grid.two,.dashboard-grid,.stat-strip,.hours-row,.hall-create-form{grid-template-columns:1fr}.menu-item-row,.reservation-row,.admin-row{align-items:flex-start;flex-direction:column}.reservation-actions,.row-actions{justify-content:flex-start}}
 
@@ -585,6 +585,28 @@ input:focus,select:focus,textarea:focus{border-color:rgba(192,85,53,.5);box-shad
   color: #5f5146;
   font-size: 18px;
   line-height: 1.6;
+}
+
+.legal-page h2 {
+  margin: 34px 0 4px;
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: clamp(22px, 3vw, 28px);
+  line-height: 1.2;
+}
+
+.legal-page .legal-updated {
+  margin-top: -6px;
+  font-size: 14px;
+  color: #8a7d6e;
+}
+
+.legal-page a {
+  color: var(--accent, #C98232);
+  text-underline-offset: 3px;
+}
+
+.legal-page .small-button {
+  margin-top: 28px;
 }
 
 @media (max-width: 380px) {
@@ -1690,10 +1712,28 @@ select:disabled{
   margin:0 auto;
   display:flex;
   justify-content:space-between;
-  gap:20px;
+  flex-wrap:wrap;
+  gap:10px 20px;
   padding:16px 0 24px;
   border-top:1px solid rgba(255,255,255,.12);
   font-size:13px;
+}
+
+.footer-legal-links{
+  display:inline-flex;
+  flex-wrap:wrap;
+  gap:8px 18px;
+}
+
+.footer-legal-links a{
+  color:rgba(255,244,231,.72);
+  text-decoration:none;
+}
+
+.footer-legal-links a:hover{
+  color:#fff;
+  text-decoration:underline;
+  text-underline-offset:3px;
 }
 
 @media(max-width:980px){
@@ -6599,12 +6639,16 @@ textarea:focus {
 .tag-checkbox-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.tag-checkbox{display:flex;align-items:center;gap:9px;min-height:42px;padding:0 12px;border:1px solid rgba(0,0,0,.12);border-radius:14px;background:#f5f3f0;color:#1a1a1a;font-size:14px;font-weight:600}.tag-checkbox input{width:18px;min-height:18px}
 .custom-tag-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}.modal-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
 
-.reservation-history-panel{display:grid;gap:18px}.reservation-history-filters{display:grid;grid-template-columns:minmax(260px,1.4fr) repeat(5,minmax(140px,1fr)) auto;gap:12px;align-items:end;padding:14px;border:1px solid rgba(0,0,0,.14);border-radius:14px;background:#f5f3f0}.reservation-history-filters .button{min-height:46px;border-radius:16px}
+.reservation-history-panel{display:grid;gap:18px}
+/* auto-fit lets the filter row wrap instead of overflowing the panel: the old
+   fixed template had a ~1130px hard minimum, wider than the 1180px container
+   leaves after paddings. */
+.reservation-history-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;align-items:end;padding:14px;border:1px solid rgba(0,0,0,.14);border-radius:14px;background:#f5f3f0}.reservation-history-filters .history-search{grid-column:span 2}.reservation-history-filters .button{min-height:46px;border-radius:16px}
 .reservation-history-list{display:grid;gap:10px}.history-row{display:grid;grid-template-columns:minmax(240px,1.4fr) 70px minmax(170px,1fr) 110px 120px 150px;gap:14px;align-items:center;padding:16px;border:1px solid rgba(0,0,0,.12);border-radius:14px;background:#f5f3f0;box-shadow:0 14px 32px rgba(0,0,0,.05)}
 .history-main{display:grid;gap:5px}.history-main p,.history-comment{margin:0;color:#7a756f;font-size:13px}.history-label{display:block;margin-bottom:4px;color:#8a7a6d;font-size:12px;font-weight:600}.history-status{justify-self:end}.history-comment{grid-column:1/-1;padding-top:10px;border-top:1px solid rgba(0,0,0,.1)}
 
 @media(max-width:1100px){.restaurant-admin-row,.restaurant-admin-list.compact .restaurant-admin-row,.guest-row,.history-row,.application-row,.application-actions-grid{grid-template-columns:1fr;align-items:start}.restaurant-admin-actions,.guest-actions,.history-status,.application-actions{justify-content:flex-start;justify-self:start}.reservation-history-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.application-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:720px){.catalog-filter-strip{display:grid!important;grid-template-columns:1fr;overflow:visible!important}.catalog-search-field{max-width:none;width:100%}.owner-guest-filters,.reservation-history-filters,.custom-tag-row,.tag-checkbox-grid,.application-detail-grid{grid-template-columns:1fr}.restaurant-admin-actions,.guest-actions,.modal-actions,.application-actions{justify-content:stretch}.restaurant-admin-actions a,.guest-actions a,.guest-actions button,.modal-actions button,.application-actions a{flex:1 1 auto}}
+@media(max-width:720px){.catalog-filter-strip{display:grid!important;grid-template-columns:1fr;overflow:visible!important}.catalog-search-field{max-width:none;width:100%}.owner-guest-filters,.reservation-history-filters,.custom-tag-row,.tag-checkbox-grid,.application-detail-grid{grid-template-columns:1fr}.reservation-history-filters .history-search{grid-column:auto}.restaurant-admin-actions,.guest-actions,.modal-actions,.application-actions{justify-content:stretch}.restaurant-admin-actions a,.guest-actions a,.guest-actions button,.modal-actions button,.application-actions a{flex:1 1 auto}}
 
 /* Kaifbook Office image uploads */
 .sr-only{
@@ -6679,7 +6723,7 @@ textarea:focus {
   padding:0;
   overflow:hidden;
   border-style:solid;
-  background:#1a1a1a;
+  background:#EDEBE7;
 }
 
 .image-upload-dropzone img{
@@ -8035,7 +8079,14 @@ svg {
     right: 16px !important;
     bottom: 12px !important;
   }
+}
 
+/* Catalog filter strip + bottom sheet: scoped to ≤680px so it matches the
+   display:grid/none restore in the ≤680px block further down. When this
+   lived in the ≤720px block, the 681–720px range showed the "Фильтры"
+   button while the unconditional display:contents killed the sheet's
+   fixed positioning — tapping the button only dimmed the screen. */
+@media (max-width: 680px) {
   .catalog-filter-strip {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) auto !important;
@@ -8196,7 +8247,9 @@ svg {
   .catalog-filter-sheet-actions .catalog-filter-reset {
     width: 100% !important;
   }
+}
 
+@media (max-width: 720px) {
   .catalog-section {
     margin: 34px 0 48px !important;
   }
@@ -9721,14 +9774,16 @@ svg {
   text-align: center;
 }
 
+/* Light workspace around the hall board — the old near-black gradient was a
+   jarring dark slab inside the warm light office theme. */
 .hall-editor-pro .hall-board-shell {
   align-items: center;
   background:
-    radial-gradient(circle at 20% 18%, rgba(212, 191, 168, 0.22), transparent 28%),
-    linear-gradient(135deg, #32261f, #1a1a1a 62%, #2f211c);
-  border-color: rgba(234, 215, 192, 0.72);
+    radial-gradient(circle at 20% 18%, rgba(212, 191, 168, 0.35), transparent 30%),
+    #edebe7;
+  border-color: #d5d1cc;
   border-radius: 14px;
-  box-shadow: inset 0 1px 0 rgba(255, 250, 243, 0.08), 0 22px 48px rgba(50, 36, 28, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 22px 48px rgba(50, 36, 28, 0.1);
   display: flex;
   height: clamp(680px, 74vh, 920px);
   justify-content: center;
@@ -10755,6 +10810,13 @@ svg {
     width: 48px;
     height: 48px;
   }
+}
+
+/* When the mobile cart bar is on screen (menu page, cart non-empty), lift the
+   scroll-to-top button above it — otherwise the circle lands on the bar's
+   item-count badge. The bar exists in the DOM only while the cart has items. */
+body:has(.menu-mobile-cart-bar) .scroll-to-top-button {
+  bottom: calc(76px + env(safe-area-inset-bottom));
 }
 
 /* Final catalog alignment pass: compact mobile toolbar and stable card CTAs. */
@@ -14856,14 +14918,16 @@ textarea:focus {
   scroll-margin-top: 164px;
 }
 
-/* 4. Tablet (≤980px): header grows to 92px, fix nav top to match */
+/* 4. Tablet (≤980px): header stays 82px here (92px only kicks in ≤680px,
+   and ≤720px the nav switches to the measured var(--header-h)). Using 92px
+   left a 10px see-through slit between header and nav on 721–980px. */
 @media (max-width: 980px) {
   .menu-order-nav {
-    top: 92px !important;
+    top: 82px !important;
   }
-  /* 92px header + ~70px nav + 12px gap */
+  /* 82px header + ~70px nav + 12px gap */
   .menu-order-category {
-    scroll-margin-top: 174px;
+    scroll-margin-top: 164px;
   }
 }
 

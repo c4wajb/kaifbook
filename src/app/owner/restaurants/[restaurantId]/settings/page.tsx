@@ -210,7 +210,7 @@ export default async function RestaurantSettingsPage({ params }: Props) {
       </div>
       <OwnerTabs restaurantId={restaurant.id} />
 
-      <section className="grid-layout two-columns">
+      <section className="grid-layout two-columns even">
         <form className="panel stack-form" action={saveSettings.bind(null, restaurant.id)}>
           <h2>Базовые правила</h2>
           <div className="form-grid two">
@@ -254,7 +254,7 @@ export default async function RestaurantSettingsPage({ params }: Props) {
           <button className="button" type="submit">Сохранить оплату</button>
         </form>
 
-        <form className="panel stack-form" action={saveDepositSettings.bind(null, restaurant.id)}>
+        <form className="panel stack-form full-span" action={saveDepositSettings.bind(null, restaurant.id)}>
           <h2>Депозиты и защита от no-show</h2>
           <label className="check-row"><input name="depositEnabled" type="checkbox" defaultChecked={depositSettings.depositEnabled} />Включить депозиты</label>
           <div className="form-grid two">
