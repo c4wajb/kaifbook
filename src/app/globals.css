@@ -8856,6 +8856,14 @@ svg {
   font-size:13px;
   color:var(--muted);
 }
+.menu-search-mark{
+  background:rgba(201,130,50,.26);
+  color:inherit;
+  border-radius:3px;
+  padding:0 1px;
+  box-decoration-break:clone;
+  -webkit-box-decoration-break:clone;
+}
 .menu-search-empty{ text-align:center; }
 @media (max-width:640px){
   .menu-search{ width:100%; }

@@ -76,6 +76,30 @@ function validateMenuPayload(payload: ReturnType<typeof menuPayloadFromForm>) {
   return null;
 }
 
+function norm(value: string) {
+  return value.toLowerCase().replace(/ё/g, "е");
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// Wrap the matched query words in <mark> so owners can spot the hit inside a
+// long dish name. ё/е and case are treated as equal, matching the search.
+function highlightMatches(text: string, tokens: string[]) {
+  if (!text || tokens.length === 0) return text;
+  const pattern = tokens.map((token) => escapeRegExp(token).replace(/е/g, "[еёЕЁ]")).join("|");
+  return text.split(new RegExp(`(${pattern})`, "gi")).map((part, index) =>
+    index % 2 === 1 ? (
+      <mark className="menu-search-mark" key={index}>
+        {part}
+      </mark>
+    ) : (
+      part
+    ),
+  );
+}
+
 export function MenuManager({
   restaurantId,
   categories,
@@ -233,23 +257,21 @@ export function MenuManager({
 
   const hasMenuItems = categories.some((category) => category.items.length > 0);
 
-  // Client-side search over the menu so owners with long menus can jump to a
-  // dish instead of scrolling. Matches dish title/description, or shows the
-  // whole category when its name matches.
-  const query = search.trim().toLowerCase();
-  const visibleCategories = query
+  // Client-side search over the whole menu so owners with long lists can jump
+  // to a dish. A multi-word query matches when every word appears in the dish
+  // title, description, or its category. ё/е and case are ignored.
+  const query = norm(search.trim());
+  const searchTokens = query ? query.split(/\s+/).filter(Boolean) : [];
+  const isSearching = searchTokens.length > 0;
+  const visibleCategories = isSearching
     ? categories
-        .map((category) => {
-          const categoryMatches = category.title.toLowerCase().includes(query);
-          const items = categoryMatches
-            ? category.items
-            : category.items.filter(
-                (item) =>
-                  item.title.toLowerCase().includes(query) ||
-                  (item.description || "").toLowerCase().includes(query),
-              );
-          return { ...category, items };
-        })
+        .map((category) => ({
+          ...category,
+          items: category.items.filter((item) => {
+            const haystack = norm(`${item.title} ${item.description || ""} ${category.title}`);
+            return searchTokens.every((token) => haystack.includes(token));
+          }),
+        }))
         .filter((category) => category.items.length > 0)
     : categories;
   const foundCount = visibleCategories.reduce((sum, category) => sum + category.items.length, 0);
@@ -363,6 +385,9 @@ export function MenuManager({
                 type="search"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Escape") setSearch("");
+                }}
                 placeholder="Поиск по блюдам"
                 aria-label="Поиск по блюдам"
               />
@@ -380,7 +405,7 @@ export function MenuManager({
             </div>
           ) : null}
         </div>
-        {query ? (
+        {isSearching ? (
           <p className="menu-search-count">
             {foundCount > 0 ? `Найдено: ${foundCount}` : "Ничего не найдено"}
           </p>
@@ -421,8 +446,8 @@ export function MenuManager({
                           )}
                         </div>
                         <div className="menu-item-content">
-                          <strong className="menu-item-title">{item.title}</strong>
-                          {item.description ? <p className="menu-item-description">{item.description}</p> : null}
+                          <strong className="menu-item-title">{highlightMatches(item.title, searchTokens)}</strong>
+                          {item.description ? <p className="menu-item-description">{highlightMatches(item.description, searchTokens)}</p> : null}
                           {item.weight ? <small className="menu-item-portion">{item.weight}</small> : null}
                         </div>
                         <strong className="menu-item-price">{formatMoney(item.price)}</strong>
