@@ -8,7 +8,7 @@
 .button,.ghost,.small-button,.danger-button,.secondary-button,.icon-button,.icon-only{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;border:1px solid transparent;border-radius:8px;font-weight:600;text-align:center}.button{padding:0 16px;color:#fff;background:var(--accent)}.button.compact{min-height:38px;padding:0 12px}.button.full,.full{width:100%}.ghost{padding:0 12px;border-color:var(--line);background:var(--surface)}.small-button{min-height:34px;padding:0 10px;border-color:var(--line);background:var(--surface);font-size:13px}.secondary-button{padding:0 14px;border-color:var(--line);background:var(--surface);color:var(--ink)}.danger-button{padding:0 14px;color:#fff;background:var(--danger)}.icon-button,.icon-only{width:38px;min-width:38px;padding:0;border-color:var(--line);background:var(--surface)}
 .filters,.panel,.restaurant-card{border:1px solid var(--line);border-radius:8px;background:var(--surface);box-shadow:var(--shadow)}.filters{display:grid;grid-template-columns:1.4fr repeat(4,minmax(130px,1fr)) auto;gap:12px;align-items:end;padding:16px;margin-bottom:26px}label{display:grid;gap:7px;color:var(--muted);font-size:13px;font-weight:600}input,select,textarea{width:100%;min-height:42px;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:#fff;color:var(--ink);font-weight:600}textarea{resize:vertical}
 .restaurants-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.restaurant-card{overflow:hidden}.card-image-link{display:block;aspect-ratio:1.45}.restaurant-card-body{display:grid;gap:15px;padding:18px}.restaurant-card h2,.panel h2,.section-heading h2{margin:0;font-size:22px}.restaurant-card p,.panel p{margin:8px 0 0;color:var(--muted);line-height:1.5}.meta-row{display:grid;gap:8px;color:var(--muted);font-size:14px}.tag-row{display:flex;gap:8px;flex-wrap:wrap}.tag-row span,.badge{display:inline-flex;align-items:center;min-height:28px;padding:0 9px;border-radius:999px;background:var(--surface-2);color:var(--accent);font-size:12px;font-weight:600}.badge-new,.badge-awaiting-restaurant-confirmation,.badge-awaiting-deposit-payment{background:#edebe7;color:var(--warning)}.badge-confirmed,.badge-approved,.badge-seated,.badge-deposit-paid,.badge-confirmed-by-guest,.badge-confirmed-by-restaurant{background:#e5e2dd;color:var(--success)}.badge-rejected,.badge-cancelled,.badge-no-show,.badge-cancelled-by-guest,.badge-cancelled-by-restaurant,.badge-payment-expired{background:#F0E0DE;color:var(--danger)}
-.restaurant-detail{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,.75fr);gap:24px;align-items:start}.restaurant-hero,.wide-form,.stack-form,.reservation-form,.owner-layout{display:grid;gap:16px}.restaurant-hero{gap:20px}.restaurant-hero-image-wrap{aspect-ratio:1.9}.panel{padding:20px}.panel+.panel{margin-top:18px}.section-heading,.editor-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}.compact-heading{margin-bottom:14px}.menu-public{display:grid;gap:20px}.menu-item-row,.list-row,.reservation-row,.admin-row{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}.menu-item-row:last-child,.list-row:last-child,.reservation-row:last-child,.admin-row:last-child{border-bottom:0}.hours-table,.stack-list,.admin-table,.reservation-list{display:grid;gap:8px}.hours-line{display:flex;justify-content:space-between;gap:12px;color:var(--muted)}.auth-panel{display:grid;gap:16px;margin-top:42px}.form-grid{display:grid;gap:14px}.form-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.form-error,.form-success,.form-note{margin:0;padding:11px 12px;border-radius:8px;font-weight:700}.form-error{color:var(--danger);background:#F0E0DE}.form-success{color:var(--success);background:#e5e2dd}.form-note{color:var(--muted);background:var(--surface-2)}.tabs{display:flex;gap:8px;flex-wrap:wrap;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}.tabs a{padding:9px 12px;border-radius:8px;color:var(--muted);font-weight:600}.grid-layout{display:grid;gap:18px}.two-columns{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)}.two-columns.even{grid-template-columns:repeat(2,minmax(0,1fr))}.full-span{grid-column:1/-1}.inline-form{display:grid;grid-template-columns:minmax(0,1fr) 110px 42px;gap:10px;align-items:center}.hall-create-form{display:grid;grid-template-columns:minmax(0,1fr) 120px 120px auto;gap:10px;align-items:center}
+.restaurant-detail{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,.75fr);gap:24px;align-items:start}.restaurant-hero,.wide-form,.stack-form,.reservation-form,.owner-layout{display:grid;gap:16px}.restaurant-hero{gap:20px}.restaurant-hero-image-wrap{aspect-ratio:1.9}.panel{padding:20px}.panel+.panel{margin-top:18px}.section-heading,.editor-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}.compact-heading{margin-bottom:14px}.menu-public{display:grid;gap:20px}.menu-item-row,.list-row,.reservation-row,.admin-row{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}.menu-item-row:last-child,.list-row:last-child,.reservation-row:last-child,.admin-row:last-child{border-bottom:0}.hours-table,.stack-list,.admin-table,.reservation-list{display:grid;gap:8px}.hours-line{display:flex;justify-content:space-between;gap:12px;color:var(--muted)}.auth-panel{display:grid;gap:16px;margin-top:42px}.form-grid{display:grid;gap:14px}.form-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.form-error,.form-success,.form-note{margin:0;padding:11px 12px;border-radius:8px;font-weight:700}.form-error{color:var(--danger);background:#F0E0DE}.form-success{color:var(--success);background:#e5e2dd}.form-note{color:var(--muted);background:var(--surface-2)}.tabs{display:flex;gap:6px;flex-wrap:wrap;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}.tabs a{padding:8px 11px;border-radius:8px;color:var(--muted);font-size:14px;font-weight:600;white-space:nowrap}.grid-layout{display:grid;gap:18px}.two-columns{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)}.two-columns.even{grid-template-columns:repeat(2,minmax(0,1fr))}.full-span{grid-column:1/-1}.inline-form{display:grid;grid-template-columns:minmax(0,1fr) 110px 42px;gap:10px;align-items:center}.hall-create-form{display:grid;grid-template-columns:minmax(0,1fr) 120px 120px auto;gap:10px;align-items:center}
 .hall-editor{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px}.hall-board{position:relative;width:100%;aspect-ratio:var(--hall-ratio);min-height:320px;overflow:hidden;border:1px dashed #c5c0ba;border-radius:8px;background:#f5f3f0;touch-action:none}.hall-table{position:absolute;display:grid;place-items:center;gap:2px;border:2px solid #1a1a1a;border-radius:8px;background:#ddd9d4;color:var(--ink);box-shadow:0 8px 20px rgba(0,0,0,.18);touch-action:none}.public-board .hall-table{pointer-events:none}.hall-table span{font-size:12px;color:var(--muted)}.hall-table.selected{border-color:#b54040;background:#f0ede9}.hall-table.disabled{opacity:.45}.table-circle{border-radius:999px}.check-row{display:flex;align-items:center;gap:9px;color:var(--ink)}.check-row input{width:18px;min-height:18px}.hours-list{display:grid;gap:12px}.hours-row{display:grid;grid-template-columns:150px 1fr 1fr 110px;gap:12px;align-items:center;padding-bottom:12px;border-bottom:1px solid var(--line)}.reservation-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.page-title{display:grid;gap:10px;margin-bottom:24px}.empty-state{padding:28px;border:1px dashed var(--line);border-radius:8px;color:var(--muted);background:rgba(255,255,255,.55)}
 @media(max-width:980px){.app-header{grid-template-columns:1fr;gap:12px;padding:14px 16px}.main-nav,.header-actions{justify-content:flex-start}.hero,.restaurant-detail,.hall-editor,.two-columns{grid-template-columns:1fr}.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.restaurants-grid,.dashboard-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hall-create-form{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:680px){.page{width:min(100% - 20px,1180px);padding-top:22px}.hero{min-height:0}.hero-media{min-height:260px}.filters,.restaurants-grid,.form-grid.two,.dashboard-grid,.stat-strip,.hours-row,.hall-create-form{grid-template-columns:1fr}.menu-item-row,.reservation-row,.admin-row{align-items:flex-start;flex-direction:column}.reservation-actions,.row-actions{justify-content:flex-start}}
 
@@ -10817,6 +10817,56 @@ svg {
    item-count badge. The bar exists in the DOM only while the cart has items. */
 body:has(.menu-mobile-cart-bar) .scroll-to-top-button {
   bottom: calc(76px + env(safe-area-inset-bottom));
+}
+
+/* Cookie notice — single technical session cookie, so a compact one-time
+   banner with a privacy link is enough. */
+.cookie-consent {
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 950;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: min(720px, calc(100vw - 32px));
+  padding: 14px 18px;
+  border: 1.5px solid rgba(201, 130, 50, 0.32);
+  border-radius: 16px;
+  background: #FFF8EF;
+  box-shadow: 0 18px 48px rgba(50, 36, 28, 0.22);
+  transform: translateX(-50%);
+}
+
+.cookie-consent p {
+  margin: 0;
+  color: #4E3A2F;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.cookie-consent a {
+  color: var(--accent, #C98232);
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+
+.cookie-consent .button {
+  flex: 0 0 auto;
+  min-height: 42px;
+  padding: 0 22px;
+}
+
+@media (max-width: 560px) {
+  .cookie-consent {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    text-align: left;
+  }
+  .cookie-consent .button {
+    width: 100%;
+  }
 }
 
 /* Final catalog alignment pass: compact mobile toolbar and stable card CTAs. */
