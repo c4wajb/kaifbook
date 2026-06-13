@@ -985,11 +985,14 @@ export function ReservationForm({
             <button className="modal-close-button" type="button" aria-label="Закрыть" onClick={() => setSuccessSummary(null)}>
               <X size={18} aria-hidden />
             </button>
-            <CheckCircle2 size={42} aria-hidden className="success-modal-icon" />
-            <div>
-              <p className="eyebrow">{successSummary.isDepositRequired ? "Заявка создана" : "Заявка отправлена"}</p>
-              <h2>{successSummary.isDepositRequired ? "Для подтверждения внесите депозит ресторану" : "Ресторан свяжется с вами для подтверждения"}</h2>
+            <div className="success-modal-head">
+              <CheckCircle2 size={38} aria-hidden className="success-modal-icon" />
+              <div>
+                <p className="eyebrow">{successSummary.isDepositRequired ? "Заявка создана" : "Заявка отправлена"}</p>
+                <h2>{successSummary.isDepositRequired ? "Для подтверждения внесите депозит ресторану" : "Ресторан свяжется с вами для подтверждения"}</h2>
+              </div>
             </div>
+            <div className="success-modal-body">
             <dl className="success-summary-list">
               <div><dt>Ресторан</dt><dd>{successSummary.restaurantTitle}</dd></div>
               <div><dt>Дата и время</dt><dd>{successSummary.reservationDate}, {successSummary.startTime}-{successSummary.endTime}</dd></div>
@@ -1020,13 +1023,6 @@ export function ReservationForm({
             ) : (
               <p className="form-note">Оплата при бронировании не требуется. Заявка уже передана ресторану.</p>
             )}
-            <div className="success-flow-panel">
-              <strong>Бронь не потеряется</strong>
-              <span>
-                {isAuthenticatedGuest
-                  ? "Заявка сохранена в вашем личном кабинете. Ее можно открыть, показать QR-код ресторану или отменить визит."
-                  : "Мы привязали заявку к номеру телефона. Если вы подтвердили её через MAX или VK, ресторану будет проще быстро проверить данные бронирования."}
-              </span>
             </div>
             <div className="success-modal-actions">
               <Link className="button full" href={myReservationsHref || (isAuthenticatedGuest ? "/guest/reservations" : `/guest/login?phone=${encodeURIComponent(successSummary.normalizedPhone)}&next=${encodeURIComponent("/guest/reservations")}`)}>

@@ -57,6 +57,9 @@ export default async function ReservationConfirmationPage({ params }: Props) {
   const isPaid = paymentStatus === PAYMENT_STATUSES.PAID || paymentStatus === EXTERNAL_PAYMENT_STATUSES.PAID_TO_RESTAURANT;
   const needsPayment = reservation.paymentRequired && !isPaid;
   const qrUrl = reservationQrUrl(reservation.confirmationToken);
+  // Only ask the guest to confirm when the restaurant actually requested it —
+  // right after booking it's redundant and off-putting.
+  const confirmationRequested = Boolean(reservation.confirmationRequestedAt);
 
   return (
     <main className="reservation-confirm-page">
@@ -66,7 +69,7 @@ export default async function ReservationConfirmationPage({ params }: Props) {
           <span>К ресторану</span>
         </Link>
         <div className="reservation-pass-topline">
-          <p className="eyebrow">Подтверждение визита</p>
+          <p className="eyebrow">{confirmationRequested ? "Подтверждение визита" : "Ваша бронь"}</p>
           <Badge status={reservation.status} />
         </div>
 
@@ -126,7 +129,9 @@ export default async function ReservationConfirmationPage({ params }: Props) {
           <span>
             {needsPayment
               ? "Оплата проходит напрямую ресторану. После оплаты ресторан проверит платеж и подтвердит заявку."
-              : "Для этого визита депозит сейчас не нужен. Вы можете подтвердить визит, чтобы ресторан держал стол для вас."}
+              : confirmationRequested
+                ? "Ресторан просит подтвердить визит, чтобы держать стол за вами."
+                : "Депозит не нужен — бронь уже у ресторана. Ниже можно показать QR-код или отменить визит."}
           </span>
           {needsPayment && paymentUrl ? (
             <Link className="button full" href={paymentUrl} target="_blank" rel="noopener noreferrer">
@@ -139,10 +144,12 @@ export default async function ReservationConfirmationPage({ params }: Props) {
         {reservation.guestConfirmedAt ? <p className="form-success">Вы подтвердили визит. Ресторан видит это в кабинете.</p> : null}
 
         {canConfirm ? (
-          <div className="reservation-pass-actions">
-            <form action={accept.bind(null, token)}>
-              <button className="button" type="submit">Я приду</button>
-            </form>
+          <div className={`reservation-pass-actions ${confirmationRequested ? "" : "single"}`}>
+            {confirmationRequested ? (
+              <form action={accept.bind(null, token)}>
+                <button className="button" type="submit">Я приду</button>
+              </form>
+            ) : null}
             <form action={cancel.bind(null, token)}>
               <button className="secondary-button" type="submit">Отменить визит</button>
             </form>
