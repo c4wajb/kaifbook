@@ -58,6 +58,9 @@ export async function POST(request: Request) {
       sessionToken,
       vkUserId: isVerified ? vkUserId : null,
       isVerified,
+      // Community id so the client can ask the user to allow messages, which is
+      // required for VK to deliver booking-status notifications.
+      groupId: process.env.VK_GROUP_ID || null,
     });
   } catch (error) {
     return handleApiError(error);

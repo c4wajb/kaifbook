@@ -7,6 +7,7 @@ export type VkMiniSession = {
   sessionToken: string | null;
   vkUserId: string | null;
   isVerified: boolean;
+  groupId: string | null;
 };
 
 function parseParamString(value: string) {
@@ -43,6 +44,20 @@ export async function initVkBridge() {
   } catch (error) {
     if (process.env.NODE_ENV !== "production") console.info("[vk-mini] bridge unavailable", error);
     return { available: false };
+  }
+}
+
+// Ask the user to allow messages from the community so VK can deliver
+// booking-status notifications. No-op (no popup) if already allowed; best-effort
+// — failures (denied, not in VK) are swallowed.
+export async function requestVkMessagesFromGroup(groupId: string | null) {
+  if (typeof window === "undefined" || !groupId || !/^\d+$/.test(groupId)) return false;
+  try {
+    const module = await import("@vkontakte/vk-bridge");
+    const result = await module.default.send("VKWebAppAllowMessagesFromGroup", { group_id: Number(groupId) });
+    return Boolean((result as { result?: boolean })?.result);
+  } catch {
+    return false;
   }
 }
 

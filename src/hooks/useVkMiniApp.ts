@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createVkMiniSession, getVkLaunchParams, initVkBridge, isVkMiniAppRuntime, type VkMiniSession } from "@/services/vkBridgeService";
+import { createVkMiniSession, getVkLaunchParams, initVkBridge, isVkMiniAppRuntime, requestVkMessagesFromGroup, type VkMiniSession } from "@/services/vkBridgeService";
 
 type VkMiniState = {
   ready: boolean;
@@ -29,15 +29,19 @@ export function useVkMiniApp() {
 
       try {
         const session = await createVkMiniSession(launchParams);
+        const inVk = isVkMiniAppRuntime(launchParams);
         if (!cancelled) {
           setState({
             ready: true,
             bridgeAvailable: bridgeState.available,
-            inVkRuntime: isVkMiniAppRuntime(launchParams),
+            inVkRuntime: inVk,
             session,
             error: null,
           });
         }
+        // Once we know the community id, make sure the user can receive booking
+        // notifications (no popup if they've already allowed it).
+        if (inVk && session.groupId) void requestVkMessagesFromGroup(session.groupId);
       } catch (error) {
         if (!cancelled) {
           setState({
