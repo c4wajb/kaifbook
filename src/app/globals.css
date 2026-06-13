@@ -14242,6 +14242,9 @@ body:has(.menu-mobile-cart-bar) .scroll-to-top-button {
 /* Waiter hall view */
 .waiter-hall-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start}
 .waiter-hall-board-wrap{overflow:hidden;border-radius:8px;border:1px solid var(--line);background:var(--surface)}
+/* Waiter view scales the hall to fit its column (everything is %-positioned),
+   so drop the editor-only 720px min-width that was clipping the right wall. */
+.waiter-hall-board-wrap .hall-board{min-width:0!important;width:100%!important}
 .waiter-hall-board{pointer-events:auto}
 .waiter-hall-board .hall-neutral-object{pointer-events:none}
 .waiter-table{cursor:pointer!important;pointer-events:auto!important;transition:border-color .15s,background .15s}
