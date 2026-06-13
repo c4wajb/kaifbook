@@ -14220,6 +14220,8 @@ body:has(.menu-mobile-cart-bar) .scroll-to-top-button {
 .staff-add-form{display:grid;gap:14px;padding:18px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);margin-top:14px}
 .staff-add-form h3{margin:0;font-size:18px}
 .form-actions{display:flex;gap:10px}
+.form-divider{width:100%;height:1px;border:0;background:var(--line);margin:8px 0 2px}
+.stack-form>h3{margin:0;font-size:18px}
 .small-button.danger{color:var(--danger);border-color:var(--danger)}
 .small-button.danger:hover{background:#F0E0DE}
 

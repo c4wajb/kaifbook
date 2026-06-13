@@ -124,6 +124,14 @@ export const VERIFICATION_STATUS_LABELS: Record<string, string> = {
 };
 export const NO_SHOW_RISK_LEVELS = { LOW: "low", MEDIUM: "medium", HIGH: "high" } as const;
 export const DEPOSIT_MODES = ["disabled", "by_table_type", "by_guests_count", "by_time", "by_risk", "custom_rules"] as const;
+export const DEPOSIT_MODE_LABELS: Record<(typeof DEPOSIT_MODES)[number], string> = {
+  disabled: "Депозиты выключены",
+  by_table_type: "По типу стола",
+  by_guests_count: "По числу гостей",
+  by_time: "По дню и времени",
+  by_risk: "По риску неявки",
+  custom_rules: "По своим правилам",
+};
 export const TABLE_SHAPES = ["rectangle", "circle", "square"] as const;
 export const CUISINE_TYPES = [
   "европейская",

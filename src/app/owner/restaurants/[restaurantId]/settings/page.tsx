@@ -2,8 +2,8 @@ import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { OwnerTabs } from "@/components/OwnerTabs";
-import { DAY_LABELS, DEPOSIT_MODES, PAYMENT_MODES } from "@/lib/constants";
-import { DEFAULT_EXTERNAL_PAYMENT_TERMS } from "@/lib/external-payments";
+import { DAY_LABELS, DEPOSIT_MODES, DEPOSIT_MODE_LABELS, PAYMENT_MODES } from "@/lib/constants";
+import { DEFAULT_DEPOSIT_REFUND_POLICY, DEFAULT_EXTERNAL_PAYMENT_TERMS } from "@/lib/external-payments";
 import { prisma } from "@/lib/db";
 import { requireOwnerPageUser } from "@/lib/page-auth";
 import { canManageRestaurant } from "@/lib/permissions";
@@ -47,10 +47,18 @@ async function saveSettings(restaurantId: string, formData: FormData) {
   redirect(`/owner/restaurants/${restaurantId}/settings?saved=booking`);
 }
 
-async function saveDepositSettings(restaurantId: string, formData: FormData) {
+async function savePaymentDepositSettings(restaurantId: string, formData: FormData) {
   "use server";
   await assertRestaurantAccess(restaurantId);
-  const payload = reservationDepositSettingsSchema.parse({
+  const paymentPayload = restaurantPaymentSettingsSchema.parse({
+    paymentMode: formData.get("paymentMode"),
+    externalDepositAmount: formData.get("externalDepositAmount"),
+    externalPaymentUrl: valueOrNull(formData, "externalPaymentUrl"),
+    paymentTermsText: valueOrNull(formData, "paymentTermsText"),
+    isPaymentEnabled: formData.get("isPaymentEnabled") === "on",
+    showDepositInfo: formData.get("showDepositInfo") === "on",
+  });
+  const depositPayload = reservationDepositSettingsSchema.parse({
     depositEnabled: formData.get("depositEnabled") === "on",
     depositMode: formData.get("depositMode"),
     defaultDepositAmount: formData.get("defaultDepositAmount"),
@@ -64,23 +72,8 @@ async function saveDepositSettings(restaurantId: string, formData: FormData) {
     legalNoticeText: valueOrNull(formData, "legalNoticeText"),
     isActive: true,
   });
-  await prisma.reservationDepositSettings.upsert({ where: { restaurantId }, update: payload, create: { restaurantId, ...payload } });
-  revalidatePath(`/owner/restaurants/${restaurantId}/settings`);
-  redirect(`/owner/restaurants/${restaurantId}/settings?saved=deposit`);
-}
-
-async function savePaymentSettings(restaurantId: string, formData: FormData) {
-  "use server";
-  await assertRestaurantAccess(restaurantId);
-  const payload = restaurantPaymentSettingsSchema.parse({
-    paymentMode: formData.get("paymentMode"),
-    externalDepositAmount: formData.get("externalDepositAmount"),
-    externalPaymentUrl: valueOrNull(formData, "externalPaymentUrl"),
-    paymentTermsText: valueOrNull(formData, "paymentTermsText"),
-    isPaymentEnabled: formData.get("isPaymentEnabled") === "on",
-    showDepositInfo: formData.get("showDepositInfo") === "on",
-  });
-  await prisma.restaurant.update({ where: { id: restaurantId }, data: payload });
+  await prisma.restaurant.update({ where: { id: restaurantId }, data: paymentPayload });
+  await prisma.reservationDepositSettings.upsert({ where: { restaurantId }, update: depositPayload, create: { restaurantId, ...depositPayload } });
   revalidatePath(`/owner/restaurants/${restaurantId}/settings`);
   redirect(`/owner/restaurants/${restaurantId}/settings?saved=payment`);
 }
@@ -211,7 +204,7 @@ export default async function RestaurantSettingsPage({ params }: Props) {
       <OwnerTabs restaurantId={restaurant.id} />
 
       <section className="grid-layout two-columns even">
-        <form className="panel stack-form" action={saveSettings.bind(null, restaurant.id)}>
+        <form className="panel stack-form full-span" action={saveSettings.bind(null, restaurant.id)}>
           <h2>Базовые правила</h2>
           <div className="form-grid two">
             <label><span>Минимум гостей</span><input name="minGuests" type="number" min="1" defaultValue={settings.minGuests} /></label>
@@ -234,8 +227,8 @@ export default async function RestaurantSettingsPage({ params }: Props) {
           <button className="button" type="submit">Сохранить правила</button>
         </form>
 
-        <form className="panel stack-form" action={savePaymentSettings.bind(null, restaurant.id)}>
-          <h2>Оплата брони</h2>
+        <form className="panel stack-form full-span" action={savePaymentDepositSettings.bind(null, restaurant.id)}>
+          <h2>Оплата и депозиты</h2>
           <p className="muted">Kaifbook не принимает оплату. Гость переходит по платежной ссылке ресторана, а сотрудник вручную отмечает оплату в заявке.</p>
           <label className="check-row"><input name="isPaymentEnabled" type="checkbox" defaultChecked={restaurant.isPaymentEnabled} />Включить оплату по ссылке ресторана</label>
           <label className="check-row"><input name="showDepositInfo" type="checkbox" defaultChecked={restaurant.showDepositInfo} />Показывать депозит гостям</label>
@@ -250,26 +243,25 @@ export default async function RestaurantSettingsPage({ params }: Props) {
             <label><span>Сумма депозита, ₽</span><input name="externalDepositAmount" type="number" min="0" defaultValue={restaurant.externalDepositAmount} /></label>
           </div>
           <label><span>Платежная ссылка ресторана</span><input name="externalPaymentUrl" type="url" placeholder="https://..." defaultValue={restaurant.externalPaymentUrl || ""} /></label>
-          <label><span>Условия оплаты</span><textarea name="paymentTermsText" rows={4} defaultValue={restaurant.paymentTermsText || DEFAULT_EXTERNAL_PAYMENT_TERMS} /></label>
-          <button className="button" type="submit">Сохранить оплату</button>
-        </form>
+          <label><span>Условия оплаты</span><textarea name="paymentTermsText" rows={3} defaultValue={restaurant.paymentTermsText || DEFAULT_EXTERNAL_PAYMENT_TERMS} /></label>
 
-        <form className="panel stack-form full-span" action={saveDepositSettings.bind(null, restaurant.id)}>
-          <h2>Депозиты и защита от no-show</h2>
-          <label className="check-row"><input name="depositEnabled" type="checkbox" defaultChecked={depositSettings.depositEnabled} />Включить депозиты</label>
+          <hr className="form-divider" />
+          <h3>Депозиты и защита от неявок</h3>
+          <p className="muted">Эти правила добавляют депозит автоматически — например для больших компаний, в часы пик или для гостей с высоким риском неявки.</p>
+          <label className="check-row"><input name="depositEnabled" type="checkbox" defaultChecked={depositSettings.depositEnabled} />Включить правила депозитов</label>
           <div className="form-grid two">
-            <label><span>Режим</span><select name="depositMode" defaultValue={depositSettings.depositMode}>{DEPOSIT_MODES.map((mode) => <option key={mode} value={mode}>{mode}</option>)}</select></label>
-            <label><span>Дефолтный депозит, ₽</span><input name="defaultDepositAmount" type="number" min="0" defaultValue={depositSettings.defaultDepositAmount} /></label>
+            <label><span>Когда брать депозит</span><select name="depositMode" defaultValue={depositSettings.depositMode}>{DEPOSIT_MODES.map((mode) => <option key={mode} value={mode}>{DEPOSIT_MODE_LABELS[mode]}</option>)}</select></label>
+            <label><span>Депозит по умолчанию, ₽</span><input name="defaultDepositAmount" type="number" min="0" defaultValue={depositSettings.defaultDepositAmount} /></label>
             <label><span>Депозит для компаний от</span><input name="requireDepositForGuestsFrom" type="number" min="1" defaultValue={depositSettings.requireDepositForGuestsFrom ?? ""} /></label>
             <label><span>Время на оплату, минут</span><input name="paymentTimeoutMinutes" type="number" min="1" defaultValue={depositSettings.paymentTimeoutMinutes} /></label>
           </div>
           <label className="check-row"><input name="requireDepositForLargeTables" type="checkbox" defaultChecked={depositSettings.requireDepositForLargeTables} />Требовать депозит для больших столов</label>
           <label className="check-row"><input name="requireDepositForPeakHours" type="checkbox" defaultChecked={depositSettings.requireDepositForPeakHours} />Требовать депозит в пятницу/субботу вечером</label>
           <label className="check-row"><input name="requireDepositForHighRiskGuests" type="checkbox" defaultChecked={depositSettings.requireDepositForHighRiskGuests} />Требовать депозит для гостей с высоким риском</label>
-          <label><span>Как депозит учитывается</span><textarea name="depositAccountingText" rows={3} defaultValue={depositSettings.depositAccountingText || "Депозит будет учтен в счете гостя."} /></label>
-          <label><span>Условия возврата</span><textarea name="depositRefundPolicyText" rows={3} defaultValue={depositSettings.depositRefundPolicyText || ""} /></label>
-          <label><span>Юридическое уведомление</span><textarea name="legalNoticeText" rows={3} defaultValue={depositSettings.legalNoticeText || "Оплата депозита проходит напрямую ресторану по его платежной ссылке. Kaifbook не принимает деньги гостей."} /></label>
-          <button className="button" type="submit">Сохранить депозитные правила</button>
+          <label><span>Как депозит учитывается</span><textarea name="depositAccountingText" rows={2} defaultValue={depositSettings.depositAccountingText || "Депозит будет учтен в счете гостя."} /></label>
+          <label><span>Условия возврата</span><textarea name="depositRefundPolicyText" rows={3} defaultValue={depositSettings.depositRefundPolicyText || DEFAULT_DEPOSIT_REFUND_POLICY} /></label>
+          <label><span>Юридическое уведомление</span><textarea name="legalNoticeText" rows={2} defaultValue={depositSettings.legalNoticeText || "Оплата депозита проходит напрямую ресторану по его платежной ссылке. Kaifbook не принимает деньги гостей."} /></label>
+          <button className="button" type="submit">Сохранить оплату и депозиты</button>
         </form>
       </section>
 
@@ -338,7 +330,7 @@ export default async function RestaurantSettingsPage({ params }: Props) {
             <label><span>Второе, минут до визита</span><input name="secondReminderMinutesBefore" type="number" min="15" defaultValue={noShowSettings.secondReminderMinutesBefore} /></label>
             <label><span>Дедлайн подтверждения, минут</span><input name="confirmationDeadlineMinutesBefore" type="number" min="15" defaultValue={noShowSettings.confirmationDeadlineMinutesBefore} /></label>
           </div>
-          <button className="button" type="submit">Сохранить no-show правила</button>
+          <button className="button" type="submit">Сохранить правила неявок</button>
         </form>
 
         <aside className="panel">
@@ -351,7 +343,7 @@ export default async function RestaurantSettingsPage({ params }: Props) {
           <div className="stack-list">
             <div className="insight-row"><strong>Оплата напрямую ресторану</strong><span>Гость переходит по вашей HTTPS-ссылке. Ресторан сам пробивает чек, проверяет оплату и оформляет возврат при необходимости.</span></div>
             <div className="insight-row"><strong>Гость видит условия заранее</strong><span>Сумма и объяснение показываются до отправки заявки, поэтому менеджеру не нужно объяснять это вручную.</span></div>
-            <div className="insight-row"><strong>CRM запоминает no-show</strong><span>Гости с историей неявок получают высокий риск и могут попадать под депозитное правило.</span></div>
+            <div className="insight-row"><strong>CRM запоминает неявки</strong><span>Гости с историей неявок получают высокий риск и могут попадать под депозитное правило.</span></div>
           </div>
         </aside>
       </section>
