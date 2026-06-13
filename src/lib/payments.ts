@@ -1,5 +1,6 @@
 import { PAYMENT_STATUSES, RESERVATION_STATUSES } from "@/lib/constants";
 import { prisma } from "@/lib/db";
+import { notifyGuestReservationStatus } from "@/lib/verifications";
 
 export type PaymentProvider = {
   createPayment(reservationId: string, amount: number, description: string, returnUrl: string): Promise<{ id: string; paymentUrl: string | null; providerPaymentId: string }>;
@@ -65,6 +66,7 @@ export async function markPaymentPaid(paymentId: string) {
     where: { id: payment.reservationId },
     data: { status: nextStatus, noShowRiskLevel: "low", noShowRiskScore: 5, confirmedAt: nextStatus === RESERVATION_STATUSES.CONFIRMED ? now : payment.reservation.confirmedAt },
   });
+  await notifyGuestReservationStatus({ ...payment.reservation, restaurantTitle: payment.reservation.restaurant.title }, nextStatus);
 
   return prisma.payment.findUniqueOrThrow({
     where: { id: paymentId },
@@ -91,6 +93,10 @@ export async function expireOverdueDepositPayments(restaurantId?: string) {
         where: { id: payment.reservationId },
         data: { status: RESERVATION_STATUSES.PAYMENT_EXPIRED },
       });
+      await notifyGuestReservationStatus(
+        { ...payment.reservation, restaurantTitle: payment.reservation.restaurant.title },
+        RESERVATION_STATUSES.PAYMENT_EXPIRED,
+      );
       expired.push(payment.id);
     }
   }

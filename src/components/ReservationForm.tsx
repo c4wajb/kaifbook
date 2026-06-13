@@ -9,6 +9,7 @@ import { ReservationQrCard } from "@/components/ReservationQrCard";
 import { fetchJsonWithDiagnostics, isFriendlyAbort } from "@/lib/client-fetch";
 import { formatRuPhoneInput, isValidRuPhone, normalizePhone } from "@/lib/phone";
 import { generateEndTimeSlots, generateStartTimeSlots, isRangeWithinWorkingHours, localDateInputValue, workingHourForDate, type WorkingHourLike } from "@/lib/time";
+import { getStoredVkMiniToken } from "@/services/vkBridgeService";
 
 type TableType = { id: string; title: string; code: string; minGuests: number; maxGuests: number; defaultDepositAmount: number; isDepositRequired: boolean };
 type Hall = {
@@ -744,7 +745,14 @@ export function ReservationForm({
         message?: string;
       }>(`/api/public/restaurants/${restaurantKey}/reservations`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          // Lets the server resolve the VK user id (for status notifications)
+          // from the signed VK Mini App session, when booking from inside VK.
+          ...(source === "vk-mini-app" && getStoredVkMiniToken()
+            ? { "x-vk-mini-session": getStoredVkMiniToken() as string }
+            : {}),
+        },
         body: JSON.stringify(payload),
         debugLabel: "create-reservation",
         userMessage: "Не удалось отправить заявку. Проверьте данные и попробуйте еще раз.",

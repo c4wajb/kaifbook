@@ -506,7 +506,9 @@ export async function confirmVerificationByToken(provider: VerificationProvider,
 export async function sendMessengerMessage(provider: string | null | undefined, chatId: string | null | undefined, message: string) {
   if (!provider || !chatId || !message) return;
   try {
-    if (provider === VERIFICATION_PROVIDERS.VK) {
+    // Any VK-family provider ("vk" chat verification, "vk-mini-app") delivers
+    // via the community token, with peer_id = the VK user id.
+    if (provider.startsWith("vk")) {
       const token = process.env.VK_COMMUNITY_TOKEN;
       if (!token) return;
       const params = new URLSearchParams({
@@ -552,8 +554,40 @@ export function reservationStatusMessage(input: { restaurantTitle?: string | nul
     rejected: "отклонена",
     completed: "завершена",
     no_show: "гость не пришел",
+    payment_expired: "отменена — депозит не оплачен вовремя",
+    seated: "гость за столом",
   };
   return `Kaifbook: статус вашей заявки в ${input.restaurantTitle || "ресторане"} обновлен. Дата: ${date}, время: ${input.startTime}-${input.endTime}, статус: ${statusLabels[input.status] || "обновлен"}.`;
+}
+
+// Single place that decides whether/where to push a VK (or MAX) message about a
+// reservation. The peer is the verified chat id when present, otherwise the VK
+// user id captured from a VK Mini App booking. Best-effort: silent if the guest
+// has no linked messenger or hasn't allowed messages from the community.
+export type NotifiableReservation = {
+  verificationProvider: string | null;
+  verifiedExternalChatId: string | null;
+  verifiedExternalUserId: string | null;
+  reservationDate: Date;
+  startTime: string;
+  endTime: string;
+  restaurantTitle?: string | null;
+};
+
+export async function notifyGuestReservationStatus(reservation: NotifiableReservation, status: string) {
+  const peer = reservation.verifiedExternalChatId || reservation.verifiedExternalUserId;
+  if (!reservation.verificationProvider || !peer) return;
+  await sendMessengerMessage(
+    reservation.verificationProvider,
+    peer,
+    reservationStatusMessage({
+      restaurantTitle: reservation.restaurantTitle,
+      reservationDate: reservation.reservationDate,
+      startTime: reservation.startTime,
+      endTime: reservation.endTime,
+      status,
+    }),
+  );
 }
 
 export function requestIp(request: Request) {

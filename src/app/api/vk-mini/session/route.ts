@@ -1,18 +1,13 @@
 import { createHash, createHmac, timingSafeEqual } from "crypto";
-import { SignJWT } from "jose";
 import { z } from "zod";
 import { handleApiError, ok, readJson } from "@/lib/api";
-import { getSessionSecret } from "@/lib/secrets";
+import { signVkMiniSession } from "@/lib/vk-mini-session";
 
 export const runtime = "nodejs";
 
 const launchParamsSchema = z.object({
   launchParams: z.record(z.string(), z.string()).default({}),
 });
-
-function getJwtSecret() {
-  return new TextEncoder().encode(process.env.VK_APP_SECRET || getSessionSecret());
-}
 
 function safeCompare(first: string, second: string) {
   const firstBuffer = Buffer.from(first);
@@ -51,17 +46,12 @@ export async function POST(request: Request) {
     const vkUserId = launchParams.vk_user_id || null;
     const vkAppId = launchParams.vk_app_id || process.env.VK_APP_ID || process.env.NEXT_PUBLIC_VK_APP_ID || null;
 
-    const sessionToken = await new SignJWT({
-      source: "vk-mini-app",
+    const sessionToken = await signVkMiniSession({
       vkUserId,
       vkAppId,
       verified: isVerified,
       paramsHash: paramsHash(launchParams),
-    })
-      .setProtectedHeader({ alg: "HS256" })
-      .setIssuedAt()
-      .setExpirationTime("2h")
-      .sign(getJwtSecret());
+    });
 
     return ok({
       ok: true,

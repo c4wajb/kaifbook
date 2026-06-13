@@ -8,7 +8,7 @@ import { expireOverdueDepositPayments } from "@/lib/payments";
 import { normalizePhone, phoneAccountEmail } from "@/lib/phone";
 import { calculateReservationPrice } from "@/lib/reservation-pricing";
 import { addMinutesToTime, dateFromInput, dayOfWeekFromDate, isPastReservationDate, isRangeWithinWorkingHours, normalizedEndMinutes, timeToMinutes, timesOverlap, todayUtcMidnight } from "@/lib/time";
-import { resolveConfirmedVerificationSession, reservationStatusMessage, sendMessengerMessage } from "@/lib/verifications";
+import { notifyGuestReservationStatus, resolveConfirmedVerificationSession, sendMessengerMessage } from "@/lib/verifications";
 
 const CANCELLED_OR_REJECTED_STATUSES = [
   RESERVATION_STATUSES.CANCELLED,
@@ -155,12 +155,15 @@ export async function validateReservationBusinessRules(restaurantId: string, inp
   return { restaurant, reservationDate, endTime, hallId: input.hallId || table?.hallId || null, tableId: input.tableId || null };
 }
 
-export async function createReservation(restaurantId: string, input: ReservationRequest, userId?: string | null) {
+export async function createReservation(restaurantId: string, input: ReservationRequest, userId?: string | null, vkUserId?: string | null) {
   const validated = await validateReservationBusinessRules(restaurantId, input);
   const selectedSeatNumbers = normalizeSeatNumbers(input.selectedSeatNumbers);
   const customerPhone = normalizePhone(input.customerPhone);
   const source = input.source === "vk-mini-app" ? "vk-mini-app" : "web";
   const verification = await resolveConfirmedVerificationSession(input.verificationSessionId, customerPhone);
+  // For VK Mini App bookings (no chat verification) the VK user id, resolved
+  // server-side from the signed session, is the peer for status notifications.
+  const vkMiniPeer = source === "vk-mini-app" && vkUserId ? vkUserId : null;
   const customerUserId = userId || (await getOrCreateCustomerUser({ fullName: input.customerName, phone: customerPhone, email: input.customerEmail || null }));
   const guest = await getOrCreateGuest({ restaurantId, name: input.customerName, phone: customerPhone, email: input.customerEmail || null });
   const pricing = await calculateReservationPrice({ restaurantId, tableId: validated.tableId, guestsCount: input.guestsCount, reservationDate: input.reservationDate, startTime: input.startTime, endTime: validated.endTime, guestId: guest.id, phone: customerPhone });
@@ -206,8 +209,8 @@ export async function createReservation(restaurantId: string, input: Reservation
         verificationProvider: verification?.provider || (source === "vk-mini-app" ? "vk-mini-app" : null),
         verificationStatus: verification?.status || null,
         verificationSessionId: verification?.id || null,
-        verifiedExternalUserId: verification?.externalUserId || null,
-        verifiedExternalChatId: verification?.externalChatId || null,
+        verifiedExternalUserId: verification?.externalUserId || vkMiniPeer,
+        verifiedExternalChatId: verification?.externalChatId || vkMiniPeer,
         verifiedExternalUsername: verification?.externalUsername || null,
         contactPhoneFromProvider: verification?.contactPhoneFromProvider || null,
         contactPhoneMatched: verification?.contactPhoneMatched ?? null,
@@ -452,19 +455,7 @@ export async function changeReservationStatus(
   });
 
   if (reservation.guestId) await refreshGuestStats(reservation.guestId);
-  if (reservation.verificationProvider && reservation.verifiedExternalChatId) {
-    await sendMessengerMessage(
-      reservation.verificationProvider,
-      reservation.verifiedExternalChatId,
-      reservationStatusMessage({
-        restaurantTitle: reservation.restaurant.title,
-        reservationDate: reservation.reservationDate,
-        startTime: reservation.startTime,
-        endTime: reservation.endTime,
-        status,
-      }),
-    );
-  }
+  await notifyGuestReservationStatus({ ...reservation, restaurantTitle: reservation.restaurant.title }, status);
 
   return updated;
 }

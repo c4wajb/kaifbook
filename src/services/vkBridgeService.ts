@@ -46,6 +46,29 @@ export async function initVkBridge() {
   }
 }
 
+const VK_MINI_TOKEN_KEY = "kaifbook_vk_mini_token";
+
+// Persist the signed session token so a booking submitted later in the same VK
+// Mini App iframe can attach it (cookies are unreliable in a third-party
+// iframe, so we pass the token explicitly via a header).
+function storeVkMiniToken(token: string | null) {
+  if (typeof window === "undefined" || !token) return;
+  try {
+    window.sessionStorage.setItem(VK_MINI_TOKEN_KEY, token);
+  } catch {
+    // sessionStorage may be unavailable — notifications just won't be wired.
+  }
+}
+
+export function getStoredVkMiniToken() {
+  if (typeof window === "undefined") return null;
+  try {
+    return window.sessionStorage.getItem(VK_MINI_TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+
 export async function createVkMiniSession(launchParams = getVkLaunchParams()) {
   const response = await fetch("/api/vk-mini/session", {
     method: "POST",
@@ -54,5 +77,7 @@ export async function createVkMiniSession(launchParams = getVkLaunchParams()) {
   });
 
   if (!response.ok) throw new Error("Не удалось создать VK Mini App сессию.");
-  return response.json() as Promise<VkMiniSession>;
+  const session = (await response.json()) as VkMiniSession;
+  storeVkMiniToken(session.sessionToken);
+  return session;
 }
