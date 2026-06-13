@@ -161,13 +161,16 @@ export async function createReservation(restaurantId: string, input: Reservation
   const customerPhone = normalizePhone(input.customerPhone);
   const source = input.source === "vk-mini-app" ? "vk-mini-app" : "web";
   const verification = await resolveConfirmedVerificationSession(input.verificationSessionId, customerPhone);
-  // Carry the VK-verified phone onto the booking so the restaurant sees a
-  // real, confirmed number (falls back to past VK ID logins for this phone).
-  const verifiedVkPhone = verification?.contactPhoneFromProvider || (await resolveVerifiedVkPhone(customerPhone));
   // For VK Mini App bookings (no chat verification) the VK user id, resolved
   // server-side from the signed session, is the peer for status notifications.
   const vkMiniPeer = source === "vk-mini-app" && vkUserId ? vkUserId : null;
   const customerUserId = userId || (await getOrCreateCustomerUser({ fullName: input.customerName, phone: customerPhone, email: input.customerEmail || null }));
+  // The guest's own number stays primary; surface the VK-verified number (from
+  // their account or a past VK ID login) so the restaurant has a confirmed one.
+  const accountVkPhone = customerUserId
+    ? (await prisma.user.findUnique({ where: { id: customerUserId }, select: { vkPhone: true } }))?.vkPhone ?? null
+    : null;
+  const verifiedVkPhone = verification?.contactPhoneFromProvider || accountVkPhone || (await resolveVerifiedVkPhone(customerPhone));
   const guest = await getOrCreateGuest({ restaurantId, name: input.customerName, phone: customerPhone, email: input.customerEmail || null });
   const pricing = await calculateReservationPrice({ restaurantId, tableId: validated.tableId, guestsCount: input.guestsCount, reservationDate: input.reservationDate, startTime: input.startTime, endTime: validated.endTime, guestId: guest.id, phone: customerPhone });
   const publicPricing = applyExternalDepositToPricing(pricing, validated.restaurant);

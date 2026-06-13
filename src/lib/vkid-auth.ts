@@ -262,6 +262,11 @@ export async function completeVkIdCallback(searchParams: URLSearchParams) {
     });
 
     const user = await getOrCreateGuestUser(session.phone);
+    if (vkPhone) {
+      // Store the VK-verified number separately — the user's own number stays
+      // primary, but we keep the VK one so it isn't lost.
+      await prisma.user.update({ where: { id: user.id }, data: { vkPhone } }).catch(() => {});
+    }
     await setSessionCookie(user);
     return NextResponse.redirect(new URL(safeReturnUrl(session.returnUrl), appPublicUrl()));
   } catch (callbackError) {
