@@ -56,7 +56,7 @@ export default async function GuestsPage({ params, searchParams }: Props) {
       <section className="dashboard-grid">
         <div className="metric-card"><strong>{guests.length}</strong><span>гостей в базе</span></div>
         <div className="metric-card"><strong>{repeatGuests}</strong><span>повторных гостей</span></div>
-        <div className="metric-card"><strong>{noShowRisk}</strong><span>с риском no-show</span></div>
+        <div className="metric-card"><strong>{noShowRisk}</strong><span>с риском неявки</span></div>
         <div className="metric-card"><strong>{guests.reduce((sum, guest) => sum + guest.totalGuests, 0)}</strong><span>гостей обслужено</span></div>
       </section>
 

@@ -50,7 +50,7 @@ export default async function NoShowAnalyticsPage({ params }: Props) {
 
       <section className="metric-grid">
         <div className="metric-card"><strong>{metrics.totalReservations}</strong><span>Всего броней</span></div>
-        <div className="metric-card"><strong>{metrics.noShowRate}%</strong><span>no-show rate</span></div>
+        <div className="metric-card"><strong>{metrics.noShowRate}%</strong><span>Процент неявок</span></div>
         <div className="metric-card"><strong>{metrics.smallTableNoShowRate}%</strong><span>Неявки по маленьким столам</span></div>
         <div className="metric-card"><strong>{metrics.largeTableNoShowRate}%</strong><span>Неявки по большим столам</span></div>
         <div className="metric-card"><strong>{metrics.depositReservations}</strong><span>Броней с депозитом</span></div>
@@ -65,10 +65,10 @@ export default async function NoShowAnalyticsPage({ params }: Props) {
         <div className="panel">
           <h2>Сравнение риска</h2>
           <div className="stack-list">
-            <div className="insight-row"><strong>С подтверждением</strong><span>{metrics.noShowWithConfirmation}% no-show</span></div>
-            <div className="insight-row"><strong>Без подтверждения</strong><span>{metrics.noShowWithoutConfirmation}% no-show</span></div>
-            <div className="insight-row"><strong>С депозитом</strong><span>{metrics.noShowWithDeposit}% no-show</span></div>
-            <div className="insight-row"><strong>Без депозита</strong><span>{metrics.noShowWithoutDeposit}% no-show</span></div>
+            <div className="insight-row"><strong>С подтверждением</strong><span>{metrics.noShowWithConfirmation}% неявок</span></div>
+            <div className="insight-row"><strong>Без подтверждения</strong><span>{metrics.noShowWithoutConfirmation}% неявок</span></div>
+            <div className="insight-row"><strong>С депозитом</strong><span>{metrics.noShowWithDeposit}% неявок</span></div>
+            <div className="insight-row"><strong>Без депозита</strong><span>{metrics.noShowWithoutDeposit}% неявок</span></div>
           </div>
         </div>
       </section>

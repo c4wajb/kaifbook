@@ -108,7 +108,7 @@ export default async function OwnerDashboardPage() {
           <div><strong>{guestsCount}</strong><span>контактов гостей в CRM</span></div>
           <div><strong>{newRequests}</strong><span>потенциально не потеряно заявок</span></div>
           <div><strong>{busiestHour}</strong><span>самый загруженный час</span></div>
-          <div><strong>{noShowRate}%</strong><span>no-show rate за период</span></div>
+          <div><strong>{noShowRate}%</strong><span>Процент неявок за период</span></div>
           <div><strong>{pageViews}</strong><span>просмотров страниц ресторанов</span></div>
           <div><strong>{viewToBookingRate}%</strong><span>конверсия просмотра в бронь</span></div>
         </div>

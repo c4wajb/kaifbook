@@ -28,7 +28,7 @@ export default function ForRestaurantsPage() {
 
       <section className="page grid-layout two-columns">
         <div className="panel">
-          <p className="eyebrow">Защита от no-show</p>
+          <p className="eyebrow">Защита от неявок</p>
           <h2>Меньше пустых столов и неявок</h2>
           <p>Настраивайте разные правила бронирования для маленьких и больших столов. Для больших компаний можно включить депозит через легальную онлайн-оплату, а для обычных броней оставить бесплатное подтверждение по ссылке.</p>
         </div>
@@ -49,7 +49,7 @@ export default function ForRestaurantsPage() {
           <div className="stack-list">
             <div className="insight-row"><strong>Гость бронирует без звонка</strong><span>Короткая форма с телефоном снижает трение и не требует регистрации.</span></div>
             <div className="insight-row"><strong>Телефон сразу попадает в CRM</strong><span>Ресторан копит базу гостей и видит повторные визиты.</span></div>
-            <div className="insight-row"><strong>Аналитика показывает точки роста</strong><span>Слабые дни, пики спроса, отмены и no-show видны в кабинете.</span></div>
+            <div className="insight-row"><strong>Аналитика показывает точки роста</strong><span>Слабые дни, пики спроса, отмены и неявки видны в кабинете.</span></div>
           </div>
         </div>
         <RestaurantLeadForm />
