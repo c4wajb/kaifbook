@@ -638,17 +638,49 @@ export type NotifiableReservation = {
   verificationProvider: string | null;
   verifiedExternalChatId: string | null;
   verifiedExternalUserId: string | null;
+  customerPhone?: string | null;
   reservationDate: Date;
   startTime: string;
   endTime: string;
   restaurantTitle?: string | null;
 };
 
+// Find the guest's VK chat from the most recent confirmed VK verification for a
+// phone — so a booking made without VK verification still reaches the guest if
+// they've ever confirmed a VK login/booking with the same number.
+async function resolveVkPeerByPhone(rawPhone: string | null | undefined) {
+  const phone = rawPhone ? normalizePhone(rawPhone) : null;
+  if (!phone) return null;
+  const linked = await prisma.verificationSession.findFirst({
+    where: {
+      phone,
+      provider: VERIFICATION_PROVIDERS.VK,
+      status: VERIFICATION_STATUSES.CONFIRMED,
+      OR: [{ externalChatId: { not: null } }, { externalUserId: { not: null } }],
+    },
+    orderBy: { confirmedAt: "desc" },
+    select: { provider: true, externalChatId: true, externalUserId: true },
+  });
+  if (!linked) return null;
+  const peer = linked.externalChatId || linked.externalUserId;
+  return peer ? { provider: linked.provider, peer } : null;
+}
+
 export async function notifyGuestReservationStatus(reservation: NotifiableReservation, status: string) {
-  const peer = reservation.verifiedExternalChatId || reservation.verifiedExternalUserId;
-  if (!reservation.verificationProvider || !peer) return;
+  let provider = reservation.verificationProvider;
+  let peer = reservation.verifiedExternalChatId || reservation.verifiedExternalUserId;
+
+  if (!peer) {
+    const linked = await resolveVkPeerByPhone(reservation.customerPhone);
+    if (linked) {
+      provider = linked.provider;
+      peer = linked.peer;
+    }
+  }
+
+  if (!provider || !peer) return;
   await sendMessengerMessage(
-    reservation.verificationProvider,
+    provider,
     peer,
     reservationStatusMessage({
       restaurantTitle: reservation.restaurantTitle,
