@@ -114,6 +114,22 @@ export function buildProviderConfirmUrl(provider: VerificationProvider, publicCo
   return `https://vk.com/im?ref=${encodeURIComponent(publicCode)}`;
 }
 
+// Deep link that opens the messenger APP on mobile (and the web messenger on
+// desktop). vk.me is VK's "open in messenger" domain — it launches the VK app
+// when installed instead of the website.
+export function buildProviderAppUrl(provider: VerificationProvider, publicCode: string) {
+  if (provider === VERIFICATION_PROVIDERS.MAX) {
+    const username = process.env.MAX_BOT_USERNAME?.trim();
+    if (username) return `https://max.ru/${encodeURIComponent(username)}?start=${encodeURIComponent(publicCode)}`;
+    return `https://max.ru/?start=${encodeURIComponent(publicCode)}`;
+  }
+  const screenName = process.env.VK_GROUP_SCREEN_NAME?.trim();
+  const groupId = process.env.VK_GROUP_ID?.trim();
+  if (screenName) return `https://vk.me/${encodeURIComponent(screenName)}`;
+  if (groupId) return `https://vk.me/club${encodeURIComponent(groupId)}`;
+  return "https://vk.me/";
+}
+
 function startCommand(publicCode: string) {
   return `Получить код Kaifbook ${publicCode}`;
 }
@@ -161,6 +177,7 @@ export async function startVerificationSession(input: {
       status: activeSession.status,
       expiresAt: activeSession.expiresAt,
       confirmUrl: buildProviderConfirmUrl(input.provider, activeSession.publicCode),
+      appUrl: buildProviderAppUrl(input.provider, activeSession.publicCode),
       commandText: startCommand(activeSession.publicCode),
       publicCode: activeSession.publicCode,
     };
@@ -218,6 +235,7 @@ export async function startVerificationSession(input: {
     status: session.status,
     expiresAt: session.expiresAt,
     confirmUrl: buildProviderConfirmUrl(input.provider, publicCode),
+    appUrl: buildProviderAppUrl(input.provider, publicCode),
     commandText: startCommand(publicCode),
     publicCode,
   };

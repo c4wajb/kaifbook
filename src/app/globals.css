@@ -5628,6 +5628,26 @@ textarea:focus {
   border-color:rgba(0,0,0,.22);
   background:linear-gradient(135deg,rgba(255,247,243,.96),rgba(247,236,228,.88));
 }
+
+/* Stepped code-login flow (shown after picking VK-сообщество / MAX) */
+.guest-code-flow{display:grid;gap:14px}
+.guest-code-flow-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.guest-code-flow-head strong{color:#1a1a1a;font-size:15px;font-weight:700}
+.guest-code-change{border:none;background:none;padding:0;color:#9B6A2B;font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.guest-code-change:hover{color:#7b3c2d}
+.guest-code-steps{display:grid;gap:14px;margin:0;padding:0;list-style:none}
+.guest-code-step{display:flex;gap:12px;align-items:flex-start}
+.guest-step-num{display:inline-grid;place-items:center;flex:0 0 auto;width:26px;height:26px;border-radius:999px;background:var(--accent,#C98232);color:#fff;font-size:13px;font-weight:700}
+.guest-step-body{flex:1 1 auto;min-width:0}
+.guest-step-body>p{margin:2px 0 8px;color:#1a1a1a;font-size:14px;font-weight:600;line-height:1.35}
+.guest-code-command{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap}
+.guest-code-command code{flex:1 1 auto;min-width:0;display:flex;align-items:center;padding:10px 12px;border:1px solid rgba(201,130,50,.28);border-radius:12px;background:#FFF8EF;color:#1a1a1a;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;font-weight:600;overflow-wrap:anywhere}
+.guest-code-command button{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto;min-height:42px;padding:0 14px;border:1.5px solid rgba(201,130,50,.3);border-radius:12px;background:#fff;color:#9B6A2B;font-size:13px;font-weight:600;cursor:pointer;transition:background .14s ease,border-color .14s ease}
+.guest-code-command button:hover{background:#FFF2DE;border-color:rgba(201,130,50,.5)}
+.guest-open-app{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;border-radius:14px;border:1.5px solid rgba(201,130,50,.32);background:#FFF8EF;color:#9B6A2B;font-size:15px;font-weight:700;text-decoration:none;transition:background .14s ease,border-color .14s ease,transform .14s ease}
+.guest-open-app:hover{background:#FFF2DE;border-color:rgba(201,130,50,.55);transform:translateY(-1px)}
+.guest-code-input{width:100%;height:48px;border:1px solid rgba(0,0,0,.2);border-radius:16px;background:#f5f3f0;color:#1a1a1a;font-size:20px;font-weight:700;letter-spacing:.18em;text-align:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.75);margin-bottom:10px}
+.guest-code-input:focus{outline:none;border-color:rgba(201,130,50,.6);box-shadow:0 0 0 4px rgba(201,130,50,.16)}
 .guest-reservations-hero{
   display:flex;
   justify-content:space-between;

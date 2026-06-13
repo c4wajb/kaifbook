@@ -21,6 +21,7 @@ type MessengerLoginState = {
   status: LoginStatus;
   sessionId: string | null;
   confirmUrl: string | null;
+  appUrl: string | null;
   commandText: string | null;
   message: string | null;
 };
@@ -39,6 +40,7 @@ const initialMessengerState: MessengerLoginState = {
   status: "idle",
   sessionId: null,
   confirmUrl: null,
+  appUrl: null,
   commandText: null,
   message: null,
 };
@@ -145,6 +147,7 @@ export function GuestLoginForm({ initialPhone = "", nextPath = "/guest/reservati
       const data = await fetchJsonWithDiagnostics<{
         session: { id: string; provider: Provider; status: "pending"; expiresAt: string };
         confirmUrl: string;
+        appUrl?: string | null;
         commandText: string;
         publicCode?: string | null;
       }>("/api/verifications/start", {
@@ -157,16 +160,17 @@ export function GuestLoginForm({ initialPhone = "", nextPath = "/guest/reservati
 
       setCode("");
       setCopied(false);
+      // Don't auto-open a new tab — the instructions (and the code field) must
+      // stay visible. The guest taps "Открыть" themselves when ready.
       setLogin({
         provider,
         status: "pending",
         sessionId: data.session.id,
         confirmUrl: data.confirmUrl,
+        appUrl: data.appUrl || data.confirmUrl,
         commandText: data.commandText,
-        message: `Откройте ${providerLabel(provider)} и отправьте короткую команду. Сообщество пришлёт 6-значный код для входа.`,
+        message: null,
       });
-
-      window.open(data.confirmUrl, "_blank", "noopener,noreferrer");
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "Не удалось начать подтверждение.");
     } finally {
@@ -183,6 +187,13 @@ export function GuestLoginForm({ initialPhone = "", nextPath = "/guest/reservati
     } catch {
       setCopied(false);
     }
+  }
+
+  function resetMessenger() {
+    setLogin(initialMessengerState);
+    setCode("");
+    setCopied(false);
+    setError(null);
   }
 
   return (
@@ -215,60 +226,92 @@ export function GuestLoginForm({ initialPhone = "", nextPath = "/guest/reservati
         </div>
 
         <div className={`guest-messenger-panel guest-messenger-${login.status}`}>
-          <div className="guest-messenger-copy">
-            <KeyRound size={18} aria-hidden />
-            <div>
-              <strong>Резервный вход по коду</strong>
-              <span>{login.message || "Если VK ID недоступен, получите код через MAX или VK-сообщество и введите его здесь."}</span>
-              {login.status === "pending" && login.commandText ? <small>{login.commandText}</small> : null}
-            </div>
-          </div>
-          <div className="guest-messenger-actions">
-            <button className="verification-button" type="button" disabled={pending || login.status === "pending"} onClick={() => startMessengerLogin("max")}>
-              <MessageCircle size={16} aria-hidden />
-              MAX
-            </button>
-            <button className="verification-button" type="button" disabled={pending || login.status === "pending"} onClick={() => startMessengerLogin("vk")}>
-              <MessageCircle size={16} aria-hidden />
-              VK-сообщество
-            </button>
-            {login.status === "pending" && login.commandText ? (
-              <button className="verification-button" type="button" onClick={copyCommand}>
-                <Copy size={15} aria-hidden />
-                {copied ? "Скопировано" : "Скопировать"}
-              </button>
-            ) : null}
-            {login.status === "pending" && login.confirmUrl ? (
-              <a className="verification-link" href={login.confirmUrl} target="_blank" rel="noopener noreferrer">
-                <ExternalLink size={15} aria-hidden />
-                Открыть {providerLabel(login.provider)}
-              </a>
-            ) : null}
-          </div>
-        </div>
+          {login.status !== "pending" ? (
+            <>
+              <div className="guest-messenger-copy">
+                <KeyRound size={18} aria-hidden />
+                <div>
+                  <strong>Резервный вход по коду</strong>
+                  <span>Если VK ID недоступен — получите код в чате сообщества и введите его здесь.</span>
+                </div>
+              </div>
+              <div className="guest-messenger-actions">
+                <button className="verification-button" type="button" disabled={pending} onClick={() => startMessengerLogin("vk")}>
+                  <MessageCircle size={16} aria-hidden />
+                  VK-сообщество
+                </button>
+                <button className="verification-button" type="button" disabled={pending} onClick={() => startMessengerLogin("max")}>
+                  <MessageCircle size={16} aria-hidden />
+                  MAX
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="guest-code-flow">
+              <div className="guest-code-flow-head">
+                <strong>Вход через {login.provider === "vk" ? "VK-сообщество" : "MAX"}</strong>
+                <button type="button" className="guest-code-change" onClick={resetMessenger}>
+                  Другой способ
+                </button>
+              </div>
 
-        {login.status === "pending" && login.sessionId ? (
-          <div className="messenger-code-form">
-            <label>
-              <span>Код из {providerLabel(login.provider)}</span>
-              <input
-                autoComplete="one-time-code"
-                inputMode="numeric"
-                maxLength={6}
-                placeholder="000000"
-                value={code}
-                onChange={(event) => {
-                  setCode(event.target.value.replace(/\D/g, "").slice(0, 6));
-                  setError(null);
-                }}
-              />
-            </label>
-          </div>
-        ) : null}
-        <button className="button icon-text full" type="button" disabled={!login.sessionId || login.status !== "pending" || code.length !== 6 || pending} onClick={() => login.sessionId && finishMessengerLogin(login.sessionId)}>
-          {pending ? "Проверяем код..." : "Войти по коду"}
-          <ArrowRight size={17} aria-hidden />
-        </button>
+              <ol className="guest-code-steps">
+                <li className="guest-code-step">
+                  <span className="guest-step-num">1</span>
+                  <div className="guest-step-body">
+                    <p>Скопируйте команду</p>
+                    <div className="guest-code-command">
+                      <code>{login.commandText}</code>
+                      <button type="button" onClick={copyCommand}>
+                        <Copy size={14} aria-hidden />
+                        {copied ? "Скопировано" : "Копировать"}
+                      </button>
+                    </div>
+                  </div>
+                </li>
+
+                <li className="guest-code-step">
+                  <span className="guest-step-num">2</span>
+                  <div className="guest-step-body">
+                    <p>Откройте {providerLabel(login.provider)} и отправьте её сообществу</p>
+                    <a className="guest-open-app" href={login.appUrl || login.confirmUrl || "#"} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink size={16} aria-hidden />
+                      Открыть {providerLabel(login.provider)}
+                    </a>
+                  </div>
+                </li>
+
+                <li className="guest-code-step">
+                  <span className="guest-step-num">3</span>
+                  <div className="guest-step-body">
+                    <p>Введите 6-значный код из ответа сообщества</p>
+                    <input
+                      className="guest-code-input"
+                      autoComplete="one-time-code"
+                      inputMode="numeric"
+                      maxLength={6}
+                      placeholder="000000"
+                      value={code}
+                      onChange={(event) => {
+                        setCode(event.target.value.replace(/\D/g, "").slice(0, 6));
+                        setError(null);
+                      }}
+                    />
+                    <button
+                      className="button icon-text full"
+                      type="button"
+                      disabled={!login.sessionId || code.length !== 6 || pending}
+                      onClick={() => login.sessionId && finishMessengerLogin(login.sessionId)}
+                    >
+                      {pending ? "Проверяем код..." : "Войти по коду"}
+                      <ArrowRight size={17} aria-hidden />
+                    </button>
+                  </div>
+                </li>
+              </ol>
+            </div>
+          )}
+        </div>
       </div>
 
       {error ? <p className="form-error">{error}</p> : null}

@@ -22,6 +22,7 @@ export async function POST(request: Request) {
         expiresAt: session.expiresAt,
       },
       confirmUrl: session.confirmUrl,
+      appUrl: session.appUrl,
       commandText: session.commandText,
       publicCode: session.publicCode,
     }, 201);
