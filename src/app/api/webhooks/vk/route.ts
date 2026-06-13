@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { handleApiError, readJson } from "@/lib/api";
 import { VERIFICATION_PROVIDERS } from "@/lib/constants";
 import { timingSafeEqualString } from "@/lib/secrets";
-import { extractExternalIdentity, issueVerificationCodeByToken, issueVerificationCodeFromPayload } from "@/lib/verifications";
+import { confirmVerificationFromPublicCode, extractExternalIdentity, issueVerificationCodeByToken, issueVerificationCodeFromPayload } from "@/lib/verifications";
 
 function hasValidSecret(payload: unknown) {
   const expected = process.env.VK_CALLBACK_SECRET;
@@ -30,7 +30,10 @@ export async function POST(request: Request) {
     if (tokenFromUrl) {
       await issueVerificationCodeByToken(VERIFICATION_PROVIDERS.VK, tokenFromUrl, extractExternalIdentity(VERIFICATION_PROVIDERS.VK, payload));
     } else {
-      await issueVerificationCodeFromPayload(VERIFICATION_PROVIDERS.VK, payload);
+      // Confirm the login directly (code-free) when the message carries the
+      // short command. Fall back to the legacy code reply if nothing matched.
+      const confirmed = await confirmVerificationFromPublicCode(VERIFICATION_PROVIDERS.VK, payload);
+      if (!confirmed) await issueVerificationCodeFromPayload(VERIFICATION_PROVIDERS.VK, payload);
     }
 
     return new NextResponse("ok", { status: 200 });

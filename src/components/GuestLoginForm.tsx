@@ -1,8 +1,8 @@
 "use client";
 
-import { ArrowRight, Copy, ExternalLink, KeyRound, MessageCircle, ShieldCheck, X } from "lucide-react";
+import { ArrowRight, Copy, ExternalLink, KeyRound, Loader2, MessageCircle, ShieldCheck, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchJsonWithDiagnostics } from "@/lib/client-fetch";
 import { formatRuPhoneInput, isValidRuPhone, normalizePhone } from "@/lib/phone";
 
@@ -196,6 +196,60 @@ export function GuestLoginForm({ initialPhone = "", nextPath = "/guest/reservati
     setError(null);
   }
 
+  // Code-free finish: the session is already confirmed (VK direct confirmation).
+  const finishCodeFreeLogin = useCallback(
+    async (sessionId: string) => {
+      setPending(true);
+      setError(null);
+      try {
+        await fetchJsonWithDiagnostics("/api/guest/auth/verify-messenger", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone: normalizedPhone, verificationSessionId: sessionId }),
+          debugLabel: "guest-verify-messenger-codefree",
+          userMessage: "Не удалось завершить вход. Попробуйте ещё раз.",
+        });
+        setLogin((current) => ({ ...current, status: "confirmed" }));
+        router.push(nextPath);
+        router.refresh();
+      } catch (loginError) {
+        setError(loginError instanceof Error ? loginError.message : "Не удалось завершить вход.");
+        setPending(false);
+      }
+    },
+    [normalizedPhone, nextPath, router],
+  );
+
+  // While waiting for a messenger login, poll the session. VK confirms directly
+  // in the chat, so the guest is signed in automatically — no code to type.
+  useEffect(() => {
+    if (login.status !== "pending" || !login.sessionId) return;
+    let active = true;
+    const sessionId = login.sessionId;
+    const interval = window.setInterval(async () => {
+      try {
+        const response = await fetch(`/api/verifications/${sessionId}/status`, { cache: "no-store" });
+        if (!response.ok || !active) return;
+        const data = (await response.json()) as { status?: string };
+        if (!active) return;
+        if (data.status === "confirmed") {
+          window.clearInterval(interval);
+          await finishCodeFreeLogin(sessionId);
+        } else if (data.status === "expired" || data.status === "failed") {
+          window.clearInterval(interval);
+          setLogin((current) => ({ ...current, status: data.status as LoginStatus }));
+          setError("Время вышло. Начните вход заново.");
+        }
+      } catch {
+        // ignore transient polling errors
+      }
+    }, 2500);
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+    };
+  }, [login.status, login.sessionId, finishCodeFreeLogin]);
+
   return (
     <section className="guest-login-card">
       <button className="page-close-button guest-login-close" type="button" aria-label="Вернуться к ресторанам" onClick={() => router.push(closePath)}>
@@ -231,8 +285,8 @@ export function GuestLoginForm({ initialPhone = "", nextPath = "/guest/reservati
               <div className="guest-messenger-copy">
                 <KeyRound size={18} aria-hidden />
                 <div>
-                  <strong>Резервный вход по коду</strong>
-                  <span>Если VK ID недоступен — получите код в чате сообщества и введите его здесь.</span>
+                  <strong>Вход через сообщество</strong>
+                  <span>Если VK ID недоступен — подтвердите вход в чате. Через VK-сообщество код вводить не нужно.</span>
                 </div>
               </div>
               <div className="guest-messenger-actions">
@@ -284,28 +338,40 @@ export function GuestLoginForm({ initialPhone = "", nextPath = "/guest/reservati
                 <li className="guest-code-step">
                   <span className="guest-step-num">3</span>
                   <div className="guest-step-body">
-                    <p>Введите 6-значный код из ответа сообщества</p>
-                    <input
-                      className="guest-code-input"
-                      autoComplete="one-time-code"
-                      inputMode="numeric"
-                      maxLength={6}
-                      placeholder="000000"
-                      value={code}
-                      onChange={(event) => {
-                        setCode(event.target.value.replace(/\D/g, "").slice(0, 6));
-                        setError(null);
-                      }}
-                    />
-                    <button
-                      className="button icon-text full"
-                      type="button"
-                      disabled={!login.sessionId || code.length !== 6 || pending}
-                      onClick={() => login.sessionId && finishMessengerLogin(login.sessionId)}
-                    >
-                      {pending ? "Проверяем код..." : "Войти по коду"}
-                      <ArrowRight size={17} aria-hidden />
-                    </button>
+                    {login.provider === "vk" ? (
+                      <>
+                        <p>Готово — вход подтвердится автоматически</p>
+                        <span className="guest-await">
+                          <Loader2 className="spin" size={16} aria-hidden />
+                          {pending ? "Входим..." : "Ждём подтверждение из VK..."}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <p>Введите 6-значный код из ответа сообщества</p>
+                        <input
+                          className="guest-code-input"
+                          autoComplete="one-time-code"
+                          inputMode="numeric"
+                          maxLength={6}
+                          placeholder="000000"
+                          value={code}
+                          onChange={(event) => {
+                            setCode(event.target.value.replace(/\D/g, "").slice(0, 6));
+                            setError(null);
+                          }}
+                        />
+                        <button
+                          className="button icon-text full"
+                          type="button"
+                          disabled={!login.sessionId || code.length !== 6 || pending}
+                          onClick={() => login.sessionId && finishMessengerLogin(login.sessionId)}
+                        >
+                          {pending ? "Проверяем код..." : "Войти по коду"}
+                          <ArrowRight size={17} aria-hidden />
+                        </button>
+                      </>
+                    )}
                   </div>
                 </li>
               </ol>

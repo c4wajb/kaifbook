@@ -521,6 +521,58 @@ export async function confirmVerificationByToken(provider: VerificationProvider,
   });
 }
 
+// Code-free confirmation: when the user sends the short command in the chat,
+// confirm the session directly (capturing their messenger id) instead of
+// replying with a code to type. The site polls the session status and signs the
+// guest in automatically. Same trust model as the code flow — the short public
+// code, shown only on the user's screen, is the secret.
+export async function confirmVerificationFromPublicCode(provider: VerificationProvider, payload: unknown) {
+  const identity = extractExternalIdentity(provider, payload);
+  const publicCodes = extractPublicCodeCandidates(payload);
+  for (const publicCode of publicCodes) {
+    const session = await confirmVerificationByPublicCode(provider, publicCode, identity);
+    if (session) return session;
+  }
+  // No matching session — let the caller's fallback path message the user.
+  return null;
+}
+
+export async function confirmVerificationByPublicCode(provider: VerificationProvider, rawPublicCode: string, identity: ExternalIdentity = {}) {
+  const publicCode = normalizePublicCode(rawPublicCode);
+  if (publicCode.length < PUBLIC_CODE_LENGTH) return null;
+  const session = await prisma.verificationSession.findUnique({ where: { publicCode } });
+  if (!session || session.provider !== provider) return null;
+
+  if (session.expiresAt.getTime() < Date.now()) {
+    const expired = await prisma.verificationSession.update({ where: { id: session.id }, data: { status: VERIFICATION_STATUSES.EXPIRED } });
+    if (identity.externalChatId) await sendMessengerMessage(provider, identity.externalChatId, "Срок действия запроса истёк. Откройте сайт Kaifbook и начните вход заново.");
+    return expired;
+  }
+  if (session.status === VERIFICATION_STATUSES.CONFIRMED) {
+    if (identity.externalChatId) await sendMessengerMessage(provider, identity.externalChatId, "Вход уже подтверждён ✅ Вернитесь на сайт Kaifbook.");
+    return session;
+  }
+  if (session.status !== VERIFICATION_STATUSES.PENDING) return session;
+
+  const phone = identity.contactPhoneFromProvider ? normalizePhone(identity.contactPhoneFromProvider) : null;
+  const confirmed = await prisma.verificationSession.update({
+    where: { id: session.id },
+    data: {
+      status: VERIFICATION_STATUSES.CONFIRMED,
+      confirmedAt: new Date(),
+      externalUserId: identity.externalUserId || null,
+      externalChatId: identity.externalChatId || null,
+      externalUsername: identity.externalUsername || null,
+      contactPhoneFromProvider: phone,
+      contactPhoneMatched: phone ? phone === session.phone : null,
+    },
+  });
+  if (confirmed.externalChatId) {
+    await sendMessengerMessage(provider, confirmed.externalChatId, "Kaifbook: вход подтверждён ✅ Вернитесь на сайт — мы откроем ваши брони автоматически.");
+  }
+  return confirmed;
+}
+
 export async function sendMessengerMessage(provider: string | null | undefined, chatId: string | null | undefined, message: string) {
   if (!provider || !chatId || !message) return;
   try {

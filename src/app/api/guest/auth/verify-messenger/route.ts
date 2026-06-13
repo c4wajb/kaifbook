@@ -1,5 +1,5 @@
 import { handleApiError, ok, readJson } from "@/lib/api";
-import { verifyGuestMessengerSession } from "@/lib/guest-phone-auth";
+import { loginGuestByConfirmedSession, verifyGuestMessengerSession } from "@/lib/guest-phone-auth";
 import { enforceRateLimit, getClientIp, MINUTE } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
@@ -11,7 +11,13 @@ export async function POST(request: Request) {
       { key: `verify:ip:${getClientIp(request)}`, rule: { limit: 20, windowMs: 15 * MINUTE } },
       { key: `verify:phone:${phone}`, rule: { limit: 10, windowMs: 15 * MINUTE } },
     ]);
-    const user = await verifyGuestMessengerSession(phone, String(body?.verificationSessionId || ""), String(body?.code || ""));
+    const sessionId = String(body?.verificationSessionId || "");
+    const code = String(body?.code || "");
+    // No code → the session must already be confirmed in the chat (VK direct
+    // confirmation, picked up by polling). Otherwise verify the typed code.
+    const user = code
+      ? await verifyGuestMessengerSession(phone, sessionId, code)
+      : await loginGuestByConfirmedSession(phone, sessionId);
     return ok({
       user,
       message: "Вход подтверждён. Теперь ваши брони доступны в личном кабинете.",

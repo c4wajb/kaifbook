@@ -2,7 +2,7 @@ import { ApiError } from "@/lib/api";
 import { hashPassword, setSessionCookie, verifyPassword } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { normalizePhone, phoneAccountEmail } from "@/lib/phone";
-import { confirmVerificationCode } from "@/lib/verifications";
+import { confirmVerificationCode, resolveConfirmedVerificationSession } from "@/lib/verifications";
 
 const CODE_TTL_MINUTES = 10;
 
@@ -88,6 +88,21 @@ export async function verifyGuestMessengerSession(rawPhone: string, verification
   if (!verificationSessionId) throw new ApiError(400, "Подтверждение через MAX или VK не найдено.");
 
   await confirmVerificationCode({ sessionId: verificationSessionId, phone, code: rawCode });
+
+  const user = await getOrCreateGuestUser(phone);
+  await setSessionCookie(user);
+  return user;
+}
+
+// Code-free login: used when the session was already confirmed in the chat
+// (VK direct confirmation). The session must be confirmed for this phone.
+export async function loginGuestByConfirmedSession(rawPhone: string, verificationSessionId: string) {
+  const phone = normalizePhone(rawPhone);
+  if (!/^\+7\d{10}$/.test(phone)) throw new ApiError(400, "Введите корректный номер телефона.");
+  if (!verificationSessionId) throw new ApiError(400, "Подтверждение не найдено.");
+
+  const confirmed = await resolveConfirmedVerificationSession(verificationSessionId, phone);
+  if (!confirmed) throw new ApiError(400, "Вход ещё не подтверждён. Откройте VK и отправьте команду сообществу.");
 
   const user = await getOrCreateGuestUser(phone);
   await setSessionCookie(user);
