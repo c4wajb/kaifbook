@@ -312,6 +312,12 @@ export default async function ReservationsPage({ params, searchParams }: Props) 
                     <span>Подтверждение</span>
                     <strong>{verificationBadgeLabel(reservation.verificationProvider, reservation.verificationStatus)}</strong>
                   </div>
+                  {reservation.contactPhoneFromProvider ? (
+                    <div>
+                      <span>Телефон из VK</span>
+                      <strong>{reservation.contactPhoneFromProvider}</strong>
+                    </div>
+                  ) : null}
                 </div>
 
                 {reservation.table?.tableType ? (

@@ -8,7 +8,7 @@ import { expireOverdueDepositPayments } from "@/lib/payments";
 import { normalizePhone, phoneAccountEmail } from "@/lib/phone";
 import { calculateReservationPrice } from "@/lib/reservation-pricing";
 import { addMinutesToTime, dateFromInput, dayOfWeekFromDate, isPastReservationDate, isRangeWithinWorkingHours, normalizedEndMinutes, timeToMinutes, timesOverlap, todayUtcMidnight } from "@/lib/time";
-import { notifyGuestReservationStatus, resolveConfirmedVerificationSession, sendMessengerMessage } from "@/lib/verifications";
+import { notifyGuestReservationStatus, resolveConfirmedVerificationSession, resolveVerifiedVkPhone, sendMessengerMessage } from "@/lib/verifications";
 
 const CANCELLED_OR_REJECTED_STATUSES = [
   RESERVATION_STATUSES.CANCELLED,
@@ -161,6 +161,9 @@ export async function createReservation(restaurantId: string, input: Reservation
   const customerPhone = normalizePhone(input.customerPhone);
   const source = input.source === "vk-mini-app" ? "vk-mini-app" : "web";
   const verification = await resolveConfirmedVerificationSession(input.verificationSessionId, customerPhone);
+  // Carry the VK-verified phone onto the booking so the restaurant sees a
+  // real, confirmed number (falls back to past VK ID logins for this phone).
+  const verifiedVkPhone = verification?.contactPhoneFromProvider || (await resolveVerifiedVkPhone(customerPhone));
   // For VK Mini App bookings (no chat verification) the VK user id, resolved
   // server-side from the signed session, is the peer for status notifications.
   const vkMiniPeer = source === "vk-mini-app" && vkUserId ? vkUserId : null;
@@ -212,8 +215,8 @@ export async function createReservation(restaurantId: string, input: Reservation
         verifiedExternalUserId: verification?.externalUserId || vkMiniPeer,
         verifiedExternalChatId: verification?.externalChatId || vkMiniPeer,
         verifiedExternalUsername: verification?.externalUsername || null,
-        contactPhoneFromProvider: verification?.contactPhoneFromProvider || null,
-        contactPhoneMatched: verification?.contactPhoneMatched ?? null,
+        contactPhoneFromProvider: verifiedVkPhone || null,
+        contactPhoneMatched: verifiedVkPhone ? verifiedVkPhone === customerPhone : verification?.contactPhoneMatched ?? null,
         appliedPricingRuleId: publicPricing.appliedRuleId,
         pricingExplanation: paymentRequired
           ? publicPricing.explanation

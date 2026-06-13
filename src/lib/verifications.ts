@@ -670,6 +670,24 @@ async function resolveVkPeerByPhone(rawPhone: string | null | undefined) {
   return peer ? { provider: linked.provider, peer } : null;
 }
 
+// The VK-verified phone from the guest's most recent VK ID login for this
+// number. VK ID returns it once the "Номер телефона" access scope is granted.
+export async function resolveVerifiedVkPhone(rawPhone: string | null | undefined) {
+  const phone = rawPhone ? normalizePhone(rawPhone) : null;
+  if (!phone) return null;
+  const session = await prisma.verificationSession.findFirst({
+    where: {
+      phone,
+      provider: "vk_id",
+      status: VERIFICATION_STATUSES.CONFIRMED,
+      contactPhoneFromProvider: { not: null },
+    },
+    orderBy: { confirmedAt: "desc" },
+    select: { contactPhoneFromProvider: true },
+  });
+  return session?.contactPhoneFromProvider || null;
+}
+
 export async function notifyGuestReservationStatus(reservation: NotifiableReservation, status: string) {
   // A notification failure must never break the status change itself.
   try {
