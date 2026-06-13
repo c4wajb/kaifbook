@@ -588,7 +588,9 @@ export async function sendMessengerMessage(provider: string | null | undefined, 
         random_id: String(Date.now()),
         message,
       });
-      await fetch("https://api.vk.com/method/messages.send", { method: "POST", body: params });
+      const vkResponse = await fetch("https://api.vk.com/method/messages.send", { method: "POST", body: params });
+      const vkBody = await vkResponse.text().catch(() => "");
+      console.log("[Kaifbook:vk-send]", { peer: chatId, status: vkResponse.status, body: vkBody.slice(0, 300) });
       return;
     }
 
@@ -667,29 +669,42 @@ async function resolveVkPeerByPhone(rawPhone: string | null | undefined) {
 }
 
 export async function notifyGuestReservationStatus(reservation: NotifiableReservation, status: string) {
-  let provider = reservation.verificationProvider;
-  let peer = reservation.verifiedExternalChatId || reservation.verifiedExternalUserId;
+  // A notification failure must never break the status change itself.
+  try {
+    let provider = reservation.verificationProvider;
+    let peer = reservation.verifiedExternalChatId || reservation.verifiedExternalUserId;
 
-  if (!peer) {
-    const linked = await resolveVkPeerByPhone(reservation.customerPhone);
-    if (linked) {
-      provider = linked.provider;
-      peer = linked.peer;
+    if (!peer) {
+      const linked = await resolveVkPeerByPhone(reservation.customerPhone);
+      if (linked) {
+        provider = linked.provider;
+        peer = linked.peer;
+      }
     }
-  }
 
-  if (!provider || !peer) return;
-  await sendMessengerMessage(
-    provider,
-    peer,
-    reservationStatusMessage({
-      restaurantTitle: reservation.restaurantTitle,
-      reservationDate: reservation.reservationDate,
-      startTime: reservation.startTime,
-      endTime: reservation.endTime,
+    console.log("[Kaifbook:notify]", {
       status,
-    }),
-  );
+      phone: reservation.customerPhone,
+      directPeer: Boolean(reservation.verifiedExternalChatId || reservation.verifiedExternalUserId),
+      provider,
+      peerFound: Boolean(peer),
+    });
+
+    if (!provider || !peer) return;
+    await sendMessengerMessage(
+      provider,
+      peer,
+      reservationStatusMessage({
+        restaurantTitle: reservation.restaurantTitle,
+        reservationDate: reservation.reservationDate,
+        startTime: reservation.startTime,
+        endTime: reservation.endTime,
+        status,
+      }),
+    );
+  } catch (error) {
+    console.error("[Kaifbook:notify] failed", error instanceof Error ? error.message : String(error));
+  }
 }
 
 export function requestIp(request: Request) {
