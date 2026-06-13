@@ -589,8 +589,10 @@ export async function sendMessengerMessage(provider: string | null | undefined, 
         message,
       });
       const vkResponse = await fetch("https://api.vk.com/method/messages.send", { method: "POST", body: params });
+      // Surface real delivery failures (e.g. 901 — user disabled messages) so
+      // they aren't lost; successful sends stay quiet (no PII in logs).
       const vkBody = await vkResponse.text().catch(() => "");
-      console.log("[Kaifbook:vk-send]", { peer: chatId, status: vkResponse.status, body: vkBody.slice(0, 300) });
+      if (vkBody.includes('"error"')) console.warn("[Kaifbook:vk-send] VK API error", vkBody.slice(0, 200));
       return;
     }
 
@@ -681,14 +683,6 @@ export async function notifyGuestReservationStatus(reservation: NotifiableReserv
         peer = linked.peer;
       }
     }
-
-    console.log("[Kaifbook:notify]", {
-      status,
-      phone: reservation.customerPhone,
-      directPeer: Boolean(reservation.verifiedExternalChatId || reservation.verifiedExternalUserId),
-      provider,
-      peerFound: Boolean(peer),
-    });
 
     if (!provider || !peer) return;
     await sendMessengerMessage(
