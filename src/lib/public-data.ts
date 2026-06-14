@@ -108,6 +108,7 @@ export const getRestaurantBySlug = unstable_cache(
       where: { slug, isActive: true, status: RESTAURANT_STATUSES.APPROVED },
       include: {
         settings: true,
+        depositSettings: true,
         workingHours: { orderBy: { dayOfWeek: "asc" } },
         menuCategories: { where: { isActive: true }, orderBy: { sortOrder: "asc" }, include: { items: { where: { isAvailable: true }, orderBy: { sortOrder: "asc" } } } },
         halls: {

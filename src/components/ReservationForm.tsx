@@ -323,6 +323,7 @@ export function ReservationForm({
   initialCustomerName,
   initialCustomerPhone,
   authenticatedGuest = false,
+  requirePhoneConfirmation = false,
 }: {
   restaurantId: string;
   restaurantSlug?: string;
@@ -338,10 +339,15 @@ export function ReservationForm({
   initialCustomerName?: string | null;
   initialCustomerPhone?: string | null;
   authenticatedGuest?: boolean;
+  requirePhoneConfirmation?: boolean;
 }) {
   const initialFormattedPhone = initialCustomerPhone ? formatRuPhoneInput(initialCustomerPhone) : "";
   const [verifiedInSession, setVerifiedInSession] = useState(false);
   const isAuthenticatedGuest = Boolean(authenticatedGuest && initialFormattedPhone) || verifiedInSession;
+  // When the restaurant requires phone confirmation, a web guest must verify via
+  // MAX/VK before submitting. Already-verified guests and VK Mini App (identity
+  // bound) are exempt. The server enforces the same rule as a backstop.
+  const mustConfirmPhone = requirePhoneConfirmation && source !== "vk-mini-app" && !isAuthenticatedGuest;
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -915,10 +921,12 @@ export function ReservationForm({
           <div className="verification-copy">
             <span className="verification-icon"><ShieldCheck size={18} aria-hidden /></span>
             <div>
-              <strong>Подтверждение заявки</strong>
+              <strong>{mustConfirmPhone ? "Подтверждение телефона обязательно" : "Подтверждение заявки"}</strong>
               <p>
                 {verification.message ||
-                  "Можно подтвердить заявку через MAX или VK. Сообщество пришлёт код для ввода на сайте. Это поможет не потерять бронь и быстрее найти её в личном кабинете. Отправить заявку можно и без подтверждения."}
+                  (mustConfirmPhone
+                    ? "Этот ресторан принимает брони только с подтверждённым телефоном. Подтвердите номер через MAX или VK — сообщество пришлёт код для ввода на сайте."
+                    : "Можно подтвердить заявку через MAX или VK. Сообщество пришлёт код для ввода на сайте. Это поможет не потерять бронь и быстрее найти её в личном кабинете. Отправить заявку можно и без подтверждения.")}
               </p>
               {verification.status === "pending" && verification.commandText ? <small>Если команда не подставилась автоматически: {verification.commandText}</small> : null}
               {verification.status === "confirmed" ? <small>Подтверждение привязано к указанному телефону.</small> : null}
@@ -973,7 +981,10 @@ export function ReservationForm({
         {error ? <p className="form-error">{error}</p> : null}
         {message ? <p className="form-success">{message}</p> : null}
 
-        <button className="button icon-text full" type="submit" disabled={pending || Boolean(selectionError) || Boolean(timeError)}>
+        {mustConfirmPhone && verification.status !== "confirmed" ? (
+          <p className="form-note">Чтобы отправить заявку, подтвердите номер телефона через MAX или VK выше.</p>
+        ) : null}
+        <button className="button icon-text full" type="submit" disabled={pending || Boolean(selectionError) || Boolean(timeError) || (mustConfirmPhone && verification.status !== "confirmed")}>
           <Send size={17} aria-hidden />
           {pending ? "Отправляем..." : "Отправить заявку"}
         </button>

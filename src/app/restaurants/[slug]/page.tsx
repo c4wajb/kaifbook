@@ -59,6 +59,15 @@ export default async function RestaurantPage({ params }: Props) {
   const publicDescription = restaurant.description.replace(/\s*Источник карточки:\s*https?:\/\/\S+/gi, "").trim();
   const today = restaurant.workingHours.find((hour) => hour.dayOfWeek === new Date().getDay());
   const ratingText = restaurant.rating > 0 ? restaurant.rating.toFixed(1).replace(".", ",") : null;
+  // Surface the booking/deposit policy texts the owner configured. Deposit
+  // policies show only when deposits are on AND "Показывать депозит гостям" is on.
+  const showDepositTerms = Boolean(restaurant.showDepositInfo && restaurant.depositSettings?.depositEnabled);
+  const bookingTerms = [
+    { label: "Политика отмены", text: restaurant.settings?.cancellationPolicyText },
+    { label: "Как учитывается депозит", text: showDepositTerms ? restaurant.depositSettings?.depositAccountingText : null },
+    { label: "Условия возврата депозита", text: showDepositTerms ? restaurant.depositSettings?.depositRefundPolicyText : null },
+    { label: "Важно", text: showDepositTerms ? restaurant.depositSettings?.legalNoticeText : null },
+  ].filter((item): item is { label: string; text: string } => Boolean(item.text && item.text.trim()));
   return (
     <div className="restaurant-profile">
       {requiresAgeGate ? <AgeGate /> : null}
@@ -245,6 +254,7 @@ export default async function RestaurantPage({ params }: Props) {
               minAdvanceBookingMinutes={restaurant.settings?.minAdvanceBookingMinutes ?? 30}
               myReservationsHref={guestSession ? "/guest/reservations" : undefined}
               reservationDurationMinutes={restaurant.settings?.reservationDurationMinutes ?? 120}
+              requirePhoneConfirmation={restaurant.settings?.requirePhoneConfirmation ?? false}
               restaurantId={restaurant.id}
               restaurantSlug={restaurant.slug}
               restaurantTitle={restaurant.title}
@@ -254,6 +264,19 @@ export default async function RestaurantPage({ params }: Props) {
               <Phone size={16} aria-hidden />
               Заявка привязывается к номеру телефона. Регистрация не нужна.
             </div>
+            {bookingTerms.length ? (
+              <div className="booking-terms">
+                <h3>Условия бронирования</h3>
+                <div className="stack-list">
+                  {bookingTerms.map((item) => (
+                    <div className="insight-row" key={item.label}>
+                      <strong>{item.label}</strong>
+                      <span>{item.text}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </section>
         </div>
       </main>

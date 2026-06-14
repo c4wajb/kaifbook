@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { MinMaxFields } from "@/components/MinMaxFields";
 import { OwnerTabs } from "@/components/OwnerTabs";
-import { DAY_LABELS, DEPOSIT_MODES, DEPOSIT_MODE_LABELS, PAYMENT_MODES } from "@/lib/constants";
+import { DAY_LABELS, PAYMENT_MODES } from "@/lib/constants";
 import { DEFAULT_DEPOSIT_REFUND_POLICY, DEFAULT_EXTERNAL_PAYMENT_TERMS } from "@/lib/external-payments";
 import { prisma } from "@/lib/db";
 import { requireOwnerPageUser } from "@/lib/page-auth";
@@ -249,7 +249,7 @@ export default async function RestaurantSettingsPage({ params }: Props) {
           <p className="muted">Эти правила добавляют депозит автоматически — например для больших компаний, в часы пик или для гостей с высоким риском неявки.</p>
           <label className="check-row"><input name="depositEnabled" type="checkbox" defaultChecked={depositSettings.depositEnabled} />Включить правила депозитов</label>
           <div className="form-grid two">
-            <label><span>Когда брать депозит</span><select name="depositMode" defaultValue={depositSettings.depositMode}>{DEPOSIT_MODES.map((mode) => <option key={mode} value={mode}>{DEPOSIT_MODE_LABELS[mode]}</option>)}</select></label>
+            <input type="hidden" name="depositMode" defaultValue={depositSettings.depositMode} />
             <label><span>Депозит по умолчанию, ₽</span><input name="defaultDepositAmount" type="number" min="0" defaultValue={depositSettings.defaultDepositAmount} /></label>
             <label><span>Депозит для компаний от</span><input name="requireDepositForGuestsFrom" type="number" min="1" defaultValue={depositSettings.requireDepositForGuestsFrom ?? ""} /></label>
             <label><span>Время на оплату, минут</span><input name="paymentTimeoutMinutes" type="number" min="1" defaultValue={depositSettings.paymentTimeoutMinutes} /></label>

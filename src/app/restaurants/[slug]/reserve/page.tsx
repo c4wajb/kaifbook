@@ -40,6 +40,7 @@ export default async function ReservePage({ params }: Props) {
         minAdvanceBookingMinutes={restaurant.settings?.minAdvanceBookingMinutes ?? 30}
         myReservationsHref={guestSession ? "/guest/reservations" : undefined}
         reservationDurationMinutes={restaurant.settings?.reservationDurationMinutes ?? 120}
+        requirePhoneConfirmation={restaurant.settings?.requirePhoneConfirmation ?? false}
         restaurantId={restaurant.id}
         restaurantSlug={restaurant.slug}
         restaurantTitle={restaurant.title}

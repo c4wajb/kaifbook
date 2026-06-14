@@ -161,6 +161,12 @@ export async function createReservation(restaurantId: string, input: Reservation
   const customerPhone = normalizePhone(input.customerPhone);
   const source = input.source === "vk-mini-app" ? "vk-mini-app" : "web";
   const verification = await resolveConfirmedVerificationSession(input.verificationSessionId, customerPhone);
+  // Owner setting "Требовать подтверждение телефона": refuse a booking until the
+  // guest has confirmed their number via VK/MAX. VK Mini App bookings are
+  // identity-bound by the signed launch params, so they're exempt.
+  if (validated.restaurant.settings?.requirePhoneConfirmation && source !== "vk-mini-app" && !verification) {
+    throw new ApiError(400, "Этот ресторан подтверждает брони по телефону. Подтвердите номер через VK или MAX и отправьте заявку ещё раз.");
+  }
   // For VK Mini App bookings (no chat verification) the VK user id, resolved
   // server-side from the signed session, is the peer for status notifications.
   const vkMiniPeer = source === "vk-mini-app" && vkUserId ? vkUserId : null;
