@@ -688,8 +688,19 @@ export async function resolveVerifiedVkPhone(rawPhone: string | null | undefined
   return session?.contactPhoneFromProvider || null;
 }
 
-export async function notifyGuestReservationStatus(reservation: NotifiableReservation, status: string) {
-  // A notification failure must never break the status change itself.
+// Deliver a free-form message to the guest over their linked messenger. Peer is
+// the reservation's verified chat/user id, falling back to the most recent
+// confirmed VK session for the same phone. Best-effort and never throws; returns
+// true only when a message was actually dispatched.
+export async function sendReservationMessageToGuest(
+  reservation: {
+    verificationProvider: string | null;
+    verifiedExternalChatId: string | null;
+    verifiedExternalUserId: string | null;
+    customerPhone?: string | null;
+  },
+  message: string,
+): Promise<boolean> {
   try {
     let provider = reservation.verificationProvider;
     let peer = reservation.verifiedExternalChatId || reservation.verifiedExternalUserId;
@@ -702,21 +713,27 @@ export async function notifyGuestReservationStatus(reservation: NotifiableReserv
       }
     }
 
-    if (!provider || !peer) return;
-    await sendMessengerMessage(
-      provider,
-      peer,
-      reservationStatusMessage({
-        restaurantTitle: reservation.restaurantTitle,
-        reservationDate: reservation.reservationDate,
-        startTime: reservation.startTime,
-        endTime: reservation.endTime,
-        status,
-      }),
-    );
+    if (!provider || !peer) return false;
+    await sendMessengerMessage(provider, peer, message);
+    return true;
   } catch (error) {
-    console.error("[Kaifbook:notify] failed", error instanceof Error ? error.message : String(error));
+    console.error("[Kaifbook:notify] guest message failed", error instanceof Error ? error.message : String(error));
+    return false;
   }
+}
+
+export async function notifyGuestReservationStatus(reservation: NotifiableReservation, status: string) {
+  // A notification failure must never break the status change itself.
+  await sendReservationMessageToGuest(
+    reservation,
+    reservationStatusMessage({
+      restaurantTitle: reservation.restaurantTitle,
+      reservationDate: reservation.reservationDate,
+      startTime: reservation.startTime,
+      endTime: reservation.endTime,
+      status,
+    }),
+  );
 }
 
 export function requestIp(request: Request) {
