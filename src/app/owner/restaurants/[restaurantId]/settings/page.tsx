@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { MinMaxFields } from "@/components/MinMaxFields";
 import { OwnerTabs } from "@/components/OwnerTabs";
 import { DAY_LABELS, DEPOSIT_MODES, DEPOSIT_MODE_LABELS, PAYMENT_MODES } from "@/lib/constants";
 import { DEFAULT_DEPOSIT_REFUND_POLICY, DEFAULT_EXTERNAL_PAYMENT_TERMS } from "@/lib/external-payments";
@@ -207,8 +208,7 @@ export default async function RestaurantSettingsPage({ params }: Props) {
         <form className="panel stack-form full-span" action={saveSettings.bind(null, restaurant.id)}>
           <h2>Базовые правила</h2>
           <div className="form-grid two">
-            <label><span>Минимум гостей</span><input name="minGuests" type="number" min="1" defaultValue={settings.minGuests} /></label>
-            <label><span>Максимум гостей</span><input name="maxGuests" type="number" min="1" defaultValue={settings.maxGuests} /></label>
+            <MinMaxFields minName="minGuests" maxName="maxGuests" minLabel="Минимум гостей" maxLabel="Максимум гостей" minDefaultValue={settings.minGuests} maxDefaultValue={settings.maxGuests} required message="Максимум гостей не может быть меньше минимума." />
             <label><span>Длительность брони, минут</span><input name="reservationDurationMinutes" type="number" min="30" step="15" defaultValue={settings.reservationDurationMinutes} /></label>
             <label><span>Интервал слотов, минут</span><input name="bookingIntervalMinutes" type="number" min="15" step="15" defaultValue={settings.bookingIntervalMinutes} /></label>
             <label><span>Минимум до визита, минут</span><input name="minAdvanceBookingMinutes" type="number" min="0" defaultValue={settings.minAdvanceBookingMinutes} /></label>
@@ -219,8 +219,7 @@ export default async function RestaurantSettingsPage({ params }: Props) {
           <label className="check-row"><input name="allowSeatSelection" type="checkbox" defaultChecked={settings.allowSeatSelection} />Разрешить гостю выбирать места на схеме</label>
           <label className="check-row"><input name="reserveWholeTableWhenSeatsSelected" type="checkbox" defaultChecked={settings.reserveWholeTableWhenSeatsSelected} />При выборе мест закреплять весь стол</label>
           <div className="form-grid two">
-            <label><span>Минимум выбранных мест</span><input name="minSeatsSelection" type="number" min="0" defaultValue={settings.minSeatsSelection} /></label>
-            <label><span>Максимум выбранных мест</span><input name="maxSeatsSelection" type="number" min="1" defaultValue={settings.maxSeatsSelection ?? ""} placeholder="По вместимости стола" /></label>
+            <MinMaxFields minName="minSeatsSelection" maxName="maxSeatsSelection" minLabel="Минимум выбранных мест" maxLabel="Максимум выбранных мест" minDefaultValue={settings.minSeatsSelection} maxDefaultValue={settings.maxSeatsSelection ?? ""} minFieldMin={0} maxFieldMin={1} maxPlaceholder="По вместимости стола" message="Максимум выбранных мест не может быть меньше минимума." />
           </div>
           <label className="check-row"><input name="requirePhoneConfirmation" type="checkbox" defaultChecked={settings.requirePhoneConfirmation} />Требовать подтверждение телефона</label>
           <label><span>Политика отмены</span><textarea name="cancellationPolicyText" rows={4} defaultValue={settings.cancellationPolicyText || ""} /></label>
@@ -279,8 +278,7 @@ export default async function RestaurantSettingsPage({ params }: Props) {
           <div className="form-grid two">
             <label><span>Название</span><input name="title" placeholder="Большой стол" required /></label>
             <label><span>Код</span><input name="code" placeholder="large" required /></label>
-            <label><span>Мин. гостей</span><input name="minGuests" type="number" min="1" defaultValue="1" /></label>
-            <label><span>Макс. гостей</span><input name="maxGuests" type="number" min="1" defaultValue="8" /></label>
+            <MinMaxFields minName="minGuests" maxName="maxGuests" minLabel="Мин. гостей" maxLabel="Макс. гостей" minDefaultValue="1" maxDefaultValue="8" message="Макс. гостей не может быть меньше минимума." />
             <label><span>Стоимость брони, ₽</span><input name="defaultBookingPrice" type="number" min="0" defaultValue="0" /></label>
             <label><span>Депозит, ₽</span><input name="defaultDepositAmount" type="number" min="0" defaultValue="2000" /></label>
           </div>
@@ -304,8 +302,7 @@ export default async function RestaurantSettingsPage({ params }: Props) {
           <div className="form-grid two">
             <label><span>Тип стола</span><select name="tableTypeId"><option value="">Любой</option>{restaurant.tableTypes.map((type) => <option key={type.id} value={type.id}>{type.title}</option>)}</select></label>
             <label><span>Конкретный стол</span><select name="tableId"><option value="">Любой</option>{allTables.map((table) => <option key={table.id} value={table.id}>{table.hallTitle}: стол {table.number}</option>)}</select></label>
-            <label><span>Мин. гостей</span><input name="minGuests" type="number" min="1" /></label>
-            <label><span>Макс. гостей</span><input name="maxGuests" type="number" min="1" /></label>
+            <MinMaxFields minName="minGuests" maxName="maxGuests" minLabel="Мин. гостей" maxLabel="Макс. гостей" minDefaultValue="" maxDefaultValue="" message="Макс. гостей не может быть меньше минимума." />
             <label><span>День недели</span><select name="dayOfWeek"><option value="">Любой</option>{DAY_LABELS.map((label, index) => <option key={label} value={index}>{label}</option>)}</select></label>
             <label><span>Приоритет</span><input name="priority" type="number" defaultValue="10" /></label>
             <label><span>Время начала</span><input name="startTime" type="time" /></label>
