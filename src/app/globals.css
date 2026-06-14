@@ -4637,13 +4637,18 @@ body {
 
 /* ── 13. Global focus-visible ─────────────────────────────────────────── */
 a:focus-visible,
-button:focus-visible,
+button:focus-visible {
+  outline: 2px solid rgba(201, 130, 50, 0.55);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+/* Form fields show focus as a single ring on the field itself — never an
+   offset outline, which read as a stray detached box around the control. */
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 3px solid rgba(201, 130, 50, 0.36);
-  outline-offset: 3px;
-  box-shadow: 0 0 0 5px rgba(201, 130, 50, 0.12);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(201, 130, 50, 0.18);
 }
 
 /* ── 14. Panels & surfaces ────────────────────────────────────────────── */
@@ -4667,7 +4672,8 @@ input:focus,
 select:focus,
 textarea:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgba(201, 130, 50, 0.14);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(201, 130, 50, 0.18);
 }
 
 /* ── 16. Filter submit ────────────────────────────────────────────────── */
@@ -14624,9 +14630,9 @@ input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--danger
 
 .button:focus-visible,
 .client-cta:focus-visible {
-  outline: 3px solid rgba(201, 130, 50, 0.4);
-  outline-offset: 3px;
-  box-shadow: 0 0 0 5px rgba(201, 130, 50, 0.14) !important;
+  outline: 2px solid rgba(201, 130, 50, 0.55);
+  outline-offset: 2px;
+  box-shadow: none !important;
 }
 
 .button:disabled,
@@ -14914,15 +14920,20 @@ input[aria-invalid="true"],select[aria-invalid="true"]{border-color:var(--danger
   box-shadow: 0 2px 8px rgba(176, 96, 32, 0.24);
 }
 
-/* ── Global focus-visible — warm amber ring ──────────────────────── */
+/* ── Global focus-visible — single clean amber ring ──────────────── */
 a:focus-visible,
-button:focus-visible,
+button:focus-visible {
+  outline: 2px solid rgba(201, 130, 50, 0.55);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+/* Form fields: one ring on the field itself, never an offset outline
+   (that read as a stray detached box around the control). */
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 3px solid rgba(201, 130, 50, 0.36);
-  outline-offset: 3px;
-  box-shadow: 0 0 0 5px rgba(201, 130, 50, 0.12);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(201, 130, 50, 0.18);
 }
 
 /* ── Panels / surfaces ───────────────────────────────────────────── */
@@ -14938,7 +14949,8 @@ input:focus,
 select:focus,
 textarea:focus {
   border-color: var(--accent, #C98232);
-  box-shadow: 0 0 0 4px rgba(201, 130, 50, 0.14);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(201, 130, 50, 0.18);
 }
 
 /* ── Filter submit ───────────────────────────────────────────────── */
