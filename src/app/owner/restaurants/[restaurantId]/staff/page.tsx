@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { OwnerTabs } from "@/components/OwnerTabs";
+import { RestaurantVkNotify } from "@/components/RestaurantVkNotify";
 import { StaffManager } from "@/components/StaffManager";
 import { ROLE_LABELS } from "@/lib/constants";
 import { prisma } from "@/lib/db";
@@ -28,6 +29,8 @@ export default async function StaffPage({ params }: Props) {
         <p>Добавляйте официантов и менеджеров. Они смогут управлять бронями, видеть список гостей и меню.</p>
       </div>
       <OwnerTabs restaurantId={restaurant.id} />
+
+      <RestaurantVkNotify restaurantId={restaurant.id} initialPeerId={restaurant.vkNotifyPeerId} initialName={restaurant.vkNotifyName} />
 
       <section className="panel">
         <div className="section-heading">

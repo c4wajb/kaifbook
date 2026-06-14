@@ -8,7 +8,7 @@ import { expireOverdueDepositPayments } from "@/lib/payments";
 import { normalizePhone, phoneAccountEmail } from "@/lib/phone";
 import { calculateReservationPrice } from "@/lib/reservation-pricing";
 import { addMinutesToTime, dateFromInput, dayOfWeekFromDate, isPastReservationDate, isRangeWithinWorkingHours, normalizedEndMinutes, resolveVisitInstant, slotRangesOverlap, timeToMinutes, todayUtcMidnight, type WorkingHourLike } from "@/lib/time";
-import { notifyGuestReservationStatus, resolveConfirmedVerificationSession, resolveVerifiedVkPhone, sendMessengerMessage } from "@/lib/verifications";
+import { notifyGuestReservationStatus, notifyRestaurantNewReservation, resolveConfirmedVerificationSession, resolveVerifiedVkPhone, sendMessengerMessage } from "@/lib/verifications";
 
 const CANCELLED_OR_REJECTED_STATUSES = [
   RESERVATION_STATUSES.CANCELLED,
@@ -234,7 +234,7 @@ export async function createReservation(restaurantId: string, input: Reservation
         confirmedAt: status === RESERVATION_STATUSES.CONFIRMED ? new Date() : null,
         confirmedByUserId: status === RESERVATION_STATUSES.CONFIRMED ? customerUserId : null,
       },
-      include: { restaurant: { select: { title: true, ownerId: true } } },
+      include: { restaurant: { select: { title: true, ownerId: true, vkNotifyPeerId: true } } },
     });
 
     if (verification?.id) {
@@ -274,6 +274,18 @@ export async function createReservation(restaurantId: string, input: Reservation
       `Kaifbook: заявка в ${reservation.restaurant.title} создана. Дата: ${reservation.reservationDate.toISOString().slice(0, 10)}, время: ${reservation.startTime}-${reservation.endTime}. Ресторан свяжется с вами для подтверждения.`,
     );
   }
+  // Alert the restaurant's linked VK about the new booking.
+  await notifyRestaurantNewReservation({
+    restaurantTitle: reservation.restaurant.title,
+    vkNotifyPeerId: reservation.restaurant.vkNotifyPeerId,
+    customerName: input.customerName,
+    customerPhone,
+    guestsCount: input.guestsCount,
+    reservationDate: validated.reservationDate,
+    startTime: input.startTime,
+    endTime: validated.endTime,
+    tableNumber: null,
+  });
 
   return {
     ...reservation,

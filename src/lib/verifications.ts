@@ -567,6 +567,20 @@ export async function confirmVerificationByPublicCode(provider: VerificationProv
       contactPhoneMatched: phone ? phone === session.phone : null,
     },
   });
+  // A restaurant-link session connects the staff member's VK to the restaurant
+  // so new-booking notifications land in their chat — not a guest login.
+  if (confirmed.method === "vk_restaurant_link" && confirmed.restaurantId) {
+    const peer = confirmed.externalChatId || confirmed.externalUserId;
+    if (peer) {
+      await prisma.restaurant.update({
+        where: { id: confirmed.restaurantId },
+        data: { vkNotifyPeerId: peer, vkNotifyName: confirmed.externalUsername || null },
+      }).catch(() => {});
+      const restaurant = await prisma.restaurant.findUnique({ where: { id: confirmed.restaurantId }, select: { title: true } });
+      await sendMessengerMessage(provider, peer, `Kaifbook: VK привязан к ресторану «${restaurant?.title ?? ""}» ✅ Уведомления о новых бронях будут приходить сюда.`);
+    }
+    return confirmed;
+  }
   if (confirmed.externalChatId) {
     await sendMessengerMessage(provider, confirmed.externalChatId, "Kaifbook: вход подтверждён ✅ Вернитесь на сайт — мы откроем ваши брони автоматически.");
   }
@@ -739,4 +753,64 @@ export async function notifyGuestReservationStatus(reservation: NotifiableReserv
 export function requestIp(request: Request) {
   const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
   return forwarded || request.headers.get("x-real-ip") || null;
+}
+
+const RESTAURANT_LINK_TTL_MINUTES = 15;
+
+// Start linking a restaurant's VK so its staff receive new-booking alerts. Same
+// short-code-in-the-community mechanism as guest login: the session is confirmed
+// when the staff member sends the command, capturing their VK id (see the
+// vk_restaurant_link branch in confirmVerificationByPublicCode).
+export async function startRestaurantVkLink(input: { restaurantId: string; phone?: string | null }) {
+  const now = new Date();
+  const token = generateVerificationToken();
+  const publicCode = await generateUniquePublicCode();
+  const session = await prisma.verificationSession.create({
+    data: {
+      provider: VERIFICATION_PROVIDERS.VK,
+      method: "vk_restaurant_link",
+      status: VERIFICATION_STATUSES.PENDING,
+      phone: input.phone || `restaurant:${input.restaurantId}`,
+      restaurantId: input.restaurantId,
+      token,
+      publicCode,
+      expiresAt: addMinutes(now, RESTAURANT_LINK_TTL_MINUTES),
+      codeExpiresAt: addMinutes(now, RESTAURANT_LINK_TTL_MINUTES),
+    },
+  });
+  return {
+    id: session.id,
+    publicCode,
+    commandText: startCommand(publicCode),
+    confirmUrl: buildProviderConfirmUrl(VERIFICATION_PROVIDERS.VK, publicCode),
+    appUrl: buildProviderAppUrl(VERIFICATION_PROVIDERS.VK, publicCode),
+    expiresAt: session.expiresAt,
+  };
+}
+
+// Push a "new booking" alert to the restaurant's linked VK. Best-effort: silent
+// when no VK is linked or the community can't message that user.
+export async function notifyRestaurantNewReservation(reservation: {
+  restaurantTitle?: string | null;
+  vkNotifyPeerId?: string | null;
+  customerName: string;
+  customerPhone: string;
+  guestsCount: number;
+  reservationDate: Date;
+  startTime: string;
+  endTime: string;
+  tableNumber?: string | null;
+}) {
+  try {
+    if (!reservation.vkNotifyPeerId) return;
+    const date = new Intl.DateTimeFormat("ru-RU", { day: "2-digit", month: "2-digit" }).format(reservation.reservationDate);
+    const table = reservation.tableNumber ? `, стол ${reservation.tableNumber}` : "";
+    await sendMessengerMessage(
+      VERIFICATION_PROVIDERS.VK,
+      reservation.vkNotifyPeerId,
+      `Kaifbook: новая бронь в «${reservation.restaurantTitle ?? ""}». ${reservation.customerName}, ${reservation.guestsCount} чел., ${date} ${reservation.startTime}–${reservation.endTime}${table}. Тел: ${reservation.customerPhone}.`,
+    );
+  } catch (error) {
+    console.error("[Kaifbook:notify] restaurant new reservation failed", error instanceof Error ? error.message : String(error));
+  }
 }
