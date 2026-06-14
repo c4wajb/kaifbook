@@ -19,6 +19,9 @@ export async function AppHeader() {
   const isAdmin = user?.role === ROLES.ADMIN;
   const isStaff = user && (STAFF_ROLES as readonly string[]).includes(user.role);
   const isOffice = pathname.startsWith("/owner") || pathname.startsWith("/admin");
+  // On the login page itself a header "Войти" just links back to the same page,
+  // which is confusing next to the real form button — so hide it there.
+  const isLoginPage = pathname.startsWith("/owner/login") || pathname.startsWith("/admin/login");
 
   if (isOffice) {
     return (
@@ -68,7 +71,7 @@ export async function AppHeader() {
             </>
           ) : (
             <>
-              <Link className="ghost" href="/owner/login">Войти</Link>
+              {!isLoginPage && <Link className="ghost" href="/owner/login">Войти</Link>}
               {!isStolix && !isStaff && <Link className="button compact" href="/owner/register">Подключить ресторан</Link>}
             </>
           )}
