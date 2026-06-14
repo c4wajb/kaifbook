@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, CheckCircle2, CreditCard, ExternalLink, MessageCircle, Send, ShieldCheck, X } from "lucide-react";
+import { ArrowRight, CalendarDays, CheckCircle2, Copy, CreditCard, ExternalLink, KeyRound, Loader2, MessageCircle, Send, ShieldCheck, X } from "lucide-react";
 import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PrettySelect } from "@/components/PrettySelect";
@@ -59,11 +59,13 @@ type VerificationState = {
   status: VerificationStatus;
   sessionId?: string | null;
   confirmUrl?: string | null;
+  appUrl?: string | null;
   commandText?: string | null;
   publicCode?: string | null;
   expiresAt?: string | null;
   message?: string | null;
 };
+type VkIdStartResponse = { appId: number; redirectUrl: string; state: string; codeChallenge: string; scope: string; expiresAt: string };
 
 function formatRub(value: number) {
   return new Intl.NumberFormat("ru-RU", { style: "currency", currency: "RUB", maximumFractionDigits: 0 }).format(value);
@@ -362,6 +364,8 @@ export function ReservationForm({
   const [verification, setVerification] = useState<VerificationState>({ provider: null, status: "idle" });
   const [verificationCode, setVerificationCode] = useState("");
   const [verificationPending, setVerificationPending] = useState(false);
+  const [vkIdPending, setVkIdPending] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [tableId, setTableId] = useState("");
   const [selectedTable, setSelectedTable] = useState<PublicBookingTable | null>(null);
   const [selectedSeatIds, setSelectedSeatIds] = useState<string[]>([]);
@@ -535,6 +539,34 @@ export function ReservationForm({
     };
   }, [verification.sessionId, verification.status]);
 
+  // Restore a booking draft saved right before a VK ID redirect, so the guest
+  // comes back to exactly the booking they were filling in. One-shot: the draft
+  // is cleared as soon as it's read, so it never resurfaces on a fresh visit.
+  useEffect(() => {
+    try {
+      const key = `kaifbook_booking_draft_${restaurantId}`;
+      const raw = window.localStorage.getItem(key);
+      if (!raw) return;
+      window.localStorage.removeItem(key);
+      const draft = JSON.parse(raw) as Partial<{
+        reservationDate: string; startTime: string; endTime: string; guestsCount: number;
+        customerName: string; customerPhone: string; tableId: string; selectedSeatIds: string[]; selectedTable: PublicBookingTable | null;
+      }>;
+      if (draft.reservationDate) setReservationDate(draft.reservationDate);
+      if (draft.startTime) setStartTime(draft.startTime);
+      if (draft.endTime) setEndTime(draft.endTime);
+      if (typeof draft.guestsCount === "number" && draft.guestsCount > 0) setGuestsCount(draft.guestsCount);
+      if (draft.customerName) setCustomerName(draft.customerName);
+      if (draft.customerPhone && !initialFormattedPhone) setCustomerPhone(formatRuPhoneInput(draft.customerPhone));
+      if (Array.isArray(draft.selectedSeatIds)) setSelectedSeatIds(draft.selectedSeatIds);
+      if (draft.tableId) setTableId(draft.tableId);
+      if (draft.selectedTable) setSelectedTable(draft.selectedTable);
+    } catch {
+      // ignore a malformed draft
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handlePricingChange = useCallback((nextPricing: Pricing | null) => setPricing(nextPricing), []);
 
   const handleSelectTable = useCallback((nextTableId: string, table: PublicBookingTable | null) => {
@@ -573,22 +605,76 @@ export function ReservationForm({
     if (verification.status !== "idle" && verification.status !== "confirmed") setVerificationCode("");
   }, [verification.status]);
 
-  const startMessengerVerification = useCallback(async (provider: VerificationProvider) => {
-    setVerificationPending(true);
-    setError(null);
-    let popup: Window | null = null;
+  const saveBookingDraft = useCallback(() => {
     try {
-      if (!isValidRuPhone(customerPhone)) {
-        setPhoneError("Введите корректный номер телефона.");
-        setVerification({ provider, status: "failed", message: "Сначала укажите корректный телефон." });
-        return;
-      }
-      popup = window.open("about:blank", "_blank");
-      if (popup) popup.opener = null;
+      window.localStorage.setItem(
+        `kaifbook_booking_draft_${restaurantId}`,
+        JSON.stringify({ reservationDate, startTime, endTime, guestsCount, customerName, customerPhone, tableId, selectedSeatIds, selectedTable }),
+      );
+    } catch {
+      // localStorage may be unavailable (private mode) — VK ID still works, just без восстановления черновика.
+    }
+  }, [customerName, customerPhone, endTime, guestsCount, reservationDate, restaurantId, selectedSeatIds, selectedTable, startTime, tableId]);
 
+  // Same VK ID quick login as the standalone guest login form. The booking draft
+  // is saved first so the OAuth redirect doesn't lose the in-progress booking.
+  const startVkIdLogin = useCallback(async () => {
+    setError(null);
+    if (!isValidRuPhone(customerPhone)) {
+      setPhoneError("Введите корректный номер телефона.");
+      return;
+    }
+    setVkIdPending(true);
+    try {
+      const returnUrl = typeof window !== "undefined" ? window.location.pathname + window.location.search + window.location.hash : undefined;
+      saveBookingDraft();
+      const data = await fetchJsonWithDiagnostics<VkIdStartResponse>("/api/guest-auth/vkid/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: normalizePhone(customerPhone), returnUrl }),
+        debugLabel: "booking-start-vkid",
+        userMessage: "Не удалось начать вход через VK ID. Используйте MAX или VK-сообщество для подтверждения.",
+      });
+      const VKID = await import("@vkid/sdk");
+      VKID.Config.init({
+        app: data.appId,
+        redirectUrl: data.redirectUrl,
+        state: data.state,
+        codeChallenge: data.codeChallenge,
+        scope: data.scope,
+        mode: VKID.ConfigAuthMode.Redirect,
+      });
+      await VKID.Auth.login({ lang: VKID.Languages.RUS });
+    } catch (vkError) {
+      setVkIdPending(false);
+      setError(vkError instanceof Error ? vkError.message : "Не удалось открыть VK ID. Используйте подтверждение по коду.");
+    }
+  }, [customerPhone, saveBookingDraft]);
+
+  const copyCommand = useCallback(async () => {
+    if (!verification.commandText) return;
+    try {
+      await navigator.clipboard.writeText(verification.commandText);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      setCopied(false);
+    }
+  }, [verification.commandText]);
+
+  const startMessengerVerification = useCallback(async (provider: VerificationProvider) => {
+    setError(null);
+    if (!isValidRuPhone(customerPhone)) {
+      setPhoneError("Введите корректный номер телефона.");
+      setVerification({ provider, status: "failed", message: "Сначала укажите корректный телефон." });
+      return;
+    }
+    setVerificationPending(true);
+    try {
       const data = await fetchJsonWithDiagnostics<{
         session: { id: string; provider: VerificationProvider; status: "pending"; expiresAt: string };
         confirmUrl: string;
+        appUrl?: string | null;
         commandText: string;
         publicCode?: string | null;
       }>("/api/verifications/start", {
@@ -599,24 +685,22 @@ export function ReservationForm({
         userMessage: "Не удалось начать подтверждение. Можно отправить бронирование без него.",
         logPayload: { provider, restaurantId, phone: normalizePhone(customerPhone) },
       });
+      setVerificationCode("");
+      setCopied(false);
+      // No auto-popup — the steps and the code field must stay visible. The guest
+      // taps "Открыть" when ready; VK confirms code-free directly in the chat.
       setVerification({
         provider,
         status: "pending",
         sessionId: data.session.id,
         confirmUrl: data.confirmUrl,
+        appUrl: data.appUrl || data.confirmUrl,
         commandText: data.commandText,
         publicCode: data.publicCode,
         expiresAt: data.session.expiresAt,
-        message: `Откройте ${provider === "max" ? "MAX" : "VK"} и отправьте команду. Сообщество пришлёт код, который нужно ввести здесь.`,
+        message: null,
       });
-      setVerificationCode("");
-      if (popup) {
-        popup.location.href = data.confirmUrl;
-      } else {
-        window.open(data.confirmUrl, "_blank", "noopener,noreferrer");
-      }
     } catch (verifyError) {
-      popup?.close();
       setVerification({
         provider,
         status: "failed",
@@ -917,58 +1001,119 @@ export function ReservationForm({
             </div>
           </div>
         ) : (
-        <div className={`verification-box verification-${verification.status}`}>
-          <div className="verification-copy">
-            <span className="verification-icon"><ShieldCheck size={18} aria-hidden /></span>
+        <div className="guest-auth-inline">
+          <div className="guest-vkid-panel">
             <div>
-              <strong>{mustConfirmPhone ? "Подтверждение телефона обязательно" : "Подтверждение заявки"}</strong>
-              <p>
-                {verification.message ||
-                  (mustConfirmPhone
-                    ? "Этот ресторан принимает брони только с подтверждённым телефоном. Подтвердите номер через MAX или VK — сообщество пришлёт код для ввода на сайте."
-                    : "Можно подтвердить заявку через MAX или VK. Сообщество пришлёт код для ввода на сайте. Это поможет не потерять бронь и быстрее найти её в личном кабинете. Отправить заявку можно и без подтверждения.")}
-              </p>
-              {verification.status === "pending" && verification.commandText ? <small>Если команда не подставилась автоматически: {verification.commandText}</small> : null}
-              {verification.status === "confirmed" ? <small>Подтверждение привязано к указанному телефону.</small> : null}
+              <strong>{mustConfirmPhone ? "Подтвердите телефон, чтобы отправить заявку" : "Быстрый вход через VK ID"}</strong>
+              <span>Подтвердим заявку через VK — бронь сразу попадёт в «Мои брони». Черновик сохранится.</span>
             </div>
-          </div>
-          <div className="verification-actions">
-            <button className="verification-button" type="button" disabled={verificationPending || verification.status === "pending"} onClick={() => startMessengerVerification("max")}>
-              <MessageCircle size={16} aria-hidden />
-              MAX
+            <button className="button icon-text full" type="button" disabled={vkIdPending || verificationPending} onClick={startVkIdLogin}>
+              {vkIdPending ? "Открываем VK ID..." : "Войти через VK ID"}
+              <ArrowRight size={17} aria-hidden />
             </button>
-            <button className="verification-button" type="button" disabled={verificationPending || verification.status === "pending"} onClick={() => startMessengerVerification("vk")}>
-              <MessageCircle size={16} aria-hidden />
-              VK
-            </button>
-            {verification.status === "pending" && verification.confirmUrl ? (
-              <Link className="verification-link" href={verification.confirmUrl} target="_blank" rel="noopener noreferrer">
-                <ExternalLink size={15} aria-hidden />
-                Открыть
-              </Link>
-            ) : null}
           </div>
-          {verification.status === "pending" && verification.sessionId ? (
-            <div className="verification-code-row">
-              <label className="verification-code-field">
-                <span>Код из {verification.provider === "max" ? "MAX" : "VK"}</span>
-                <input
-                  autoComplete="one-time-code"
-                  inputMode="numeric"
-                  maxLength={6}
-                  placeholder="000000"
-                  value={verificationCode}
-                  onChange={(event) => {
-                    setVerificationCode(event.target.value.replace(/\D/g, "").slice(0, 6));
-                    setError(null);
-                  }}
-                />
-              </label>
-              <button className="verification-button verification-code-submit" type="button" disabled={verificationPending || verificationCode.length !== 6} onClick={confirmMessengerVerification}>
-                {verificationPending ? "Проверяем..." : "Подтвердить код"}
-              </button>
-            </div>
-          ) : null}
+
+          <div className={`guest-messenger-panel guest-messenger-${verification.status}`}>
+            {verification.status !== "pending" ? (
+              <>
+                <div className="guest-messenger-copy">
+                  <KeyRound size={18} aria-hidden />
+                  <div>
+                    <strong>Подтверждение через сообщество</strong>
+                    <span>
+                      {mustConfirmPhone
+                        ? "Если VK ID недоступен — подтвердите в чате. Через VK-сообщество код вводить не нужно."
+                        : "Если VK ID недоступен — подтвердите в чате. Через VK-сообщество код вводить не нужно. Отправить заявку можно и без подтверждения."}
+                    </span>
+                  </div>
+                </div>
+                <div className="guest-messenger-actions">
+                  <button className="verification-button" type="button" disabled={verificationPending} onClick={() => startMessengerVerification("vk")}>
+                    <MessageCircle size={16} aria-hidden />
+                    VK-сообщество
+                  </button>
+                  <button className="verification-button" type="button" disabled={verificationPending} onClick={() => startMessengerVerification("max")}>
+                    <MessageCircle size={16} aria-hidden />
+                    MAX
+                  </button>
+                </div>
+                {verification.status === "failed" && verification.message ? <p className="form-warning" style={{ margin: 0 }}>{verification.message}</p> : null}
+              </>
+            ) : (
+              <div className="guest-code-flow">
+                <div className="guest-code-flow-head">
+                  <strong>Подтверждение через {verification.provider === "vk" ? "VK-сообщество" : "MAX"}</strong>
+                  <button type="button" className="guest-code-change" onClick={() => { setVerification({ provider: null, status: "idle" }); setVerificationCode(""); }}>
+                    Другой способ
+                  </button>
+                </div>
+                <ol className="guest-code-steps">
+                  <li className="guest-code-step">
+                    <span className="guest-step-num">1</span>
+                    <div className="guest-step-body">
+                      <p>Скопируйте команду</p>
+                      <div className="guest-code-command">
+                        <code>{verification.commandText}</code>
+                        <button type="button" onClick={copyCommand}>
+                          <Copy size={14} aria-hidden />
+                          {copied ? "Скопировано" : "Копировать"}
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                  <li className="guest-code-step">
+                    <span className="guest-step-num">2</span>
+                    <div className="guest-step-body">
+                      <p>Откройте {verification.provider === "max" ? "MAX" : "VK"} и отправьте её сообществу</p>
+                      <a className="guest-open-app" href={verification.appUrl || verification.confirmUrl || "#"} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink size={16} aria-hidden />
+                        Открыть {verification.provider === "max" ? "MAX" : "VK"}
+                      </a>
+                    </div>
+                  </li>
+                  <li className="guest-code-step">
+                    <span className="guest-step-num">3</span>
+                    <div className="guest-step-body">
+                      {verification.provider === "vk" ? (
+                        <>
+                          <p>Готово — подтвердится автоматически</p>
+                          <span className="guest-await">
+                            <Loader2 className="spin" size={16} aria-hidden />
+                            Ждём подтверждение из VK...
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <p>Введите 6-значный код из ответа сообщества</p>
+                          <input
+                            className="guest-code-input"
+                            autoComplete="one-time-code"
+                            inputMode="numeric"
+                            maxLength={6}
+                            placeholder="000000"
+                            value={verificationCode}
+                            onChange={(event) => {
+                              setVerificationCode(event.target.value.replace(/\D/g, "").slice(0, 6));
+                              setError(null);
+                            }}
+                          />
+                          <button
+                            className="button icon-text full"
+                            type="button"
+                            disabled={verificationPending || verificationCode.length !== 6}
+                            onClick={confirmMessengerVerification}
+                          >
+                            {verificationPending ? "Проверяем код..." : "Подтвердить код"}
+                            <ArrowRight size={17} aria-hidden />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </li>
+                </ol>
+              </div>
+            )}
+          </div>
         </div>
         )}
 

@@ -5563,6 +5563,7 @@ textarea:focus {
   background:#edebe7;
   color:#1a1a1a;
 }
+.guest-auth-inline{display:grid;gap:14px;margin-top:4px}
 .guest-messenger-panel{
   display:grid;
   gap:10px;
