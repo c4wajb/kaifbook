@@ -15713,3 +15713,41 @@ h1, h2, h3, h4 { overflow-wrap: break-word; }
 .public-booking-board-scroll.fit-to-view.is-fit .public-booking-board-zoom {
   min-width: 0;
 }
+
+/* ============================================================
+   Text-wrapping fix — long words (restaurant names) must wrap
+   gracefully, never shatter mid-letter (e.g. "Крыжовни|к").
+   `overflow-wrap:break-word` keeps the word whole until it truly
+   cannot fit, then breaks at the edge; `hyphens:auto` (the page is
+   <html lang="ru">) lets the engine insert a real hyphen at the
+   break where a dictionary is available. Both only ADD break
+   opportunities — they never widen text — so this can't break the
+   layout. Listed selectors are placed last so source order beats
+   the scattered `overflow-wrap:anywhere` heading rules above.
+   ============================================================ */
+h1,h2,h3,h4,h5,h6,
+.page-title h1,.catalog-title h1,.profile-hero-content h1,.showcase-content h2,
+.restaurant-hero h1,.restaurant-profile-hero h1,.restaurant-card h2,.restaurant-card h3,
+.section-heading h2,.profile-section h2,.hall-widget-head h3,.hall-editor-topbar h2,
+.home-banner-slider .banner-copy h2,
+.vk-mini-hero h1,.vk-mini-section h1,.vk-mini-section h2,.vk-mini-place-content h1,
+.reservation-form h2,.reservation-success-card h2,.guest-reservation-card h2 {
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+
+/* The reserve-page title is pinned in a narrow (~190px) sidebar column.
+   The generic mobile heading rule blows it up to 44px there, which
+   forces names like «Крыжовник»/«Аквамарин» to break at a random
+   letter in the 681–720px band. Size it to its column instead so
+   common names stay on their own line; break-word + hyphens handle
+   the rare extra-long name. */
+.public-reserve-page .page-title h1 {
+  font-size: clamp(26px, 3.4vw, 40px) !important;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
