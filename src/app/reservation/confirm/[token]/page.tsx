@@ -140,7 +140,7 @@ export default async function ReservationConfirmationPage({ params }: Props) {
           ) : null}
         </div>
 
-        {reservation.status === RESERVATION_STATUSES.CANCELLED_BY_GUEST ? <p className="form-success">Заявка отменена. Ресторан получил уведомление.</p> : null}
+        {reservation.status === RESERVATION_STATUSES.CANCELLED_BY_GUEST ? <p className="form-success">Заявка отменена. Ресторан уведомлён об отмене.</p> : null}
         {reservation.guestConfirmedAt ? <p className="form-success">Вы подтвердили визит. Ресторан видит это в кабинете.</p> : null}
 
         {canConfirm ? (

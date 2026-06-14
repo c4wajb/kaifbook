@@ -8,7 +8,7 @@ import { expireOverdueDepositPayments } from "@/lib/payments";
 import { normalizePhone, phoneAccountEmail } from "@/lib/phone";
 import { calculateReservationPrice } from "@/lib/reservation-pricing";
 import { addMinutesToTime, dateFromInput, dayOfWeekFromDate, isPastReservationDate, isRangeWithinWorkingHours, normalizedEndMinutes, resolveVisitInstant, slotRangesOverlap, timeToMinutes, todayUtcMidnight, type WorkingHourLike } from "@/lib/time";
-import { notifyGuestReservationStatus, notifyRestaurantNewReservation, resolveConfirmedVerificationSession, resolveVerifiedVkPhone, sendMessengerMessage } from "@/lib/verifications";
+import { notifyGuestReservationStatus, notifyRestaurantReservationEvent, resolveConfirmedVerificationSession, resolveVerifiedVkPhone, sendMessengerMessage } from "@/lib/verifications";
 
 const CANCELLED_OR_REJECTED_STATUSES = [
   RESERVATION_STATUSES.CANCELLED,
@@ -275,7 +275,8 @@ export async function createReservation(restaurantId: string, input: Reservation
     );
   }
   // Alert the restaurant's linked VK about the new booking.
-  await notifyRestaurantNewReservation({
+  await notifyRestaurantReservationEvent({
+    event: "new",
     restaurantTitle: reservation.restaurant.title,
     vkNotifyPeerId: reservation.restaurant.vkNotifyPeerId,
     customerName: input.customerName,

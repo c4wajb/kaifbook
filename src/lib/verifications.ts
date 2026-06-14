@@ -788,9 +788,14 @@ export async function startRestaurantVkLink(input: { restaurantId: string; phone
   };
 }
 
-// Push a "new booking" alert to the restaurant's linked VK. Best-effort: silent
-// when no VK is linked or the community can't message that user.
-export async function notifyRestaurantNewReservation(reservation: {
+export type RestaurantReservationEvent = "new" | "cancelled" | "rescheduled" | "confirmed";
+
+// Push a booking event to the restaurant's linked VK. Best-effort: silent when
+// no VK is linked or the community can't message that user. Covers guest-driven
+// events (new / cancelled / rescheduled / confirmed); no-show is marked by the
+// restaurant itself, so it isn't pushed back to them.
+export async function notifyRestaurantReservationEvent(reservation: {
+  event: RestaurantReservationEvent;
   restaurantTitle?: string | null;
   vkNotifyPeerId?: string | null;
   customerName: string;
@@ -805,12 +810,19 @@ export async function notifyRestaurantNewReservation(reservation: {
     if (!reservation.vkNotifyPeerId) return;
     const date = new Intl.DateTimeFormat("ru-RU", { day: "2-digit", month: "2-digit" }).format(reservation.reservationDate);
     const table = reservation.tableNumber ? `, стол ${reservation.tableNumber}` : "";
-    await sendMessengerMessage(
-      VERIFICATION_PROVIDERS.VK,
-      reservation.vkNotifyPeerId,
-      `Kaifbook: новая бронь в «${reservation.restaurantTitle ?? ""}». ${reservation.customerName}, ${reservation.guestsCount} чел., ${date} ${reservation.startTime}–${reservation.endTime}${table}. Тел: ${reservation.customerPhone}.`,
-    );
+    const who = `${reservation.customerName}, ${reservation.guestsCount} чел., ${date} ${reservation.startTime}–${reservation.endTime}${table}`;
+    const title = reservation.restaurantTitle ?? "";
+    const phone = ` Тел: ${reservation.customerPhone}.`;
+    const message =
+      reservation.event === "cancelled"
+        ? `Kaifbook: ❌ гость отменил бронь в «${title}». ${who}.${phone}`
+        : reservation.event === "rescheduled"
+          ? `Kaifbook: 🔁 гость перенёс бронь в «${title}». Теперь: ${who}.${phone}`
+          : reservation.event === "confirmed"
+            ? `Kaifbook: ✅ гость подтвердил визит в «${title}». ${who}.${phone}`
+            : `Kaifbook: 🆕 новая бронь в «${title}». ${who}.${phone}`;
+    await sendMessengerMessage(VERIFICATION_PROVIDERS.VK, reservation.vkNotifyPeerId, message);
   } catch (error) {
-    console.error("[Kaifbook:notify] restaurant new reservation failed", error instanceof Error ? error.message : String(error));
+    console.error("[Kaifbook:notify] restaurant event failed", error instanceof Error ? error.message : String(error));
   }
 }

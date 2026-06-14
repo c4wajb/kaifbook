@@ -4,6 +4,7 @@ import { RESERVATION_STATUSES } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 import { dateFromInput } from "@/lib/time";
 import { validateReservationBusinessRules } from "@/lib/reservations";
+import { notifyRestaurantReservationEvent } from "@/lib/verifications";
 
 export const reservationRescheduleSchema = z.object({
   reservationDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
@@ -17,7 +18,7 @@ export async function getReservationByConfirmationToken(token: string) {
   const reservation = await prisma.reservation.findUnique({
     where: { confirmationToken: token },
     include: {
-      restaurant: { select: { id: true, title: true, slug: true, address: true, phone: true, ownerId: true } },
+      restaurant: { select: { id: true, title: true, slug: true, address: true, phone: true, ownerId: true, vkNotifyPeerId: true } },
       hall: { select: { title: true } },
       table: { include: { tableType: true } },
       payments: { orderBy: { createdAt: "desc" } },
@@ -81,6 +82,18 @@ export async function acceptReservationByToken(token: string) {
     },
   });
 
+  await notifyRestaurantReservationEvent({
+    event: "confirmed",
+    restaurantTitle: reservation.restaurant.title,
+    vkNotifyPeerId: reservation.restaurant.vkNotifyPeerId,
+    customerName: reservation.customerName,
+    customerPhone: reservation.customerPhone,
+    guestsCount: reservation.guestsCount,
+    reservationDate: reservation.reservationDate,
+    startTime: reservation.startTime,
+    endTime: reservation.endTime,
+  });
+
   return updated;
 }
 
@@ -106,6 +119,18 @@ export async function cancelReservationByToken(token: string) {
       title: "Гость отменил визит",
       message: `${reservation.customerName} отменил визит на ${reservation.startTime}`,
     },
+  });
+
+  await notifyRestaurantReservationEvent({
+    event: "cancelled",
+    restaurantTitle: reservation.restaurant.title,
+    vkNotifyPeerId: reservation.restaurant.vkNotifyPeerId,
+    customerName: reservation.customerName,
+    customerPhone: reservation.customerPhone,
+    guestsCount: reservation.guestsCount,
+    reservationDate: reservation.reservationDate,
+    startTime: reservation.startTime,
+    endTime: reservation.endTime,
   });
 
   return updated;
@@ -153,6 +178,18 @@ export async function rescheduleReservationByToken(token: string, payload: z.inf
       title: "Гость перенёс визит",
       message: `${reservation.customerName}: новая дата ${payload.reservationDate}, ${payload.startTime}`,
     },
+  });
+
+  await notifyRestaurantReservationEvent({
+    event: "rescheduled",
+    restaurantTitle: reservation.restaurant.title,
+    vkNotifyPeerId: reservation.restaurant.vkNotifyPeerId,
+    customerName: reservation.customerName,
+    customerPhone: reservation.customerPhone,
+    guestsCount: input.guestsCount,
+    reservationDate: updated.reservationDate,
+    startTime: updated.startTime,
+    endTime: updated.endTime,
   });
 
   return updated;
