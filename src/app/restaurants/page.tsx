@@ -11,10 +11,12 @@ export const metadata: Metadata = {
     type: "website",
   },
 };
+import { AgeGate } from "@/components/AgeGate";
 import { ChipSlider } from "@/components/ChipSlider";
 import { HomeBannerSlider } from "@/components/HomeBannerSlider";
 import { RestaurantCard } from "@/components/RestaurantCard";
 import { RestaurantFilters } from "@/components/RestaurantFilters";
+import { filtersImplyAdultContent } from "@/lib/adult-content";
 import { parseStringList } from "@/lib/json-fields";
 import { getHomeBannerRestaurants, getPublicRestaurants, getRestaurantFilterOptions } from "@/lib/public-data";
 
@@ -86,6 +88,7 @@ function RestaurantSection({ title, restaurants, showAllHref, layout = "grid" }:
 
 export default async function RestaurantsPage({ searchParams }: Props) {
   const filters = await searchParams;
+  const requiresAgeGate = filtersImplyAdultContent(filters);
   const hasActiveFilters = Boolean(filters.q || filters.city || filters.cuisine || filters.feature || filters.averageCheck || filters.type || filters.open);
   const layoutMode: LayoutMode = filters.layout === "large" ? "large" : "grid";
   const [restaurants, options, bannerRestaurants] = await Promise.all([getPublicRestaurants(filters), getRestaurantFilterOptions(), getHomeBannerRestaurants()]);
@@ -116,6 +119,7 @@ export default async function RestaurantsPage({ searchParams }: Props) {
 
   return (
     <div className={`page client-page catalog-page catalog-layout-${layoutMode}`}>
+      {requiresAgeGate ? <AgeGate /> : null}
       <h1 className="visually-hidden">Рестораны в Курске</h1>
 
       <ChipSlider className="quick-filter-row catalog-quick-row">
