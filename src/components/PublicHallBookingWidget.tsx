@@ -192,8 +192,10 @@ export function PublicHallBookingWidget({
   const fitScale = useMemo(() => {
     if (!viewport.width) return 1;
     const scaleByWidth = viewport.width / boardWidth;
-    const scaleByHeight = Number.isFinite(viewport.maxHeight) ? viewport.maxHeight / boardHeight : 1;
-    return Math.max(0.12, Math.min(scaleByWidth, scaleByHeight, 1));
+    const scaleByHeight = Number.isFinite(viewport.maxHeight) ? viewport.maxHeight / boardHeight : Number.POSITIVE_INFINITY;
+    // Fill the available width (scale up when the hall is narrower than the
+    // viewport) without overflowing the height. Capped so it can't get absurd.
+    return Math.max(0.12, Math.min(scaleByWidth, scaleByHeight, 2.4));
   }, [boardHeight, boardWidth, viewport.maxHeight, viewport.width]);
   const currentScale = fitScale * zoomMultiplier;
   const isZoomed = zoomMultiplier > 1.02;
@@ -208,9 +210,12 @@ export function PublicHallBookingWidget({
     const updateViewport = () => {
       const width = Math.max(1, node.clientWidth);
       const mobileHeight = typeof window === "undefined" ? 420 : Math.min(430, Math.max(260, window.innerHeight * 0.46));
+      // Desktop gets a generous height cap so the board can grow to fill the
+      // width for typical halls, while never running off the screen vertically.
+      const desktopHeight = typeof window === "undefined" ? 760 : Math.min(820, Math.max(420, window.innerHeight * 0.72));
       setViewport({
         width,
-        maxHeight: width <= 680 ? mobileHeight : Number.POSITIVE_INFINITY,
+        maxHeight: width <= 680 ? mobileHeight : desktopHeight,
       });
     };
 

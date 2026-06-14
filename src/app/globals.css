@@ -15654,3 +15654,62 @@ h1, h2, h3, h4 { overflow-wrap: break-word; }
 .yandex-map-placeholder:hover {
   color: var(--lux-terracotta, #be6842);
 }
+
+/* ── Floor-plan table status — high-contrast, unmistakable colours ─────── */
+/* свободен → зелёный, нужен депозит → янтарный, занято → красный,
+   выбран → синий. Source order = precedence (selected wins over all). */
+.booking-table.status-available .booking-table-core {
+  border-color: #2f9e44 !important;
+  background: #e9f7ec !important;
+  color: #176a2b !important;
+}
+.booking-table.requires-deposit .booking-table-core {
+  border-color: #e8920c !important;
+  background: #fdeccb !important;
+  color: #8a5410 !important;
+}
+.booking-table.status-occupied .booking-table-core,
+.booking-table.status-too_small .booking-table-core,
+.booking-table.status-disabled .booking-table-core {
+  border-color: #e03131 !important;
+  background: #ffe7e7 !important;
+  color: #b02525 !important;
+  opacity: 1 !important;
+}
+.booking-table.selected .booking-table-core,
+.public-booking-board .booking-table.selected .booking-table-core {
+  border-color: #1565c0 !important;
+  background: #1971c2 !important;
+  color: #ffffff !important;
+}
+/* Labels (number / seats / status) take the table's status colour so they stay
+   readable on every background — white on the filled blue "selected" card. */
+.booking-table .booking-table-core strong,
+.booking-table .booking-table-core span,
+.booking-table .booking-table-core small {
+  color: inherit !important;
+}
+.booking-table.status-available .seat-dot { border-color: #2f9e44; }
+.booking-table.status-occupied .seat-dot,
+.booking-table.status-too_small .seat-dot,
+.booking-table.status-disabled .seat-dot { border-color: #e0a3a3; filter: none; }
+.booking-table.selected .seat-dot.selected {
+  background: #1971c2 !important;
+  border-color: #1565c0 !important;
+  color: #ffffff !important;
+}
+.hall-legend .legend-free { background: #2f9e44 !important; }
+.hall-legend .legend-warning { background: #e8920c !important; }
+.hall-legend .legend-busy { background: #e03131 !important; }
+.hall-legend .legend-selected { background: #1971c2 !important; }
+
+/* Floor plan fills the width; if a short hall can't (height-capped), centre it
+   instead of pinning it to the left. */
+.public-booking-board-scroll.fit-to-view.is-fit {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+.public-booking-board-scroll.fit-to-view.is-fit .public-booking-board-zoom {
+  min-width: 0;
+}
