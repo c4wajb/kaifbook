@@ -60,7 +60,7 @@ NEXT_PUBLIC_APP_URL="http://localhost:3000"
 # COOKIE_SECURE=true   # включать за HTTPS в проде
 ```
 
-Опциональные интеграции (полный список и комментарии — в `.env.example`): подтверждение брони через VK/MAX (`VK_*`, `MAX_*`), вход VK ID (`VK_ID_*`, `NEXT_PUBLIC_VK_ID_APP_ID`), VK Mini App (`VK_APP_*`, `NEXT_PUBLIC_VK_APP_ID`), демо-SMS (`SMS_DEMO_CODE`, `SMS_PROVIDER`).
+Опциональные интеграции (полный список и комментарии — в `.env.example`): подтверждение брони через VK/MAX (`VK_*`, `MAX_*`), вход VK ID (`VK_ID_*`, `NEXT_PUBLIC_VK_ID_APP_ID`), VK Mini App (`VK_APP_*`, `NEXT_PUBLIC_VK_APP_ID`).
 
 ## Демо-доступ
 

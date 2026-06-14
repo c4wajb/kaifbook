@@ -26,18 +26,6 @@ model User {
   reservationAuditLogs ReservationAuditLog[]
 }
 
-model PhoneLoginCode {
-  id         String    @id @default(cuid())
-  phone      String
-  codeHash   String
-  expiresAt  DateTime
-  consumedAt DateTime?
-  createdAt  DateTime  @default(now())
-
-  @@index([phone, createdAt])
-  @@map("phone_login_codes")
-}
-
 model RestaurantStaffAccess {
   id           String   @id @default(cuid())
   restaurantId String

@@ -271,7 +271,7 @@ export function GuestLoginForm({ initialPhone = "", nextPath = "/guest/reservati
         <div className="guest-vkid-panel">
           <div>
             <strong>Быстрый вход через VK ID</strong>
-            <span>Подтвердим вход через VK. Код из SMS больше не нужен.</span>
+            <span>Подтвердим вход через VK — быстро и без лишних шагов.</span>
           </div>
           <button className="button icon-text full" type="button" disabled={vkIdPending || pending} onClick={startVkIdLogin}>
             {vkIdPending ? "Открываем VK ID..." : "Войти через VK ID"}

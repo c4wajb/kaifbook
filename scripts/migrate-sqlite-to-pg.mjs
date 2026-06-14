@@ -48,7 +48,6 @@ const TABLES = [
   { sqlite: "restaurant_leads", pg: "restaurant_leads" },
   { sqlite: "restaurant_page_events", pg: "restaurant_page_events" },
   { sqlite: "waitlist_entries", pg: "waitlist_entries" },
-  { sqlite: "phone_login_codes", pg: "phone_login_codes" },
   { sqlite: "verification_sessions", pg: "verification_sessions" },
 ];
 
