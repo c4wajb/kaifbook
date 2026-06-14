@@ -79,6 +79,55 @@ export function isRangeWithinWorkingHours(startTime: string, endTime: string, wo
   return startMinutes >= openMinutes && endMinutes <= closeMinutes;
 }
 
+const DEFAULT_TZ_OFFSET_MINUTES = 180; // Europe/Moscow (UTC+3, no DST).
+
+export function appTzOffsetMinutes(): number {
+  const raw = process.env.APP_TZ_OFFSET_MINUTES;
+  const parsed = raw ? Number.parseInt(raw, 10) : Number.NaN;
+  return Number.isFinite(parsed) ? parsed : DEFAULT_TZ_OFFSET_MINUTES;
+}
+
+// A slot before opening on an overnight working day (one that closes the next
+// calendar day) belongs to the morning AFTER the picked date.
+export function isAfterMidnightSlot(startTime: string, workingHour: WorkingHourLike | null | undefined): boolean {
+  if (!workingHour || workingHour.isClosed) return false;
+  const open = timeToMinutes(workingHour.openTime);
+  const close = timeToMinutes(workingHour.closeTime);
+  if (close > open) return false; // closes the same day — not overnight
+  return timeToMinutes(startTime) < open;
+}
+
+// Minutes from the picked date's local midnight to the slot start, with
+// after-midnight slots of an overnight night rolled onto the next day (1440+).
+export function slotStartOffsetMinutes(startTime: string, workingHour: WorkingHourLike | null | undefined): number {
+  return timeToMinutes(startTime) + (isAfterMidnightSlot(startTime, workingHour) ? 24 * 60 : 0);
+}
+
+// True UTC instant of a visit. reservationDate is the picked day's UTC midnight;
+// startTime is the local (Moscow) wall-clock. After-midnight slots roll to the
+// next day, and the local→UTC offset is applied explicitly (server clock is UTC).
+export function resolveVisitInstant(reservationDate: Date, startTime: string, workingHour: WorkingHourLike | null | undefined): Date {
+  return new Date(reservationDate.getTime() + (slotStartOffsetMinutes(startTime, workingHour) - appTzOffsetMinutes()) * 60_000);
+}
+
+// Overlap test for two same-day reservations that stays correct across midnight:
+// each [start, end] becomes an absolute minute range from the date's midnight
+// (after-midnight slots rolled to 1440+). For daytime hours this is identical to
+// timesOverlap.
+export function slotRangesOverlap(
+  aStart: string,
+  aEnd: string,
+  bStart: string,
+  bEnd: string,
+  workingHour: WorkingHourLike | null | undefined,
+): boolean {
+  const aStartAbs = slotStartOffsetMinutes(aStart, workingHour);
+  const aEndAbs = aStartAbs + (normalizedEndMinutes(timeToMinutes(aStart), timeToMinutes(aEnd)) - timeToMinutes(aStart));
+  const bStartAbs = slotStartOffsetMinutes(bStart, workingHour);
+  const bEndAbs = bStartAbs + (normalizedEndMinutes(timeToMinutes(bStart), timeToMinutes(bEnd)) - timeToMinutes(bStart));
+  return aStartAbs < bEndAbs && bStartAbs < aEndAbs;
+}
+
 export type TimeSlotOptions = {
   date: string;
   workingHours: WorkingHourLike[] | null | undefined;

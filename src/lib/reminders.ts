@@ -1,22 +1,10 @@
 import { prisma } from "@/lib/db";
-import { timeToMinutes } from "@/lib/time";
+import { dayOfWeekFromDate, resolveVisitInstant } from "@/lib/time";
 import { sendReservationMessageToGuest } from "@/lib/verifications";
 
-// Europe/Moscow is UTC+3 with no DST. Reservation dates are stored at UTC
-// midnight and startTime is the restaurant's local wall-clock, so the true UTC
-// instant of a visit is date + startTime − offset. Override per-deployment with
-// APP_TZ_OFFSET_MINUTES if the restaurants ever live in another timezone.
-const DEFAULT_TZ_OFFSET_MINUTES = 180;
-
-function tzOffsetMinutes() {
-  const raw = process.env.APP_TZ_OFFSET_MINUTES;
-  const parsed = raw ? Number.parseInt(raw, 10) : Number.NaN;
-  return Number.isFinite(parsed) ? parsed : DEFAULT_TZ_OFFSET_MINUTES;
-}
-
-export function reservationVisitInstant(reservationDate: Date, startTime: string): Date {
-  return new Date(reservationDate.getTime() + (timeToMinutes(startTime) - tzOffsetMinutes()) * 60_000);
-}
+// The true UTC instant of a visit is resolved by resolveVisitInstant (lib/time):
+// reservation date + Moscow wall-clock startTime − tz offset, rolling
+// after-midnight slots of an overnight night onto the next day.
 
 // Confirmed, upcoming bookings the guest is expected to attend. We never remind
 // about pending/awaiting bookings (the restaurant may still reject them) or
@@ -117,9 +105,15 @@ export async function processDueReminders(now = new Date()): Promise<ReminderSum
       },
     })) as ReminderReservation[];
 
+    const workingHours = await prisma.restaurantWorkingHour.findMany({
+      where: { restaurantId: settings.restaurantId },
+      select: { dayOfWeek: true, openTime: true, closeTime: true, isClosed: true },
+    });
+
     for (const reservation of reservations) {
       summary.scanned += 1;
-      const visitAt = reservationVisitInstant(reservation.reservationDate, reservation.startTime);
+      const workingHour = workingHours.find((hour) => hour.dayOfWeek === dayOfWeekFromDate(reservation.reservationDate)) ?? null;
+      const visitAt = resolveVisitInstant(reservation.reservationDate, reservation.startTime, workingHour);
       const minutesUntil = (visitAt.getTime() - now.getTime()) / 60_000;
       if (minutesUntil <= 0) continue; // visit already started or passed
 

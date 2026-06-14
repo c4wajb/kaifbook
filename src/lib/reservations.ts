@@ -7,7 +7,7 @@ import { formatGuests } from "@/lib/format";
 import { expireOverdueDepositPayments } from "@/lib/payments";
 import { normalizePhone, phoneAccountEmail } from "@/lib/phone";
 import { calculateReservationPrice } from "@/lib/reservation-pricing";
-import { addMinutesToTime, dateFromInput, dayOfWeekFromDate, isPastReservationDate, isRangeWithinWorkingHours, normalizedEndMinutes, timeToMinutes, timesOverlap, todayUtcMidnight } from "@/lib/time";
+import { addMinutesToTime, dateFromInput, dayOfWeekFromDate, isPastReservationDate, isRangeWithinWorkingHours, normalizedEndMinutes, resolveVisitInstant, slotRangesOverlap, timeToMinutes, todayUtcMidnight, type WorkingHourLike } from "@/lib/time";
 import { notifyGuestReservationStatus, resolveConfirmedVerificationSession, resolveVerifiedVkPhone, sendMessengerMessage } from "@/lib/verifications";
 
 const CANCELLED_OR_REJECTED_STATUSES = [
@@ -80,7 +80,7 @@ export function isWithinWorkingHours(startTime: string, endTime: string, working
   return isRangeWithinWorkingHours(startTime, endTime, workingHour ? { ...workingHour, dayOfWeek: 0 } : null);
 }
 
-export async function findTableConflict(input: { tableId: string; reservationDate: Date; startTime: string; endTime: string; excludeReservationId?: string }) {
+export async function findTableConflict(input: { tableId: string; reservationDate: Date; startTime: string; endTime: string; excludeReservationId?: string; workingHour?: WorkingHourLike | null }) {
   const occupyingStatuses = [
     RESERVATION_STATUSES.NEW,
     RESERVATION_STATUSES.AWAITING_RESTAURANT_CONFIRMATION,
@@ -101,7 +101,7 @@ export async function findTableConflict(input: { tableId: string; reservationDat
     select: { id: true, startTime: true, endTime: true, customerName: true, status: true },
   });
 
-  return existing.find((reservation) => timesOverlap(input.startTime, input.endTime, reservation.startTime, reservation.endTime)) ?? null;
+  return existing.find((reservation) => slotRangesOverlap(input.startTime, input.endTime, reservation.startTime, reservation.endTime, input.workingHour ?? null)) ?? null;
 }
 
 export async function validateReservationBusinessRules(restaurantId: string, input: ReservationRequest, options: { allowInactiveRestaurant?: boolean; excludeReservationId?: string } = {}) {
@@ -125,8 +125,7 @@ export async function validateReservationBusinessRules(restaurantId: string, inp
   // enforce it too so a direct request can't book too close to the visit time).
   const minAdvance = restaurant.settings?.minAdvanceBookingMinutes ?? 0;
   if (!options.allowInactiveRestaurant && minAdvance > 0) {
-    const [startHour, startMinute] = input.startTime.split(":").map(Number);
-    const startInstant = new Date(reservationDate.getUTCFullYear(), reservationDate.getUTCMonth(), reservationDate.getUTCDate(), startHour, startMinute, 0, 0);
+    const startInstant = resolveVisitInstant(reservationDate, input.startTime, workingHour);
     const minutesUntilStart = (startInstant.getTime() - Date.now()) / 60000;
     if (minutesUntilStart < minAdvance) throw new ApiError(400, `Бронировать можно минимум за ${minAdvance} минут до визита. Выберите время позже.`);
   }
@@ -148,7 +147,7 @@ export async function validateReservationBusinessRules(restaurantId: string, inp
       if (selectedSeats.length > (restaurant.settings?.maxSeatsSelection ?? table.seats)) throw new ApiError(400, "Выбрано слишком много мест");
       if (selectedSeats.length > table.seats) throw new ApiError(400, "Выбрано больше мест, чем есть за столом");
     }
-    const conflict = await findTableConflict({ tableId: table.id, reservationDate, startTime: input.startTime, endTime, excludeReservationId: options.excludeReservationId });
+    const conflict = await findTableConflict({ tableId: table.id, reservationDate, startTime: input.startTime, endTime, excludeReservationId: options.excludeReservationId, workingHour });
     if (conflict) throw new ApiError(409, "Этот стол уже занят на выбранное время. Выберите другой.");
   }
 

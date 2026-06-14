@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { applyExternalDepositToPricing } from "@/lib/external-payments";
 import { expireOverdueDepositPayments } from "@/lib/payments";
 import { calculateReservationPrice } from "@/lib/reservation-pricing";
-import { addMinutesToTime, dateFromInput, dayOfWeekFromDate, isRangeWithinWorkingHours, normalizedEndMinutes, timeToMinutes, timesOverlap, todayUtcMidnight } from "@/lib/time";
+import { addMinutesToTime, dateFromInput, dayOfWeekFromDate, isRangeWithinWorkingHours, normalizedEndMinutes, slotRangesOverlap, timeToMinutes, todayUtcMidnight } from "@/lib/time";
 
 type C = { params: Promise<{ slug: string }> };
 
@@ -94,7 +94,7 @@ export async function GET(request: Request, context: C) {
     const flatTables = restaurant.halls.flatMap((hall) => hall.tables.map((table) => ({ ...table, hallId: hall.id, hallTitle: hall.title })));
     const tables = await Promise.all(
       flatTables.map(async (table) => {
-        const conflict = reservations.find((reservation) => reservation.tableId === table.id && timesOverlap(startTime, endTime, reservation.startTime, reservation.endTime));
+        const conflict = reservations.find((reservation) => reservation.tableId === table.id && slotRangesOverlap(startTime, endTime, reservation.startTime, reservation.endTime, workingHour));
         const maxGuests = table.maxGuests ?? table.seats;
         const minGuests = table.minGuests ?? table.tableType?.minGuests ?? 1;
         const tooSmall = guestsCount > maxGuests;
