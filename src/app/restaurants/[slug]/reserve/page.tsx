@@ -23,12 +23,15 @@ export default async function ReservePage({ params }: Props) {
   return (
     <div className="page public-reserve-page">
       {requiresAgeGate ? <AgeGate /> : null}
-      <div className="page-title">
+      <div className="reserve-topbar">
         <Link className="booking-top-return" href={`/restaurants/${restaurant.slug}`} aria-label="Вернуться к ресторану">
           <span aria-hidden>←</span>
           <span>К ресторану</span>
         </Link>
-        <h1>{restaurant.title}</h1>
+        <div className="reserve-topbar-title">
+          <span className="reserve-eyebrow">Бронирование столика</span>
+          <h1>{restaurant.title}</h1>
+        </div>
       </div>
       <ReservationForm
         authenticatedGuest={Boolean(guestSession)}

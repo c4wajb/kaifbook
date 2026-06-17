@@ -23,14 +23,15 @@ export default async function ShortBookingPage({ params }: Props) {
   return (
     <div className="page public-reserve-page">
       {requiresAgeGate ? <AgeGate /> : null}
-      <div className="page-title">
+      <div className="reserve-topbar">
         <Link className="booking-top-return" href={`/restaurants/${restaurant.slug}`} aria-label="Вернуться к ресторану">
           <span aria-hidden>←</span>
           <span>К ресторану</span>
         </Link>
-        <p className="eyebrow">Быстрое бронирование</p>
-        <h1>{restaurant.title}</h1>
-        <p>Эту ссылку удобно открыть из соцсетей, карт или QR-кода. Если вы уже вошли, заявка сохранится в ваших бронях.</p>
+        <div className="reserve-topbar-title">
+          <span className="reserve-eyebrow">Быстрое бронирование</span>
+          <h1>{restaurant.title}</h1>
+        </div>
       </div>
       <ReservationForm
         authenticatedGuest={Boolean(guestSession)}
