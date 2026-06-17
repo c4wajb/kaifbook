@@ -6,10 +6,10 @@ import { CookieConsent } from "@/components/CookieConsent";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import "./globals.css";
 
-// Interface/body text. Cyrillic-native variable font exposed as --font-sans.
-const fontSans = Golos_Text({ subsets: ["latin", "cyrillic"], variable: "--font-sans", display: "swap" });
-// Headings. Brand serif exposed as --font-serif (replaces the Georgia fallback).
-const fontSerif = Playfair_Display({ subsets: ["latin", "cyrillic"], variable: "--font-serif", display: "swap" });
+// Interface/body text. Cyrillic-native variable font; mapped to --font-sans in :root.
+const fontSans = Golos_Text({ subsets: ["latin", "cyrillic"], variable: "--font-golos", display: "swap" });
+// Headings. Brand serif (variable font keeps the exact heading weights); mapped to --font-serif in :root.
+const fontSerif = Playfair_Display({ subsets: ["latin", "cyrillic"], variable: "--font-playfair", display: "swap" });
 
 export const metadata: Metadata = { title: "Kaifbook", description: "MVP цифровой системы бронирования ресторанов" };
 export const viewport: Viewport = { width: "device-width", initialScale: 1, maximumScale: 1, userScalable: false, viewportFit: "cover" };
