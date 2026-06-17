@@ -12,5 +12,5 @@ const fontSans = Golos_Text({ subsets: ["latin", "cyrillic"], variable: "--font-
 const fontSerif = Playfair_Display({ subsets: ["latin", "cyrillic"], variable: "--font-serif", display: "swap" });
 
 export const metadata: Metadata = { title: "Kaifbook", description: "MVP цифровой системы бронирования ресторанов" };
-export const viewport: Viewport = { width: "device-width", initialScale: 1, maximumScale: 1, userScalable: false };
+export const viewport: Viewport = { width: "device-width", initialScale: 1, maximumScale: 1, userScalable: false, viewportFit: "cover" };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="ru" data-scroll-behavior="smooth" suppressHydrationWarning className={`${fontSans.variable} ${fontSerif.variable}`}><body suppressHydrationWarning><AppHeader /><main>{children}</main><AppFooter /><ScrollToTopButton /><CookieConsent /></body></html>; }

@@ -15954,3 +15954,23 @@ html {
 .scroll-to-top-button {
   bottom: calc(24px + env(safe-area-inset-bottom));
 }
+
+/* ============================================================
+   Task 7 — Native (Capacitor / VK Mini): now that viewport-fit=cover
+   activates env(safe-area-inset-*), the sticky TOP bars must clear the
+   status bar / notch (bottom bars already handle their inset). All
+   no-ops on desktop / normal browser tabs where the insets are 0.
+   ============================================================ */
+.app-header {
+  padding-top: env(safe-area-inset-top);
+}
+@media (max-width: 720px) {
+  /* keep the compact mobile header padding, add the inset on top */
+  .app-header.public-header {
+    padding-top: calc(10px + env(safe-area-inset-top)) !important;
+  }
+}
+/* VK Mini sticky topbar clears the notch when stuck at the top */
+.vk-mini-topbar {
+  padding-top: calc(10px + env(safe-area-inset-top));
+}
