@@ -15991,3 +15991,81 @@ html {
   /* reserve two lines so 1-line titles align with 2-line ones */
   min-height: calc(2 * 1.15em);
 }
+
+/* ============================================================
+   Task 9 — Admin rows become readable CARDS on mobile instead of a
+   single-column stack of unlabeled cells ("каша"). Restaurant rows
+   get a real card layout (title block, badge + stat chips inline,
+   full-width action grid); the other row types get full-width 44px
+   actions. Most overflow-x rules in this file are legitimate sliders
+   (rails/chips/tabs), so they are intentionally left alone.
+   ============================================================ */
+@media (max-width: 720px) {
+  .restaurant-admin-row {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 12px !important;
+    padding: 16px !important;
+  }
+  .restaurant-admin-row .restaurant-admin-main {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+  .restaurant-admin-row .restaurant-admin-main strong {
+    font-size: 17px;
+  }
+  /* badge + the two stats share one inline row under the title */
+  .restaurant-admin-row > .badge,
+  .restaurant-admin-row .restaurant-admin-stat {
+    flex: 0 0 auto;
+  }
+  .restaurant-admin-row .restaurant-admin-stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: var(--surface-2);
+  }
+  .restaurant-admin-row .restaurant-admin-stat strong { font-size: 15px; }
+  .restaurant-admin-row .restaurant-admin-stat span { color: var(--muted); font-size: 12px; }
+  /* actions: full-width 2-up grid of equal 44px buttons with a divider */
+  .restaurant-admin-row .restaurant-admin-actions {
+    flex: 1 1 100%;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px;
+    margin-top: 2px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+  }
+  .restaurant-admin-row .restaurant-admin-actions .small-button {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  /* other admin row types: keep the stack but make actions full-width
+     and comfortably tappable */
+  .guest-row,
+  .history-row,
+  .application-row {
+    padding: 16px !important;
+    gap: 8px !important;
+  }
+  .guest-actions,
+  .history-status,
+  .application-actions {
+    width: 100%;
+    margin-top: 4px;
+  }
+  .guest-actions .small-button,
+  .guest-actions .button,
+  .application-actions .small-button,
+  .application-actions .button {
+    flex: 1 1 auto;
+    min-height: 44px;
+    justify-content: center;
+  }
+}
