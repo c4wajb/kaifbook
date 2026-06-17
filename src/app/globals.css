@@ -15840,3 +15840,50 @@ h1,h2,h3,h4,h5,h6,
 .catalog-filter-chip .catalog-filter-trigger.selected svg {
   color: currentColor !important;
 }
+
+/* ============================================================
+   Task 4 — Branded placeholder for hero slides with no photo.
+   Replaces the flat dark-brown rectangle (a missing image under
+   the left-dark overlay) with a warm cream panel: soft diagonal
+   texture, faint serif monogram, small mono caption. On these
+   slides the overlay flips to a light left-scrim and the copy to
+   dark ink so the heading and CTA stay readable.
+   ============================================================ */
+.banner-slide-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(135deg, rgba(155, 63, 36, .05) 0 16px, rgba(155, 63, 36, 0) 16px 32px),
+    linear-gradient(155deg, #efe7da 0%, #e6d8c5 58%, #ddcbb4 100%);
+}
+.banner-placeholder-mark {
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: clamp(140px, 24vw, 300px);
+  font-weight: 700;
+  line-height: 1;
+  color: rgba(120, 86, 53, .14);
+  user-select: none;
+}
+.banner-placeholder-note {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: .08em;
+  color: rgba(90, 70, 50, .5);
+}
+.home-banner-slider.is-placeholder .showcase-overlay {
+  background: linear-gradient(90deg, rgba(255, 251, 244, .66), rgba(255, 251, 244, .2) 42%, transparent 70%) !important;
+}
+.home-banner-slider.is-placeholder .banner-copy,
+.home-banner-slider.is-placeholder .banner-copy h2,
+.home-banner-slider.is-placeholder .banner-copy p {
+  color: #241a13 !important;
+}
+.home-banner-slider.is-placeholder .banner-copy .showcase-meta span {
+  color: #5a4636 !important;
+}

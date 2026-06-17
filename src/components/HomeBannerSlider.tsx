@@ -34,13 +34,17 @@ export function HomeBannerSlider({ restaurants }: { restaurants: BannerRestauran
   const skipNextClick = useRef(false);
   const preparedSlides = useMemo(
     () =>
-      slides.map((slide) => ({
-        ...slide,
-        image: slide.bannerImage || slide.mainPhotoUrl || parseStringList(slide.galleryPhotos || "[]")[0] || fallbackPhoto,
-        titleText: slide.bannerTitle || slide.title,
-        subtitleText: slide.bannerSubtitle || slide.shortDescription,
-        cuisineLabel: formatList(slide.cuisineTypes).split(", ").slice(0, 2).join(" и "),
-      })),
+      slides.map((slide) => {
+        const photo = slide.bannerImage || slide.mainPhotoUrl || parseStringList(slide.galleryPhotos || "[]")[0] || "";
+        return {
+          ...slide,
+          hasPhoto: Boolean(photo),
+          image: photo || fallbackPhoto,
+          titleText: slide.bannerTitle || slide.title,
+          subtitleText: slide.bannerSubtitle || slide.shortDescription,
+          cuisineLabel: formatList(slide.cuisineTypes).split(", ").slice(0, 2).join(" и "),
+        };
+      }),
     [slides],
   );
   const current = preparedSlides[index] ?? preparedSlides[0];
@@ -107,7 +111,7 @@ export function HomeBannerSlider({ restaurants }: { restaurants: BannerRestauran
 
   return (
     <section
-      className="restaurant-showcase home-banner-slider"
+      className={`restaurant-showcase home-banner-slider ${current.hasPhoto ? "" : "is-placeholder"}`}
       aria-roledescription="carousel"
       aria-label={`Открыть ресторан ${current.titleText}`}
       role="link"
@@ -130,7 +134,14 @@ export function HomeBannerSlider({ restaurants }: { restaurants: BannerRestauran
       <div className="banner-slide-stack" aria-hidden="true">
         {preparedSlides.map((slide, slideIndex) => (
           <div className={`banner-slide ${slideIndex === index ? "active" : ""}`} key={slide.slug}>
-            <Image src={slide.image} alt="" fill priority={slideIndex === 0} loading={slideIndex === 0 ? "eager" : "lazy"} sizes="(max-width: 980px) 100vw, 1180px" />
+            {slide.hasPhoto ? (
+              <Image src={slide.image} alt="" fill priority={slideIndex === 0} loading={slideIndex === 0 ? "eager" : "lazy"} sizes="(max-width: 980px) 100vw, 1180px" />
+            ) : (
+              <div className="banner-slide-placeholder">
+                <span className="banner-placeholder-mark" aria-hidden>{(slide.titleText || "·").trim().charAt(0).toUpperCase()}</span>
+                <span className="banner-placeholder-note">фото ресторана</span>
+              </div>
+            )}
           </div>
         ))}
       </div>
