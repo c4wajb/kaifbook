@@ -1,6 +1,6 @@
 "use client";
 
-import { Armchair, Loader2 } from "lucide-react";
+import { Armchair, CheckCircle2, Loader2 } from "lucide-react";
 import { CSSProperties, type MouseEvent as ReactMouseEvent, type TouchEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { fetchJsonWithDiagnostics, isFriendlyAbort } from "@/lib/client-fetch";
 import { getPublicSchemeObjectZIndex, getPublicTableZIndex, getSchemeObjectLayer, sortSchemeObjectsForRender } from "@/lib/scheme-layers";
@@ -409,7 +409,11 @@ export function PublicHallBookingWidget({
         <div>
           <span className="eyebrow">Столы ресторана</span>
           <h3>Выберите стол</h3>
-          <p>Нажмите на свободный стол. Если нужно, выберите места рядом с ним.</p>
+          {!selectedTableId ? (
+            <span className="hall-tap-hint"><Armchair size={15} aria-hidden /> Нажмите на свободный стол, чтобы выбрать</span>
+          ) : (
+            <p>Можно выбрать места рядом со столом.</p>
+          )}
         </div>
         {pending ? <span className="tiny-status"><Loader2 size={14} className="spin" aria-hidden /> обновляем</span> : null}
       </div>
@@ -472,7 +476,7 @@ export function PublicHallBookingWidget({
           const height = `${(table.height / boardHeight) * 100}%`;
           const selected = selectedTableId === table.id;
           return (
-            <div className={`booking-table ${table.shape === "circle" ? "round" : ""} status-${table.status} ${selected ? "selected" : ""} ${table.pricing.isDepositRequired ? "requires-deposit" : ""}`} key={table.id} style={{ left, top, width, height, transform: `rotate(${table.rotation}deg)`, zIndex: getPublicTableZIndex(selected) }}>
+            <div className={`booking-table ${table.shape === "circle" ? "round" : ""} status-${table.status} ${selected ? "selected" : ""} ${table.pricing.isDepositRequired ? "requires-deposit" : ""} ${!selectedTableId && table.status === "available" ? "pulse-hint" : ""}`} key={table.id} style={{ left, top, width, height, transform: `rotate(${table.rotation}deg)`, zIndex: getPublicTableZIndex(selected) }}>
               {table.seatsMap.map((seat, index) => (
                 <button
                   aria-label={`Место ${seat.seatNumber} за столом ${table.number}`}
@@ -510,8 +514,8 @@ export function PublicHallBookingWidget({
       </div>
 
       {selectedTable ? (
-        <div className="selected-table-summary">
-          <strong>Стол {selectedTable.number} · {selectedSeatIds.length || guestsCount} мест из {selectedTable.seats}</strong>
+        <div className="selected-table-summary is-selected">
+          <strong><CheckCircle2 size={16} aria-hidden /> Стол {selectedTable.number} выбран · {selectedSeatIds.length || guestsCount} мест из {selectedTable.seats}</strong>
           <span>{selectedTable.tableType?.title ? `${selectedTable.tableType.title} · ` : ""}{selectedTable.pricing.explanation}</span>
         </div>
       ) : (

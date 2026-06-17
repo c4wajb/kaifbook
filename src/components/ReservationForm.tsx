@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, CalendarDays, CheckCircle2, Copy, CreditCard, ExternalLink, KeyRound, Loader2, MessageCircle, Send, ShieldCheck, X } from "lucide-react";
+import { Armchair, ArrowRight, CalendarDays, CheckCircle2, Clock, Copy, CreditCard, ExternalLink, KeyRound, Loader2, MessageCircle, Send, ShieldCheck, Users, X } from "lucide-react";
 import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PrettySelect } from "@/components/PrettySelect";
@@ -891,9 +891,81 @@ export function ReservationForm({
     }
   }
 
+  // ── Display-only derived state for the stepper / live summary / CTA.
+  // Everything below is computed from EXISTING state — no new React state, no
+  // change to submit/payload/verification. It only presents progress + reasons.
+  const isPhoneValid = isValidRuPhone(customerPhone);
+  const isNameFilled = Boolean(customerName.trim());
+  const verificationSatisfied = !mustConfirmPhone || verification.status === "confirmed";
+  const stepWhenDone = !timeError && Boolean(startTime) && Boolean(endTime);
+  const stepWhereDone = !hasConfiguredHall || (Boolean(tableId) && !selectionError);
+  const stepWhoDone = isNameFilled && isPhoneValid && verificationSatisfied;
+  const activeStep = !stepWhenDone ? "when" : !stepWhereDone ? "where" : "who";
+  // Reason the submit is not yet possible (covers — and never weakens — the
+  // original disabled gate: timeError / selectionError / required verification,
+  // plus name + phone which the submit handler already enforces).
+  const submitBlockedReason = timeError
+    ? "Выберите дату и время"
+    : selectionError
+      ? selectionError
+      : !isNameFilled
+        ? "Введите имя"
+        : !isPhoneValid
+          ? "Введите телефон"
+          : !verificationSatisfied
+            ? "Подтвердите телефон"
+            : null;
+  const canSubmit = !pending && !submitBlockedReason;
+
+  function pluralGuests(n: number) {
+    const mod10 = n % 10;
+    const mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return "гость";
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return "гостя";
+    return "гостей";
+  }
+
+  function scrollToStep(id: string) {
+    const el = typeof document !== "undefined" ? document.getElementById(id) : null;
+    if (!el) return;
+    const reduce = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const top = el.getBoundingClientRect().top + window.scrollY - 88;
+    window.scrollTo({ top, behavior: reduce ? "auto" : "smooth" });
+  }
+
   return (
     <>
-      <form className="panel reservation-form" onSubmit={submit}>
+      <form id="bookingForm" className="panel reservation-form" onSubmit={submit}>
+        <ol className="booking-stepper" aria-label="Шаги бронирования">
+          <li className={`booking-stepper-item ${activeStep === "when" ? "is-active" : ""} ${stepWhenDone ? "is-done" : ""}`}>
+            <button type="button" onClick={() => scrollToStep("step-when")}>
+              <span className="booking-stepper-num">{stepWhenDone ? <CheckCircle2 size={17} aria-hidden /> : "1"}</span>
+              <span className="booking-stepper-text"><strong>Когда</strong><small>Дата и время</small></span>
+            </button>
+          </li>
+          <li className={`booking-stepper-item ${activeStep === "where" ? "is-active" : ""} ${stepWhereDone ? "is-done" : ""}`}>
+            <button type="button" onClick={() => scrollToStep("step-where")}>
+              <span className="booking-stepper-num">{stepWhereDone ? <CheckCircle2 size={17} aria-hidden /> : "2"}</span>
+              <span className="booking-stepper-text"><strong>Где</strong><small>Стол</small></span>
+            </button>
+          </li>
+          <li className={`booking-stepper-item ${activeStep === "who" ? "is-active" : ""} ${stepWhoDone ? "is-done" : ""}`}>
+            <button type="button" onClick={() => scrollToStep("step-who")}>
+              <span className="booking-stepper-num">{stepWhoDone ? <CheckCircle2 size={17} aria-hidden /> : "3"}</span>
+              <span className="booking-stepper-text"><strong>Контакты</strong><small>Имя и телефон</small></span>
+            </button>
+          </li>
+        </ol>
+
+        <div className="booking-step-list">
+        <section id="step-when" className={`booking-step ${activeStep === "when" ? "is-active" : ""} ${stepWhenDone ? "is-done" : ""}`} aria-labelledby="step-when-title">
+          <header className="booking-step-head">
+            <span className="booking-step-num">{stepWhenDone ? <CheckCircle2 size={18} aria-hidden /> : "1"}</span>
+            <div className="booking-step-heading">
+              <h3 id="step-when-title">Когда</h3>
+              <p>Выберите дату, время и количество гостей</p>
+            </div>
+          </header>
         <div className="form-grid two booking-contact-fields">
           <DatePickerField
             label="Дата"
@@ -929,8 +1001,17 @@ export function ReservationForm({
             <input name="guestsCount" type="number" min="1" max={selectedTableCapacity ?? undefined} value={guestsCount} onChange={(event) => handleGuestsInputChange(event.target.value)} required />
           </label>
         </div>
-        {timeError ? <p className="form-warning">{timeError}</p> : null}
+        {timeError ? <p className="form-warning booking-step-error" role="alert">{timeError}</p> : null}
+        </section>
 
+        <section id="step-where" className={`booking-step ${activeStep === "where" ? "is-active" : ""} ${stepWhereDone ? "is-done" : ""}`} aria-labelledby="step-where-title">
+          <header className="booking-step-head">
+            <span className="booking-step-num">{stepWhereDone ? <CheckCircle2 size={18} aria-hidden /> : "2"}</span>
+            <div className="booking-step-heading">
+              <h3 id="step-where-title">Где</h3>
+              <p>Выберите стол на схеме зала</p>
+            </div>
+          </header>
         {hasConfiguredHall && !timeError ? (
           <PublicHallBookingWidget
             guestsCount={guestsCount}
@@ -975,7 +1056,17 @@ export function ReservationForm({
           <span>{pricing?.explanation || "Этот стол можно выбрать без предоплаты. Если ресторан попросит подтвердить визит, ссылка придет отдельно."}</span>
           {selectedTable ? <small>Вы выбрали: стол {selectedTable.number}, мест: {selectedSeatIds.length || guestsCount}</small> : null}
         </div>
+        {selectionError ? <p className="form-warning booking-step-error" role="alert">{selectionError}</p> : null}
+        </section>
 
+        <section id="step-who" className={`booking-step ${activeStep === "who" ? "is-active" : ""} ${stepWhoDone ? "is-done" : ""}`} aria-labelledby="step-who-title">
+          <header className="booking-step-head">
+            <span className="booking-step-num">{stepWhoDone ? <CheckCircle2 size={18} aria-hidden /> : "3"}</span>
+            <div className="booking-step-heading">
+              <h3 id="step-who-title">Контакты</h3>
+              <p>Как с вами связаться</p>
+            </div>
+          </header>
         <div className="form-grid two">
           <label>
             <span>Имя</span>
@@ -1015,7 +1106,8 @@ export function ReservationForm({
 
           <div className={`guest-messenger-panel guest-messenger-${verification.status}`}>
             {verification.status !== "pending" ? (
-              <>
+              <details className="guest-other-method">
+                <summary><span>Другой способ подтверждения</span></summary>
                 <div className="guest-messenger-copy">
                   <KeyRound size={18} aria-hidden />
                   <div>
@@ -1038,7 +1130,7 @@ export function ReservationForm({
                   </button>
                 </div>
                 {verification.status === "failed" && verification.message ? <p className="form-warning" style={{ margin: 0 }}>{verification.message}</p> : null}
-              </>
+              </details>
             ) : (
               <div className="guest-code-flow">
                 <div className="guest-code-flow-head">
@@ -1117,22 +1209,51 @@ export function ReservationForm({
         </div>
         )}
 
-        <label>
-          <span>Комментарий</span>
+        <label className="booking-comment-field">
+          <span>Комментарий <em className="field-optional">необязательно</em></span>
           <textarea className="booking-comment" name="comment" rows={3} />
         </label>
+        </section>
+        </div>
 
-        {selectionError ? <p className="form-warning">{selectionError}</p> : null}
-        {error ? <p className="form-error">{error}</p> : null}
-        {message ? <p className="form-success">{message}</p> : null}
+        <aside className="booking-summary" aria-label="Сводка вашей брони">
+          <div className="booking-summary-card">
+            <strong className="booking-summary-title">Ваша бронь</strong>
+            <ul className="booking-summary-list">
+              <li className={stepWhenDone ? "is-set" : ""}>
+                <CalendarDays size={16} aria-hidden />
+                <span>{reservationDate ? formatDateInputRu(reservationDate) : "Дата не выбрана"}</span>
+              </li>
+              <li className={startTime && endTime ? "is-set" : ""}>
+                <Clock size={16} aria-hidden />
+                <span>{startTime && endTime ? `${startTime} – ${endTime}` : "Время не выбрано"}</span>
+              </li>
+              <li className="is-set">
+                <Users size={16} aria-hidden />
+                <span>{normalizedGuestsCount} {pluralGuests(normalizedGuestsCount)}</span>
+              </li>
+              <li className={selectedTable ? "is-set" : ""}>
+                <Armchair size={16} aria-hidden />
+                <span>{selectedTable ? `Стол ${selectedTable.number} выбран` : hasConfiguredHall ? "Стол не выбран" : "Стол подберёт ресторан"}</span>
+              </li>
+              {pricing?.isDepositRequired ? (
+                <li className="is-set booking-summary-deposit">
+                  <CreditCard size={16} aria-hidden />
+                  <span>Депозит {formatRub(pricing.depositAmount)}</span>
+                </li>
+              ) : null}
+            </ul>
 
-        {mustConfirmPhone && verification.status !== "confirmed" ? (
-          <p className="form-note">Чтобы отправить заявку, подтвердите номер телефона через MAX или VK выше.</p>
-        ) : null}
-        <button className="button icon-text full" type="submit" disabled={pending || Boolean(selectionError) || Boolean(timeError) || (mustConfirmPhone && verification.status !== "confirmed")}>
-          <Send size={17} aria-hidden />
-          {pending ? "Отправляем..." : "Отправить заявку"}
-        </button>
+            {error ? <p className="form-error" role="alert">{error}</p> : null}
+            {message ? <p className="form-success">{message}</p> : null}
+
+            <button className="button icon-text full booking-submit" type="submit" disabled={!canSubmit}>
+              <Send size={17} aria-hidden />
+              {pending ? "Отправляем..." : "Отправить заявку"}
+            </button>
+            {submitBlockedReason && !pending ? <p className="booking-submit-reason" role="status">{submitBlockedReason}</p> : null}
+          </div>
+        </aside>
       </form>
 
       {successSummary ? (
