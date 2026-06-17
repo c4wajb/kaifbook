@@ -15906,3 +15906,36 @@ h1,h2,h3,h4,h5,h6,
 .home-banner-slider.is-placeholder .banner-copy .showcase-meta span {
   color: #5a4636 !important;
 }
+
+/* ============================================================
+   Task 6 — Equal-height restaurant cards with the CTA pinned to
+   the bottom. The card is a flex column that fills its grid cell;
+   the body grows to take the slack so the "Забронировать стол"
+   button lands on the same baseline across a row regardless of how
+   long the title / description / chips are. Long titles balance
+   instead of laddering.
+   ============================================================ */
+.restaurants-grid,
+.restaurant-rail {
+  align-items: stretch;
+}
+.restaurants-grid > .restaurant-card,
+.restaurant-rail > .restaurant-card,
+.restaurant-card.luxury-restaurant-card {
+  height: 100%;
+  display: flex !important;
+  flex-direction: column !important;
+}
+.restaurant-card.luxury-restaurant-card > .restaurant-card-body,
+.restaurant-card.luxury-restaurant-card > .luxury-card-body {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+}
+/* push the booking button to the bottom of the body */
+.restaurant-card.luxury-restaurant-card .restaurant-card-book-button {
+  margin-top: auto !important;
+}
+.restaurant-card .restaurant-card-title-block h3 {
+  text-wrap: balance;
+}
