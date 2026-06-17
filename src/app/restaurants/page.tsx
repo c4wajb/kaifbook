@@ -12,7 +12,6 @@ export const metadata: Metadata = {
   },
 };
 import { AgeGate } from "@/components/restaurant/AgeGate";
-import { ChipSlider } from "@/components/ui/ChipSlider";
 import { HomeBannerSlider } from "@/components/restaurant/HomeBannerSlider";
 import { RestaurantCard } from "@/components/restaurant/RestaurantCard";
 import { RestaurantFilters } from "@/components/restaurant/RestaurantFilters";
@@ -122,14 +121,14 @@ export default async function RestaurantsPage({ searchParams }: Props) {
       {requiresAgeGate ? <AgeGate /> : null}
       <h1 className="visually-hidden">Рестораны в Курске</h1>
 
-      <ChipSlider className="quick-filter-row catalog-quick-row">
+      <nav className="catalog-categories" aria-label="Категории ресторанов">
         {quickFilters.map((filter) => (
           <Link key={filter.label} href={filter.href} className={isQuickFilterActive(filters, filter.href) ? "active" : undefined} scroll={false}>
-            <filter.icon size={15} aria-hidden />
+            <filter.icon size={14} aria-hidden />
             {filter.label}
           </Link>
         ))}
-      </ChipSlider>
+      </nav>
 
       <HomeBannerSlider restaurants={bannerRestaurants} />
 

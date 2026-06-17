@@ -4209,76 +4209,9 @@ h1,h2,h3,.brand span,.catalog-title h1,.showcase-content h2,.profile-hero-conten
   padding-top:26px;
 }
 
-/* ── Chip slider ─────────────────────────────────────────────────────── */
-.chip-slider-wrapper{
-  position:relative;
-  margin:0 0 22px;
-}
-.chip-slider-wrapper::before,
-.chip-slider-wrapper::after{
-  content:"";
-  position:absolute;
-  top:0;
-  bottom:0;
-  width:48px;
-  z-index:3;
-  pointer-events:none;
-  opacity:0;
-  transition:opacity 250ms ease;
-}
-.chip-slider-wrapper::before{
-  left:0;
-  background:linear-gradient(90deg,rgba(229,222,210,.95) 30%,transparent);
-}
-.chip-slider-wrapper::after{
-  right:0;
-  background:linear-gradient(270deg,rgba(229,222,210,.95) 30%,transparent);
-}
-.chip-slider-wrapper.has-scroll-left::before,
-.chip-slider-wrapper.has-scroll-right::after{
-  opacity:1;
-}
-.chip-slider-arrow{
-  position:absolute;
-  top:50%;
-  transform:translateY(-50%);
-  z-index:5;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  width:36px;
-  height:36px;
-  border-radius:50%;
-  border:1px solid rgba(0,0,0,.08);
-  background:#fff;
-  color:#1a1a1a;
-  box-shadow:0 2px 10px rgba(0,0,0,.1);
-  cursor:pointer;
-  transition:box-shadow .2s,transform .2s;
-}
-.chip-slider-arrow:hover{
-  box-shadow:0 4px 16px rgba(0,0,0,.15);
-  transform:translateY(-50%) scale(1.06);
-}
-.chip-slider-arrow-left{left:-4px}
-.chip-slider-arrow-right{right:-4px}
-.chip-slider-track{
-  display:flex;
-  overflow-x:auto;
-  overflow-y:hidden;
-  scroll-behavior:smooth;
-  scrollbar-width:none;
-}
-.chip-slider-track::-webkit-scrollbar{display:none}
-
-.catalog-quick-row{
-  padding:6px 0 4px;
-  gap:10px;
-}
-
-.catalog-quick-row::-webkit-scrollbar{
-  display:none;
-}
+/* Chip slider (pills + arrow buttons) removed in Header V2 — catalog
+   categories are now plain text-links (.catalog-categories). A few dead
+   .chip-slider-* overrides remain harmlessly elsewhere in this file. */
 
 /* design-system-2026-placeholder */
 
@@ -16403,4 +16336,151 @@ html {
 .brand span {
   letter-spacing: .02em;
   font-weight: 700;
+}
+
+/* ============================================================
+   Header V2 — compact: logo · search (flex:1) · «Мои брони»,
+   and catalog categories as quiet text-links (no pills/arrows).
+   Brand tokens; sticky header unchanged. Appended last.
+   ============================================================ */
+
+/* Search field (desktop: always-open; mobile: icon that expands). */
+.header-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 520px;
+  min-height: 44px;
+  padding: 0 6px 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-2);
+  justify-self: center;
+}
+.header-search:focus-within { border-color: rgba(192, 85, 53, .42); box-shadow: var(--focus); }
+.header-search-icon {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  color: var(--accent);
+  cursor: pointer;
+}
+.header-search input {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 40px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  outline: none;
+}
+.header-search input::placeholder { color: var(--muted); font-weight: 500; }
+.header-search input::-webkit-search-cancel-button { display: none; }
+.header-search-close { display: none; }
+.public-header .header-actions .button.compact { min-height: 44px; }
+
+/* Catalog categories — text-links, active underlined, scroll + fade. */
+.catalog-categories {
+  display: flex;
+  gap: 26px;
+  align-items: center;
+  margin: 0 0 16px;
+  padding-bottom: 6px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.catalog-categories::-webkit-scrollbar { display: none; }
+.catalog-categories a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  padding: 4px 0;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color .16s ease, border-color .16s ease;
+}
+.catalog-categories a:hover { color: var(--ink); }
+.catalog-categories a.active { color: var(--ink); font-weight: 700; border-bottom-color: var(--accent); }
+.catalog-categories a svg { opacity: .65; }
+.catalog-categories a.active svg { opacity: 1; color: var(--accent); }
+/* right fade as a scroll hint (sticky pseudo, overlaps via negative margin) */
+.catalog-categories::after {
+  content: "";
+  position: sticky;
+  right: 0;
+  flex: 0 0 auto;
+  align-self: stretch;
+  width: 40px;
+  margin-left: -40px;
+  background: linear-gradient(90deg, transparent, var(--bg));
+  pointer-events: none;
+}
+
+/* Mobile: search collapses to a lupa icon that expands to a top bar. */
+@media (max-width: 720px) {
+  /* the brand must not grow, or it pushes the search icon + «Мои брони» off-screen */
+  .public-header .brand { flex: 0 1 auto !important; font-size: clamp(19px, 5.6vw, 26px) !important; }
+  /* header-actions was hidden on mobile when it was an empty decorative div;
+     it now holds the «Мои брони» button, so show it again. */
+  .public-header .header-actions { display: flex !important; flex: 0 0 auto; }
+  .header-search {
+    width: auto;
+    max-width: none;
+    min-height: 40px;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+  }
+  .header-search input { display: none; }
+  .header-search-icon {
+    width: 42px;
+    height: 42px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+  }
+  .header-search.is-open {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 60;
+    width: auto;
+    min-height: 62px;
+    gap: 10px;
+    padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    background: rgba(251, 247, 244, .98);
+    backdrop-filter: blur(12px);
+  }
+  .header-search.is-open .header-search-icon { border: 0; background: none; width: 30px; height: 30px; }
+  .header-search.is-open input { display: block; flex: 1 1 auto; min-height: 44px; font-size: 16px; }
+  .header-search.is-open .header-search-close {
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 42px;
+    height: 42px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+  }
 }
