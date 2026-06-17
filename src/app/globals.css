@@ -15751,3 +15751,92 @@ h1,h2,h3,h4,h5,h6,
   hyphens: auto;
   -webkit-hyphens: auto;
 }
+
+/* ============================================================
+   Task 2 — Catalog filter bar: flex-wrap instead of the fragile
+   fixed-column grid. Chips size to their content (no clipped
+   labels like "ип заведени"), all six filters stay visible and
+   wrap to extra rows on narrow widths, the search field grows,
+   and the view toggle sits on the right. Scoped to >=681px so the
+   <=680px bottom-sheet (handled elsewhere) is left untouched.
+   Placed last in the cascade so it wins over the grid layers.
+   ============================================================ */
+@media (min-width: 681px) {
+  .catalog-filter-strip {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px !important;
+    grid-template-columns: none !important;
+    overflow: visible !important;
+  }
+
+  /* search grows but is capped so the chips keep room */
+  .catalog-search-field {
+    order: 1;
+    flex: 1 1 240px !important;
+    width: auto !important;
+    min-width: 200px !important;
+    max-width: 420px !important;
+    min-height: 44px !important;
+  }
+
+  .catalog-filter-controls {
+    display: contents !important;
+  }
+
+  /* every dropdown visible (un-hide the 5th/6th the grid dropped),
+     sized to its label, never clipped */
+  .catalog-filter-controls > .catalog-filter-chip {
+    order: 4;
+    display: inline-flex !important;
+    flex: 0 0 auto;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  .catalog-filter-chip .catalog-filter-trigger {
+    width: auto !important;
+    max-width: none !important;
+    min-height: 44px !important;
+    padding: 0 16px !important;
+    justify-content: center !important;
+  }
+
+  .catalog-filter-chip .catalog-filter-trigger span {
+    max-width: none !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+    font-size: 13px !important;
+  }
+
+  .catalog-filter-reset {
+    order: 5;
+    min-height: 44px !important;
+  }
+
+  /* chips replace the "Фильтры" trigger on the inline bar */
+  .catalog-mobile-filter-button {
+    display: none !important;
+  }
+
+  /* view toggle pinned to the right edge of the bar */
+  .catalog-filter-strip .catalog-layout-bar {
+    order: 50;
+    margin-left: auto !important;
+    justify-self: auto !important;
+  }
+}
+
+/* Clear, on-brand chevron; flips to light text-colour on the dark
+   selected/open state so it never disappears. */
+.catalog-filter-chip .catalog-filter-trigger svg {
+  color: var(--accent-dark) !important;
+  opacity: 1 !important;
+}
+.catalog-filter-chip .catalog-filter-trigger.open svg,
+.catalog-filter-chip .catalog-filter-trigger.selected svg {
+  color: currentColor !important;
+}
