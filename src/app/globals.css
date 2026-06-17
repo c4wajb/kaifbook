@@ -15974,3 +15974,20 @@ html {
 .vk-mini-topbar {
   padding-top: calc(10px + env(safe-area-inset-top));
 }
+
+/* ============================================================
+   Task 8 — Catalog card titles: uniform 2-line clamp so long names
+   ("Кафе-пельменная…") never ladder unevenly and the meta below
+   always starts on the same line. Scoped to the default catalog card —
+   the compact (.catalog-layout-grid) and .restaurant-card-mini
+   variants keep their own clamp.
+   ============================================================ */
+.restaurant-card:not(.restaurant-card-mini):not(.restaurant-card-compact) .restaurant-card-title-block h3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  line-height: 1.15;
+  /* reserve two lines so 1-line titles align with 2-line ones */
+  min-height: calc(2 * 1.15em);
+}
