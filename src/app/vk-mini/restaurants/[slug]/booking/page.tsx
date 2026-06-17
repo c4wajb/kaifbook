@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
 import { AgeGate } from "@/components/restaurant/AgeGate";
 import { ReservationForm } from "@/components/reservations/ReservationForm";
@@ -25,7 +26,7 @@ export default async function VkMiniBookingPage({ params }: Props) {
     <VkMiniAppShell active="home">
       {requiresAgeGate ? <AgeGate /> : null}
       <Link className="booking-top-return vk-mini-back" href={`/vk-mini/restaurants/${restaurant.slug}`} aria-label="Вернуться к ресторану">
-        <span aria-hidden>←</span>
+        <span aria-hidden><ArrowLeft size={15} /></span>
         <span>К ресторану</span>
       </Link>
       <section className="vk-mini-section vk-mini-booking-intro">

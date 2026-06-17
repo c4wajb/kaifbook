@@ -1,7 +1,7 @@
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Armchair, CalendarCheck, CheckCircle2, Clock3, MapPin, Phone, Users } from "lucide-react";
+import { ArrowLeft, Armchair, CalendarCheck, CheckCircle2, Clock3, MapPin, Phone, Users } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { ReservationQrCard } from "@/components/reservations/ReservationQrCard";
 import { EXTERNAL_PAYMENT_STATUSES, PAYMENT_STATUSES, RESERVATION_STATUSES } from "@/lib/constants";
@@ -65,7 +65,7 @@ export default async function ReservationConfirmationPage({ params }: Props) {
     <main className="reservation-confirm-page">
       <section className="reservation-pass-card">
         <Link className="booking-top-return reservation-pass-return" href={`/restaurants/${reservation.restaurant.slug}`} aria-label="Вернуться к ресторану">
-          <span aria-hidden>←</span>
+          <span aria-hidden><ArrowLeft size={15} /></span>
           <span>К ресторану</span>
         </Link>
         <div className="reservation-pass-topline">

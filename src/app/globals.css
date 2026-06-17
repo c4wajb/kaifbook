@@ -16382,3 +16382,25 @@ html {
   gap: 2px;
   text-align: center;
 }
+
+/* ============================================================
+   Global mark centering — small circular badges hold a single
+   numeral (step numbers, etc.). Serif numerals (Playfair) sit
+   optically off-centre in a small circle, so number-marks use the
+   interface sans with a tight line-height and tabular figures.
+   (Single-glyph icon circles like the back arrow use an SVG icon,
+   which flexbox centres exactly — see the page components.)
+   ============================================================ */
+.booking-stepper-num,
+.booking-step-num,
+.guest-step-num {
+  font-family: var(--font-sans) !important;
+  line-height: 1 !important;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Brand wordmark: the heavy serif was cramped by negative tracking. */
+.brand span {
+  letter-spacing: .02em;
+  font-weight: 700;
+}
