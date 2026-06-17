@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { OwnerTabs } from "@/components/OwnerTabs";
-import { RestaurantForm } from "@/components/RestaurantForm";
+import { OwnerTabs } from "@/components/admin/OwnerTabs";
+import { RestaurantForm } from "@/components/restaurant/RestaurantForm";
 import { prisma } from "@/lib/db";
 import { canManageRestaurant } from "@/lib/permissions";
 import { requireOwnerPageUser } from "@/lib/page-auth";

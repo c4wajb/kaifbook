@@ -1,4 +1,4 @@
-import { Badge } from "@/components/Badge";
+import { Badge } from "@/components/ui/Badge";
 import { prisma } from "@/lib/db";
 import { formatGuests, reservationDateLabel } from "@/lib/format";
 import { requireAdminPageUser } from "@/lib/page-auth";

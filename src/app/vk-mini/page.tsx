@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { RestaurantCard } from "@/components/RestaurantCard";
-import { RestaurantFilters } from "@/components/RestaurantFilters";
-import { VkMiniAppShell } from "@/components/VkMiniAppShell";
+import { RestaurantCard } from "@/components/restaurant/RestaurantCard";
+import { RestaurantFilters } from "@/components/restaurant/RestaurantFilters";
+import { VkMiniAppShell } from "@/components/vk/VkMiniAppShell";
 import { getPublicRestaurants, getRestaurantFilterOptions } from "@/lib/public-data";
 
 type Props = {

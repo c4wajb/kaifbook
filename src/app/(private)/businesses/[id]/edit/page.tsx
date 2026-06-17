@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { updateBusinessAction } from "@/app/actions";
-import { BusinessForm } from "@/components/business-form";
-import { BusinessTabs } from "@/components/business-tabs";
-import { FlashMessage } from "@/components/flash-message";
-import { PageHeader } from "@/components/page-header";
+import { BusinessForm } from "@/components/restaurant/business-form";
+import { BusinessTabs } from "@/components/restaurant/business-tabs";
+import { FlashMessage } from "@/components/ui/flash-message";
+import { PageHeader } from "@/components/layout/page-header";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 

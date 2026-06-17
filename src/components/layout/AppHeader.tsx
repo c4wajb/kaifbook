@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { CalendarCheck, Code, LayoutDashboard, ShieldCheck } from "lucide-react";
-import { BrandLogo } from "@/components/BrandLogo";
-import { LogoutButton } from "@/components/LogoutButton";
+import { BrandLogo } from "@/components/layout/BrandLogo";
+import { LogoutButton } from "@/components/ui/LogoutButton";
 import { getCurrentUser } from "@/lib/auth";
 import { OWNER_ROLES, ROLES, STAFF_ROLES } from "@/lib/constants";
 

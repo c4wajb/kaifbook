@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createPromoAction, deactivatePromoAction, updatePromoAction } from "@/app/actions";
-import { BusinessTabs } from "@/components/business-tabs";
-import { DateInput } from "@/components/DateInput";
-import { FlashMessage } from "@/components/flash-message";
-import { PageHeader } from "@/components/page-header";
+import { BusinessTabs } from "@/components/restaurant/business-tabs";
+import { DateInput } from "@/components/ui/DateInput";
+import { FlashMessage } from "@/components/ui/flash-message";
+import { PageHeader } from "@/components/layout/page-header";
 import { dateInputValue, formatDate } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth";

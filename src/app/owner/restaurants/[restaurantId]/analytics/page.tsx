@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { OwnerTabs } from "@/components/OwnerTabs";
+import { OwnerTabs } from "@/components/admin/OwnerTabs";
 import { getRestaurantAnalytics } from "@/lib/owner-analytics";
 import { requireOwnerPageUser } from "@/lib/page-auth";
 import { canManageRestaurant } from "@/lib/permissions";

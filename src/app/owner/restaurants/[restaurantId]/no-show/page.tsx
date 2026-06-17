@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
-import { OwnerTabs } from "@/components/OwnerTabs";
+import { OwnerTabs } from "@/components/admin/OwnerTabs";
 import { prisma } from "@/lib/db";
 import { formatGuests } from "@/lib/format";
 import { getNoShowDepositAnalytics } from "@/lib/no-show-analytics";

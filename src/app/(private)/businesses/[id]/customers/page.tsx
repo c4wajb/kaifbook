@@ -5,9 +5,9 @@ import {
   deleteCustomerAction,
   updateCustomerAction
 } from "@/app/actions";
-import { BusinessTabs } from "@/components/business-tabs";
-import { FlashMessage } from "@/components/flash-message";
-import { PageHeader } from "@/components/page-header";
+import { BusinessTabs } from "@/components/restaurant/business-tabs";
+import { FlashMessage } from "@/components/ui/flash-message";
+import { PageHeader } from "@/components/layout/page-header";
 import { formatDate } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth";

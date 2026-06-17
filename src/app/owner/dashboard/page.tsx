@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BarChart3, CalendarClock, MousePointerClick, UserRoundCheck } from "lucide-react";
-import { Badge } from "@/components/Badge";
+import { Badge } from "@/components/ui/Badge";
 import { RESERVATION_STATUSES, ROLES, STAFF_ROLES } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 import { formatMoney } from "@/lib/format";

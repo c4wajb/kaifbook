@@ -1,4 +1,4 @@
-import { GuestLoginForm } from "@/components/GuestLoginForm";
+import { GuestLoginForm } from "@/components/guest/GuestLoginForm";
 
 type Props = {
   searchParams: Promise<{ phone?: string; next?: string; vkid_error?: string }>;

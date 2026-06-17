@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { HallCreateForm } from "@/components/HallCreateForm";
-import { HallEditor } from "@/components/HallEditor";
-import { OwnerTabs } from "@/components/OwnerTabs";
-import { WaiterHallView } from "@/components/WaiterHallView";
+import { HallCreateForm } from "@/components/restaurant/HallCreateForm";
+import { HallEditor } from "@/components/restaurant/HallEditor";
+import { OwnerTabs } from "@/components/admin/OwnerTabs";
+import { WaiterHallView } from "@/components/restaurant/WaiterHallView";
 import { prisma } from "@/lib/db";
 import { RESERVATION_STATUSES, STAFF_ROLES } from "@/lib/constants";
 import { canAccessRestaurant } from "@/lib/permissions";

@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Plus, Sparkles } from "lucide-react";
-import { FlashMessage } from "@/components/flash-message";
-import { PageHeader } from "@/components/page-header";
-import { StatCard } from "@/components/stat-card";
+import { FlashMessage } from "@/components/ui/flash-message";
+import { PageHeader } from "@/components/layout/page-header";
+import { StatCard } from "@/components/admin/stat-card";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 

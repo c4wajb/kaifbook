@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Golos_Text, Playfair_Display } from "next/font/google";
-import { AppFooter } from "@/components/AppFooter";
-import { AppHeader } from "@/components/AppHeader";
-import { CookieConsent } from "@/components/CookieConsent";
-import { ScrollToTopButton } from "@/components/ScrollToTopButton";
+import { AppFooter } from "@/components/layout/AppFooter";
+import { AppHeader } from "@/components/layout/AppHeader";
+import { CookieConsent } from "@/components/layout/CookieConsent";
+import { ScrollToTopButton } from "@/components/layout/ScrollToTopButton";
 import "./globals.css";
 
 // Interface/body text. Cyrillic-native variable font; mapped to --font-sans in :root.

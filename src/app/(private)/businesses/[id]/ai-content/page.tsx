@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { generateContentAction } from "@/app/actions";
-import { BusinessTabs } from "@/components/business-tabs";
-import { FlashMessage } from "@/components/flash-message";
-import { PageHeader } from "@/components/page-header";
+import { BusinessTabs } from "@/components/restaurant/business-tabs";
+import { FlashMessage } from "@/components/ui/flash-message";
+import { PageHeader } from "@/components/layout/page-header";
 import { contentTones, contentTypeLabels, contentTypes, formatDate } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth";

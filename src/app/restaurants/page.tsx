@@ -11,11 +11,11 @@ export const metadata: Metadata = {
     type: "website",
   },
 };
-import { AgeGate } from "@/components/AgeGate";
-import { ChipSlider } from "@/components/ChipSlider";
-import { HomeBannerSlider } from "@/components/HomeBannerSlider";
-import { RestaurantCard } from "@/components/RestaurantCard";
-import { RestaurantFilters } from "@/components/RestaurantFilters";
+import { AgeGate } from "@/components/restaurant/AgeGate";
+import { ChipSlider } from "@/components/ui/ChipSlider";
+import { HomeBannerSlider } from "@/components/restaurant/HomeBannerSlider";
+import { RestaurantCard } from "@/components/restaurant/RestaurantCard";
+import { RestaurantFilters } from "@/components/restaurant/RestaurantFilters";
 import { filtersImplyAdultContent } from "@/lib/adult-content";
 import { parseStringList } from "@/lib/json-fields";
 import { getHomeBannerRestaurants, getPublicRestaurants, getRestaurantFilterOptions } from "@/lib/public-data";

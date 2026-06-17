@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { FlashMessage } from "@/components/flash-message";
-import { PageHeader } from "@/components/page-header";
+import { FlashMessage } from "@/components/ui/flash-message";
+import { PageHeader } from "@/components/layout/page-header";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 

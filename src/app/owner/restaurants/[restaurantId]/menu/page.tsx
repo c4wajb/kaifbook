@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { MenuManager } from "@/components/MenuManager";
-import { OwnerTabs } from "@/components/OwnerTabs";
+import { MenuManager } from "@/components/restaurant/MenuManager";
+import { OwnerTabs } from "@/components/admin/OwnerTabs";
 import { prisma } from "@/lib/db";
 import { STAFF_ROLES } from "@/lib/constants";
 import { canAccessRestaurant } from "@/lib/permissions";

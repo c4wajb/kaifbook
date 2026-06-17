@@ -4,7 +4,7 @@ import { Eye, EyeOff, ImageIcon, Pencil, Plus, Search, Trash2, X } from "lucide-
 import { useRouter } from "next/navigation";
 import { FormEvent, startTransition, useState } from "react";
 
-import { ImageUploadField } from "@/components/ImageUploadField";
+import { ImageUploadField } from "@/components/ui/ImageUploadField";
 import { formatMoney } from "@/lib/format";
 
 type MenuItem = {

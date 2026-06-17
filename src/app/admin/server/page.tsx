@@ -1,5 +1,5 @@
 import { requireAdminPageUser } from "@/lib/page-auth";
-import { ServerDashboard } from "@/components/ServerDashboard";
+import { ServerDashboard } from "@/components/admin/ServerDashboard";
 
 export const dynamic = "force-dynamic";
 

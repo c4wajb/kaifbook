@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { AgeGate } from "@/components/AgeGate";
-import { MenuOrderPage } from "@/components/MenuOrderPage";
+import { AgeGate } from "@/components/restaurant/AgeGate";
+import { MenuOrderPage } from "@/components/restaurant/MenuOrderPage";
 import { isAdultOnlyRestaurant } from "@/lib/adult-content";
 import { getRestaurantBySlug } from "@/lib/public-data";
 

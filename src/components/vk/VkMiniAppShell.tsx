@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { CalendarCheck, Home, Info, UtensilsCrossed } from "lucide-react";
-import { BrandLogoMark } from "@/components/BrandLogo";
+import { BrandLogoMark } from "@/components/layout/BrandLogo";
 import { useVkMiniApp } from "@/hooks/useVkMiniApp";
 
 type Props = {

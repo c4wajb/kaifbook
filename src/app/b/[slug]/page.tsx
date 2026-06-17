@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { MapPin, Phone } from "lucide-react";
 import { notFound } from "next/navigation";
 import { publicLeadAction } from "@/app/actions";
-import { FlashMessage } from "@/components/flash-message";
+import { FlashMessage } from "@/components/ui/flash-message";
 import { formatDate } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 

@@ -1,8 +1,8 @@
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { MinMaxFields } from "@/components/MinMaxFields";
-import { OwnerTabs } from "@/components/OwnerTabs";
+import { MinMaxFields } from "@/components/ui/MinMaxFields";
+import { OwnerTabs } from "@/components/admin/OwnerTabs";
 import { DAY_LABELS, PAYMENT_MODES } from "@/lib/constants";
 import { DEFAULT_DEPOSIT_REFUND_POLICY, DEFAULT_EXTERNAL_PAYMENT_TERMS } from "@/lib/external-payments";
 import { prisma } from "@/lib/db";

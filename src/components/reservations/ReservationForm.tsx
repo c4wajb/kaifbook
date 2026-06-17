@@ -3,9 +3,9 @@
 import { Armchair, ArrowRight, CalendarDays, CheckCircle2, Clock, Copy, CreditCard, ExternalLink, KeyRound, Loader2, MessageCircle, Send, ShieldCheck, Users, X } from "lucide-react";
 import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { PrettySelect } from "@/components/PrettySelect";
-import { PublicBookingTable, PublicHallBookingWidget } from "@/components/PublicHallBookingWidget";
-import { ReservationQrCard } from "@/components/ReservationQrCard";
+import { PrettySelect } from "@/components/ui/PrettySelect";
+import { PublicBookingTable, PublicHallBookingWidget } from "@/components/reservations/PublicHallBookingWidget";
+import { ReservationQrCard } from "@/components/reservations/ReservationQrCard";
 import { fetchJsonWithDiagnostics, isFriendlyAbort } from "@/lib/client-fetch";
 import { formatRuPhoneInput, isValidRuPhone, normalizePhone } from "@/lib/phone";
 import { generateEndTimeSlots, generateStartTimeSlots, isRangeWithinWorkingHours, localDateInputValue, workingHourForDate, type WorkingHourLike } from "@/lib/time";

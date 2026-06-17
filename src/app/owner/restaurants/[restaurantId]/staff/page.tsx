@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { OwnerTabs } from "@/components/OwnerTabs";
-import { RestaurantVkNotify } from "@/components/RestaurantVkNotify";
-import { StaffManager } from "@/components/StaffManager";
+import { OwnerTabs } from "@/components/admin/OwnerTabs";
+import { RestaurantVkNotify } from "@/components/vk/RestaurantVkNotify";
+import { StaffManager } from "@/components/admin/StaffManager";
 import { ROLE_LABELS } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 import { canManageRestaurant } from "@/lib/permissions";

@@ -1,4 +1,4 @@
-import { Badge } from "@/components/Badge";
+import { Badge } from "@/components/ui/Badge";
 import { prisma } from "@/lib/db";
 import { requireAdminPageUser } from "@/lib/page-auth";
 export default async function AdminUsersPage() { await requireAdminPageUser("/admin/users"); const users = await prisma.user.findMany({ select: { id: true, fullName: true, email: true, phone: true, role: true, isActive: true, createdAt: true, _count: { select: { restaurants: true, reservations: true } } }, orderBy: { createdAt: "desc" } }); return <div className="page"><div className="page-title"><p className="eyebrow">Админ-панель</p><h1>Пользователи</h1></div><section className="panel admin-table">{users.map((u) => <div className="admin-row" key={u.id}><div><strong>{u.fullName}</strong><p>{u.email}{u.phone ? ` · ${u.phone}` : ""}</p><p>Ресторанов: {u._count.restaurants} · броней: {u._count.reservations}</p></div><Badge status={u.isActive ? "approved" : "rejected"}>{u.role}</Badge></div>)}</section></div>; }

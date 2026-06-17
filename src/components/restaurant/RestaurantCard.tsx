@@ -6,7 +6,7 @@ import { Clock3, MapPin, Star, WalletCards } from "lucide-react";
 import { useMemo, useState } from "react";
 import { formatMoney } from "@/lib/format";
 import { parseStringList } from "@/lib/json-fields";
-import { RestaurantCardGallery } from "@/components/RestaurantCardGallery";
+import { RestaurantCardGallery } from "@/components/restaurant/RestaurantCardGallery";
 
 type WorkingHour = { dayOfWeek: number; openTime: string; closeTime: string; isClosed: boolean };
 type RestaurantCardProps = {

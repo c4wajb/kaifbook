@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AgeGate } from "@/components/AgeGate";
-import { ReservationForm } from "@/components/ReservationForm";
-import { VkMiniAppShell } from "@/components/VkMiniAppShell";
+import { AgeGate } from "@/components/restaurant/AgeGate";
+import { ReservationForm } from "@/components/reservations/ReservationForm";
+import { VkMiniAppShell } from "@/components/vk/VkMiniAppShell";
 import { getCurrentUser } from "@/lib/auth";
 import { isAdultOnlyRestaurant } from "@/lib/adult-content";
 import { getRestaurantBySlug } from "@/lib/public-data";

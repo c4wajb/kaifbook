@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { OwnerTabs } from "@/components/OwnerTabs";
-import { WorkingHoursForm } from "@/components/WorkingHoursForm";
+import { OwnerTabs } from "@/components/admin/OwnerTabs";
+import { WorkingHoursForm } from "@/components/restaurant/WorkingHoursForm";
 import { prisma } from "@/lib/db";
 import { canManageRestaurant } from "@/lib/permissions";
 import { requireOwnerPageUser } from "@/lib/page-auth";

@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { Badge } from "@/components/Badge";
-import { DateInput } from "@/components/DateInput";
-import { OwnerTabs } from "@/components/OwnerTabs";
+import { Badge } from "@/components/ui/Badge";
+import { DateInput } from "@/components/ui/DateInput";
+import { OwnerTabs } from "@/components/admin/OwnerTabs";
 import { RESERVATION_STATUSES } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 import { externalPaymentStatusLabel } from "@/lib/external-payments";

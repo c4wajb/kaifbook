@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AdminRestaurantLeadActions } from "@/components/AdminRestaurantLeadActions";
-import { Badge } from "@/components/Badge";
+import { AdminRestaurantLeadActions } from "@/components/admin/AdminRestaurantLeadActions";
+import { Badge } from "@/components/ui/Badge";
 import { prisma } from "@/lib/db";
 import { requireAdminPageUser } from "@/lib/page-auth";
 

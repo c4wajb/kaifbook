@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { CalendarCheck, Clock3, MapPin, Phone } from "lucide-react";
-import { Badge } from "@/components/Badge";
-import { DateInput } from "@/components/DateInput";
-import { GuestLoginForm } from "@/components/GuestLoginForm";
-import { LogoutButton } from "@/components/LogoutButton";
-import { ReservationQrCard } from "@/components/ReservationQrCard";
-import { VkMiniAppShell } from "@/components/VkMiniAppShell";
+import { Badge } from "@/components/ui/Badge";
+import { DateInput } from "@/components/ui/DateInput";
+import { GuestLoginForm } from "@/components/guest/GuestLoginForm";
+import { LogoutButton } from "@/components/ui/LogoutButton";
+import { ReservationQrCard } from "@/components/reservations/ReservationQrCard";
+import { VkMiniAppShell } from "@/components/vk/VkMiniAppShell";
 import { getCurrentUser } from "@/lib/auth";
 import { RESERVATION_STATUSES } from "@/lib/constants";
 import { prisma } from "@/lib/db";

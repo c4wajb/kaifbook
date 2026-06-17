@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { CalendarCheck, Clock3, MapPin, Phone } from "lucide-react";
-import { Badge } from "@/components/Badge";
-import { DateInput } from "@/components/DateInput";
-import { LogoutButton } from "@/components/LogoutButton";
-import { ReservationQrCard } from "@/components/ReservationQrCard";
+import { Badge } from "@/components/ui/Badge";
+import { DateInput } from "@/components/ui/DateInput";
+import { LogoutButton } from "@/components/ui/LogoutButton";
+import { ReservationQrCard } from "@/components/reservations/ReservationQrCard";
 import { getCurrentUser } from "@/lib/auth";
 import { RESERVATION_STATUSES } from "@/lib/constants";
 import { prisma } from "@/lib/db";

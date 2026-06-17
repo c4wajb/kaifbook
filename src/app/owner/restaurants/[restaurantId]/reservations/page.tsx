@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { Badge } from "@/components/Badge";
-import { DateInput } from "@/components/DateInput";
-import { OwnerTabs } from "@/components/OwnerTabs";
-import { ReservationActions } from "@/components/ReservationActions";
-import { ReservationSearchBox } from "@/components/ReservationSearchBox";
+import { Badge } from "@/components/ui/Badge";
+import { DateInput } from "@/components/ui/DateInput";
+import { OwnerTabs } from "@/components/admin/OwnerTabs";
+import { ReservationActions } from "@/components/reservations/ReservationActions";
+import { ReservationSearchBox } from "@/components/reservations/ReservationSearchBox";
 import { EXTERNAL_PAYMENT_STATUSES, RESERVATION_STATUSES, STAFF_ROLES, VERIFICATION_STATUSES } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 import { externalPaymentStatusLabel } from "@/lib/external-payments";

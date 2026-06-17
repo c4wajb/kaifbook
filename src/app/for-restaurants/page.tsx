@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { RestaurantLeadForm } from "@/components/RestaurantLeadForm";
+import { RestaurantLeadForm } from "@/components/restaurant/RestaurantLeadForm";
 
 export default function ForRestaurantsPage() {
   return (

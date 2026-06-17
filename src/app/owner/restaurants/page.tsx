@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { BarChart3, CalendarClock, Plus, Settings, Users } from "lucide-react";
-import { Badge } from "@/components/Badge";
+import { Badge } from "@/components/ui/Badge";
 import { ROLES, STAFF_ROLES } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 import { formatList, formatMoney } from "@/lib/format";

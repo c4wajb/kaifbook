@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { PrettySelect } from "@/components/PrettySelect";
+import { PrettySelect } from "@/components/ui/PrettySelect";
 
 const STORAGE_KEY = "kaifbook_age_confirmed";
 const MIN_AGE = 18;

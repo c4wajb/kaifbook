@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import { ServerDashboard } from "@/components/ServerDashboard";
+import { ServerDashboard } from "@/components/admin/ServerDashboard";
 
 export const dynamic = "force-dynamic";
 

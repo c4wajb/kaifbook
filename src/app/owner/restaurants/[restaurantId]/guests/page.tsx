@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { GuestTagsEditor } from "@/components/GuestTagsEditor";
-import { OwnerTabs } from "@/components/OwnerTabs";
+import { GuestTagsEditor } from "@/components/guest/GuestTagsEditor";
+import { OwnerTabs } from "@/components/admin/OwnerTabs";
 import { prisma } from "@/lib/db";
 import { formatDate, reservationDateLabel, statusLabel } from "@/lib/format";
 import { parseStringList } from "@/lib/json-fields";

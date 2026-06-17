@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { createBusinessAction } from "@/app/actions";
-import { BusinessForm } from "@/components/business-form";
-import { FlashMessage } from "@/components/flash-message";
-import { PageHeader } from "@/components/page-header";
+import { BusinessForm } from "@/components/restaurant/business-form";
+import { FlashMessage } from "@/components/ui/flash-message";
+import { PageHeader } from "@/components/layout/page-header";
 
 type NewBusinessPageProps = {
   searchParams: Promise<{

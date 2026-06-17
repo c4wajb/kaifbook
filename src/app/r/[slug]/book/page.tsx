@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AgeGate } from "@/components/AgeGate";
-import { ReservationForm } from "@/components/ReservationForm";
+import { AgeGate } from "@/components/restaurant/AgeGate";
+import { ReservationForm } from "@/components/reservations/ReservationForm";
 import { getCurrentUser } from "@/lib/auth";
 import { isAdultOnlyRestaurant } from "@/lib/adult-content";
 import { getRestaurantBySlug } from "@/lib/public-data";

@@ -4,7 +4,7 @@ import { Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
-import { ImageGalleryUploadField, ImageUploadField } from "@/components/ImageUploadField";
+import { ImageGalleryUploadField, ImageUploadField } from "@/components/ui/ImageUploadField";
 import { RESTAURANT_STATUSES } from "@/lib/constants";
 import { listToText, parseStringList } from "@/lib/json-fields";
 

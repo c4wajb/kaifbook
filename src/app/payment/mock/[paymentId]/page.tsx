@@ -1,7 +1,7 @@
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Badge } from "@/components/Badge";
+import { Badge } from "@/components/ui/Badge";
 import { PAYMENT_STATUSES } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 import { formatMoney, reservationDateLabel } from "@/lib/format";

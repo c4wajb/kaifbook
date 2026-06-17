@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge } from "@/components/Badge";
+import { Badge } from "@/components/ui/Badge";
 import { prisma } from "@/lib/db";
 import { requireAdminPageUser } from "@/lib/page-auth";
 

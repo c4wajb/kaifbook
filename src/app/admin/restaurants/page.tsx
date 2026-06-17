@@ -1,5 +1,5 @@
-import { AdminRestaurantActions } from "@/components/AdminRestaurantActions";
-import { Badge } from "@/components/Badge";
+import { AdminRestaurantActions } from "@/components/admin/AdminRestaurantActions";
+import { Badge } from "@/components/ui/Badge";
 import { prisma } from "@/lib/db";
 import { requireAdminPageUser } from "@/lib/page-auth";
 export default async function AdminRestaurantsPage() { await requireAdminPageUser("/admin/restaurants"); const restaurants = await prisma.restaurant.findMany({ include: { owner: { select: { fullName: true, email: true } }, _count: { select: { reservations: true } } }, orderBy: { createdAt: "desc" } }); return <div className="page"><div className="page-title"><p className="eyebrow">Админ-панель</p><h1>Рестораны</h1></div><section className="panel admin-table">{restaurants.map((r) => <div className="admin-row" key={r.id}><div><strong>{r.title}</strong><p>{r.city}, {r.address} · владелец {r.owner.fullName} ({r.owner.email})</p><p>Броней: {r._count.reservations} · активен: {r.isActive ? "да" : "нет"} · баннер: {r.isFeatured ? "да" : "нет"}</p></div><Badge status={r.status} /><AdminRestaurantActions restaurantId={r.id} isFeatured={r.isFeatured} /></div>)}</section></div>; }

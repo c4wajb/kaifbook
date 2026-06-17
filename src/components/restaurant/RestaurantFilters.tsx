@@ -3,7 +3,7 @@
 import { ChevronDown, Search, SlidersHorizontal, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CatalogLayoutToggle } from "@/components/CatalogLayoutToggle";
+import { CatalogLayoutToggle } from "@/components/restaurant/CatalogLayoutToggle";
 import { CUISINE_TYPES, RESTAURANT_FEATURES } from "@/lib/constants";
 
 type FilterValues = {

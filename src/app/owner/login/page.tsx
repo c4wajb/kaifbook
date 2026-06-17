@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import Link from "next/link";
-import { AuthForm } from "@/components/AuthForm";
+import { AuthForm } from "@/components/guest/AuthForm";
 
 type OwnerLoginPageProps = { searchParams: Promise<{ next?: string }> };
 

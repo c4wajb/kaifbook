@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Mail, MapPin, Phone } from "lucide-react";
-import { BrandLogo } from "@/components/BrandLogo";
+import { BrandLogo } from "@/components/layout/BrandLogo";
 
 const officePathPrefixes = ["/owner", "/admin", "/dashboard", "/businesses", "/login", "/register"];
 
