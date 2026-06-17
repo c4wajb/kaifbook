@@ -15939,3 +15939,18 @@ h1,h2,h3,h4,h5,h6,
 .restaurant-card .restaurant-card-title-block h3 {
   text-wrap: balance;
 }
+
+/* ============================================================
+   Task 7 — Mobile / Capacitor safety
+   ============================================================ */
+/* Guard against stray horizontal scroll on phones. `clip` (not hidden)
+   so <html> never becomes a vertical scroll container — that would
+   detach the sticky header and fixed bars. */
+html {
+  overflow-x: clip;
+}
+/* Scroll-to-top FAB clears the home indicator / gesture bar on notched
+   devices (Capacitor / iOS) instead of sitting on top of it. */
+.scroll-to-top-button {
+  bottom: calc(24px + env(safe-area-inset-bottom));
+}
