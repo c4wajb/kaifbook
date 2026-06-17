@@ -15655,53 +15655,64 @@ h1, h2, h3, h4 { overflow-wrap: break-word; }
   color: var(--lux-terracotta, #be6842);
 }
 
-/* ── Floor-plan table status — high-contrast, unmistakable colours ─────── */
-/* свободен → зелёный, нужен депозит → янтарный, занято → красный,
-   выбран → синий. Source order = precedence (selected wins over all). */
+/* ── Floor-plan table status — warm identity (Task 5) ──────────────────────
+   Free vs occupied are separated by FILL + SHADOW, not hue, so the scheme
+   stays on the warm palette yet remains unmistakable:
+     free      → bright white card that lifts off the board (shadow);
+     occupied  → flat muted greige that recedes (no shadow, dimmed);
+     selected  → terracotta (--accent) tint + ring;
+     deposit   → amber.
+   Green is reserved for "confirmed" booking statuses elsewhere.
+   Source order = precedence (selected wins over all). */
 .booking-table.status-available .booking-table-core {
-  border-color: #2f9e44 !important;
-  background: #e9f7ec !important;
-  color: #176a2b !important;
+  border-color: rgba(122, 110, 98, .42) !important;
+  background: #ffffff !important;
+  color: #2a2017 !important;
+  box-shadow: 0 6px 16px rgba(80, 56, 36, .12) !important;
 }
 .booking-table.requires-deposit .booking-table-core {
-  border-color: #e8920c !important;
-  background: #fdeccb !important;
-  color: #8a5410 !important;
+  border-color: #d98a1f !important;
+  background: #fbeccb !important;
+  color: #875312 !important;
+  box-shadow: 0 6px 16px rgba(176, 122, 28, .16) !important;
 }
 .booking-table.status-occupied .booking-table-core,
 .booking-table.status-too_small .booking-table-core,
 .booking-table.status-disabled .booking-table-core {
-  border-color: #e03131 !important;
-  background: #ffe7e7 !important;
-  color: #b02525 !important;
-  opacity: 1 !important;
+  border-color: rgba(122, 116, 108, .34) !important;
+  background: #e7e2da !important;
+  color: #9a948c !important;
+  box-shadow: none !important;
+  opacity: .72 !important;
 }
 .booking-table.selected .booking-table-core,
 .public-booking-board .booking-table.selected .booking-table-core {
-  border-color: #1565c0 !important;
-  background: #1971c2 !important;
-  color: #ffffff !important;
+  border-color: var(--accent, #c05535) !important;
+  background: #f6e0d4 !important;
+  background: oklch(0.92 0.05 47) !important;
+  color: #8a3a1f !important;
+  box-shadow: 0 0 0 2px rgba(192, 85, 53, .38), 0 12px 26px rgba(192, 85, 53, .26) !important;
 }
 /* Labels (number / seats / status) take the table's status colour so they stay
-   readable on every background — white on the filled blue "selected" card. */
+   readable on every background. */
 .booking-table .booking-table-core strong,
 .booking-table .booking-table-core span,
 .booking-table .booking-table-core small {
   color: inherit !important;
 }
-.booking-table.status-available .seat-dot { border-color: #2f9e44; }
+.booking-table.status-available .seat-dot { border-color: rgba(122, 110, 98, .55); }
 .booking-table.status-occupied .seat-dot,
 .booking-table.status-too_small .seat-dot,
-.booking-table.status-disabled .seat-dot { border-color: #e0a3a3; filter: none; }
+.booking-table.status-disabled .seat-dot { border-color: rgba(122, 116, 108, .4); filter: none; opacity: .7; }
 .booking-table.selected .seat-dot.selected {
-  background: #1971c2 !important;
-  border-color: #1565c0 !important;
+  background: var(--accent, #c05535) !important;
+  border-color: var(--accent-dark, #9b3f24) !important;
   color: #ffffff !important;
 }
-.hall-legend .legend-free { background: #2f9e44 !important; }
-.hall-legend .legend-warning { background: #e8920c !important; }
-.hall-legend .legend-busy { background: #e03131 !important; }
-.hall-legend .legend-selected { background: #1971c2 !important; }
+.hall-legend .legend-free { background: #ffffff !important; box-shadow: inset 0 0 0 1.5px rgba(122, 110, 98, .6) !important; }
+.hall-legend .legend-warning { background: #d98a1f !important; }
+.hall-legend .legend-busy { background: #c2bbb0 !important; }
+.hall-legend .legend-selected { background: var(--accent, #c05535) !important; }
 
 /* Floor plan fills the width; if a short hall can't (height-capped), centre it
    instead of pinning it to the left. */
@@ -15712,6 +15723,14 @@ h1, h2, h3, h4 { overflow-wrap: break-word; }
 }
 .public-booking-board-scroll.fit-to-view.is-fit .public-booking-board-zoom {
   min-width: 0;
+}
+
+/* Owner hall-editor zoom panel (the guest booking scheme has no buttons —
+   it pinch/scroll-zooms): make the floating control fully opaque with a clear
+   ring + shadow so it reads as a control on top, never blends into a table. */
+.hall-zoom-controls {
+  background: #fffaf4 !important;
+  box-shadow: 0 14px 30px rgba(76, 50, 32, .2), 0 0 0 1px rgba(212, 191, 168, .85) !important;
 }
 
 /* ============================================================
