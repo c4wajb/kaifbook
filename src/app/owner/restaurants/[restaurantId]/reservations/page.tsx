@@ -6,56 +6,25 @@ import { DateInput } from "@/components/ui/DateInput";
 import { OwnerTabs } from "@/components/admin/OwnerTabs";
 import { ReservationActions } from "@/components/reservations/ReservationActions";
 import { ReservationSearchBox } from "@/components/reservations/ReservationSearchBox";
-import { EXTERNAL_PAYMENT_STATUSES, RESERVATION_STATUSES, STAFF_ROLES, VERIFICATION_STATUSES } from "@/lib/constants";
+import { EXTERNAL_PAYMENT_STATUSES, STAFF_ROLES, VERIFICATION_STATUSES } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 import { externalPaymentStatusLabel } from "@/lib/external-payments";
 import { formatGuests, formatMoney, reservationDateLabel, statusLabel } from "@/lib/format";
 import { requireOwnerPageUser } from "@/lib/page-auth";
 import { canAccessRestaurant } from "@/lib/permissions";
-import { dateFromInput } from "@/lib/time";
+import { ACTIVE_STATUSES, BOOKING_TABS, getBookingPhase, getBookingPhaseLabel, getBookingTab, type BookingPhase } from "@/lib/reservation-status";
+import { dateFromInput, resolveVisitInstant } from "@/lib/time";
 import { verificationBadgeLabel } from "@/lib/verifications";
 
 type Props = {
   params: Promise<{ restaurantId: string }>;
-  searchParams: Promise<{ status?: string; date?: string; queue?: string; verification?: string }>;
+  searchParams: Promise<{ date?: string; tab?: string; verification?: string; risk?: string }>;
 };
 
-type ReservationForList = Awaited<ReturnType<typeof getReservations>>[number];
+type ReservationForList = Awaited<ReturnType<typeof getActiveReservations>>[number];
 
-const NEW_STATUSES = new Set<string>([
-  RESERVATION_STATUSES.NEW,
-  RESERVATION_STATUSES.AWAITING_RESTAURANT_CONFIRMATION,
-]);
-
-const CONFIRMED_STATUSES = new Set<string>([
-  RESERVATION_STATUSES.CONFIRMED,
-  RESERVATION_STATUSES.CONFIRMED_BY_GUEST,
-  RESERVATION_STATUSES.CONFIRMED_BY_RESTAURANT,
-  RESERVATION_STATUSES.DEPOSIT_PAID,
-  RESERVATION_STATUSES.SEATED,
-]);
-
-const CLOSED_STATUSES = new Set<string>([
-  RESERVATION_STATUSES.CANCELLED,
-  RESERVATION_STATUSES.CANCELLED_BY_GUEST,
-  RESERVATION_STATUSES.CANCELLED_BY_RESTAURANT,
-  RESERVATION_STATUSES.REJECTED,
-  RESERVATION_STATUSES.NO_SHOW,
-  RESERVATION_STATUSES.PAYMENT_EXPIRED,
-  RESERVATION_STATUSES.COMPLETED,
-]);
-
-const QUEUES = [
-  { key: "all", label: "Все" },
-  { key: "new", label: "Новые" },
-  { key: "payment", label: "Ждут оплату" },
-  { key: "paid", label: "Оплачены" },
-  { key: "confirmed", label: "Подтверждены" },
-  { key: "risk", label: "Риск неявки" },
-  { key: "closed", label: "Закрытые" },
-] as const;
-
-async function getReservations(restaurantId: string, filters: { status?: string; date?: string; verification?: string }) {
+// Only fetch live bookings — closed/terminal statuses live in «История броней».
+async function getActiveReservations(restaurantId: string, filters: { date?: string; verification?: string }) {
   const verificationWhere =
     filters.verification === "confirmed"
       ? { verificationStatus: VERIFICATION_STATUSES.CONFIRMED }
@@ -67,7 +36,7 @@ async function getReservations(restaurantId: string, filters: { status?: string;
   return prisma.reservation.findMany({
     where: {
       restaurantId,
-      status: filters.status || undefined,
+      status: { in: ACTIVE_STATUSES },
       reservationDate: filters.date ? dateFromInput(filters.date) : undefined,
       ...verificationWhere,
     },
@@ -90,76 +59,42 @@ function safeToken(value: string) {
   return value.replaceAll("_", "-");
 }
 
-function reservationNeedsAttention(reservation: ReservationForList) {
-  return (
-    NEW_STATUSES.has(reservation.status) ||
-    reservation.paymentStatus === EXTERNAL_PAYMENT_STATUSES.AWAITING_EXTERNAL_PAYMENT
-  );
+function isAwaitingPayment(reservation: ReservationForList) {
+  return reservation.paymentRequired && reservation.paymentStatus === EXTERNAL_PAYMENT_STATUSES.AWAITING_EXTERNAL_PAYMENT;
 }
 
-function reservationPriority(reservation: ReservationForList) {
-  if (NEW_STATUSES.has(reservation.status)) return 0;
-  if (reservation.paymentStatus === EXTERNAL_PAYMENT_STATUSES.AWAITING_EXTERNAL_PAYMENT) return 1;
-  if (reservation.paymentStatus === EXTERNAL_PAYMENT_STATUSES.PAID_TO_RESTAURANT && !CONFIRMED_STATUSES.has(reservation.status)) return 2;
-  if (CONFIRMED_STATUSES.has(reservation.status)) return 3;
-  if (reservation.status === RESERVATION_STATUSES.COMPLETED) return 4;
-  if (CLOSED_STATUSES.has(reservation.status)) return 5;
-  return 6;
+function reservationHasRisk(reservation: ReservationForList) {
+  return reservation.noShowRiskLevel === "high" || (reservation.guest?.noShowCount ?? 0) > 0;
 }
+
+function reservationNeedsAttention(reservation: ReservationForList) {
+  return getBookingPhase(reservation.status) === "needs_confirmation" || isAwaitingPayment(reservation);
+}
+
+const PHASE_PRIORITY: Record<BookingPhase, number> = { needs_confirmation: 0, awaiting_payment: 1, confirmed: 2, seated: 3, closed: 4 };
 
 function sortReservations(a: ReservationForList, b: ReservationForList) {
-  const priorityDiff = reservationPriority(a) - reservationPriority(b);
+  const priorityDiff = PHASE_PRIORITY[getBookingPhase(a.status)] - PHASE_PRIORITY[getBookingPhase(b.status)];
   if (priorityDiff) return priorityDiff;
 
-  if (NEW_STATUSES.has(a.status) && NEW_STATUSES.has(b.status)) {
+  if (getBookingPhase(a.status) === "needs_confirmation" && getBookingPhase(b.status) === "needs_confirmation") {
     return b.createdAt.getTime() - a.createdAt.getTime();
   }
-
   const dateDiff = a.reservationDate.getTime() - b.reservationDate.getTime();
   if (dateDiff) return dateDiff;
-
   const timeDiff = a.startTime.localeCompare(b.startTime);
   if (timeDiff) return timeDiff;
-
   return b.createdAt.getTime() - a.createdAt.getTime();
 }
 
-function matchesQueue(reservation: ReservationForList, queue: string) {
-  switch (queue) {
-    case "new":
-      return NEW_STATUSES.has(reservation.status);
-    case "payment":
-      return reservation.paymentStatus === EXTERNAL_PAYMENT_STATUSES.AWAITING_EXTERNAL_PAYMENT;
-    case "paid":
-      return reservation.paymentStatus === EXTERNAL_PAYMENT_STATUSES.PAID_TO_RESTAURANT;
-    case "confirmed":
-      return CONFIRMED_STATUSES.has(reservation.status);
-    case "risk":
-      return reservation.noShowRiskLevel === "high" || (reservation.guest?.noShowCount ?? 0) > 0;
-    case "closed":
-      return CLOSED_STATUSES.has(reservation.status);
-    default:
-      return true;
-  }
-}
-
-function queueHref(restaurantId: string, filters: { status?: string; date?: string; queue?: string; verification?: string }, queue: string) {
+function tabHref(restaurantId: string, filters: { date?: string; verification?: string; risk?: string }, tab: string) {
   const params = new URLSearchParams();
-  if (queue !== "all") params.set("queue", queue);
-  if (filters.status) params.set("status", filters.status);
+  if (tab !== BOOKING_TABS[0].key) params.set("tab", tab);
   if (filters.date) params.set("date", filters.date);
   if (filters.verification) params.set("verification", filters.verification);
+  if (filters.risk) params.set("risk", filters.risk);
   const query = params.toString();
   return `/owner/restaurants/${restaurantId}/reservations${query ? `?${query}` : ""}`;
-}
-
-function reservationActionLabel(reservation: ReservationForList) {
-  if (NEW_STATUSES.has(reservation.status)) return "Нужно подтвердить";
-  if (reservation.paymentStatus === EXTERNAL_PAYMENT_STATUSES.AWAITING_EXTERNAL_PAYMENT) return "Ждет оплату";
-  if (reservation.paymentStatus === EXTERNAL_PAYMENT_STATUSES.PAID_TO_RESTAURANT && !CONFIRMED_STATUSES.has(reservation.status)) return "Оплату отметили";
-  if (reservation.status === RESERVATION_STATUSES.NO_SHOW) return "Гость не пришел";
-  if (CLOSED_STATUSES.has(reservation.status)) return "Закрыта";
-  return "В работе";
 }
 
 function reservationBadges(reservation: ReservationForList) {
@@ -180,20 +115,22 @@ export default async function ReservationsPage({ params, searchParams }: Props) 
   const user = await requireOwnerPageUser();
   const { restaurantId } = await params;
   const filters = await searchParams;
-  const activeQueue = filters.queue || "all";
+  const tab = getBookingTab(filters.tab);
   const restaurant = await prisma.restaurant.findUnique({ where: { id: restaurantId } });
   if (!restaurant || !(await canAccessRestaurant(user, restaurant))) notFound();
 
-  const allReservations = await getReservations(restaurantId, filters);
-  const reservations = allReservations.filter((reservation) => matchesQueue(reservation, activeQueue)).sort(sortReservations);
-  const attentionCount = allReservations.filter(reservationNeedsAttention).length;
+  const allActive = await getActiveReservations(restaurantId, filters);
+  const tabMatches = allActive.filter((reservation) => tab.phases.includes(getBookingPhase(reservation.status)));
+  const reservations = (filters.risk === "1" ? tabMatches.filter(reservationHasRisk) : tabMatches).sort(sortReservations);
+  const attentionCount = allActive.filter(reservationNeedsAttention).length;
+  const now = Date.now();
 
   return (
     <div className="page owner-layout">
       <div className="page-title">
         <p className="eyebrow">Брони и посадка</p>
         <h1>{restaurant.title}</h1>
-        <p>Новые заявки и брони, которые ждут действия менеджера, теперь всегда показываются первыми.</p>
+        <p>Новые заявки показываются первыми. Завершённые, отменённые и неявки — в разделе «История броней».</p>
       </div>
 
       <OwnerTabs restaurantId={restaurant.id} isStaff={(STAFF_ROLES as readonly string[]).includes(user.role)} />
@@ -201,10 +138,10 @@ export default async function ReservationsPage({ params, searchParams }: Props) 
       <section className="panel owner-reservation-panel">
         <div className="owner-reservation-head">
           <div>
-            <h2>Заявки на бронь</h2>
+            <h2>{tab.title}</h2>
             <p>
-              Всего: <strong>{allReservations.length}</strong>. Требуют внимания:{" "}
-              <strong>{attentionCount}</strong>.
+              {tab.subtitle}
+              {attentionCount ? <> · требуют внимания: <strong>{attentionCount}</strong></> : null}
             </p>
           </div>
           <Link className="small-button" href={`/owner/restaurants/${restaurant.id}/reservations`}>
@@ -212,17 +149,12 @@ export default async function ReservationsPage({ params, searchParams }: Props) 
           </Link>
         </div>
 
-        <nav className="reservation-filter-chips" aria-label="Фильтр заявок">
-          {QUEUES.map((queue) => {
-            const count = allReservations.filter((reservation) => matchesQueue(reservation, queue.key)).length;
-            const isActive = activeQueue === queue.key;
+        <nav className="reservation-filter-chips" aria-label="Этап брони">
+          {BOOKING_TABS.map((item) => {
+            const count = allActive.filter((reservation) => item.phases.includes(getBookingPhase(reservation.status))).length;
             return (
-              <Link
-                key={queue.key}
-                className={isActive ? "active" : ""}
-                href={queueHref(restaurant.id, filters, queue.key)}
-              >
-                {queue.label}
+              <Link key={item.key} className={tab.key === item.key ? "active" : ""} href={tabHref(restaurant.id, filters, item.key)}>
+                {item.label}
                 <span>{count}</span>
               </Link>
             );
@@ -232,18 +164,7 @@ export default async function ReservationsPage({ params, searchParams }: Props) 
         <ReservationSearchBox />
 
         <form className="owner-reservation-filters" action={`/owner/restaurants/${restaurant.id}/reservations`}>
-          {activeQueue !== "all" ? <input type="hidden" name="queue" value={activeQueue} /> : null}
-          <label>
-            <span>Статус</span>
-            <select name="status" defaultValue={filters.status || ""}>
-              <option value="">Все статусы</option>
-              {Object.values(RESERVATION_STATUSES).map((status) => (
-                <option key={status} value={status}>
-                  {statusLabel(status)}
-                </option>
-              ))}
-            </select>
-          </label>
+          {tab.key !== BOOKING_TABS[0].key ? <input type="hidden" name="tab" value={tab.key} /> : null}
           <DateInput name="date" label="Дата визита" defaultValue={filters.date || ""} />
           <label>
             <span>Подтверждение</span>
@@ -255,6 +176,10 @@ export default async function ReservationsPage({ params, searchParams }: Props) 
               <option value="vk">Через VK</option>
             </select>
           </label>
+          <label className="reservation-risk-toggle">
+            <input type="checkbox" name="risk" value="1" defaultChecked={filters.risk === "1"} />
+            <span>Только с риском неявки</span>
+          </label>
           <button className="button" type="submit">
             Показать
           </button>
@@ -263,6 +188,7 @@ export default async function ReservationsPage({ params, searchParams }: Props) 
         <div className="owner-reservation-list">
           {reservations.map((reservation) => {
             const selectedSeats = parseSeatNumbers(reservation.selectedSeatNumbers);
+            const visitStarted = now >= resolveVisitInstant(reservation.reservationDate, reservation.startTime, null).getTime();
             return (
               <article
                 className={`reservation-card status-${safeToken(reservation.status)} payment-${safeToken(reservation.paymentStatus)}${
@@ -275,7 +201,7 @@ export default async function ReservationsPage({ params, searchParams }: Props) 
               >
                 <div className="reservation-card-top">
                   <div>
-                    <span className="reservation-action-label">{reservationActionLabel(reservation)}</span>
+                    <span className="reservation-action-label">{getBookingPhaseLabel(reservation.status)}</span>
                     <h3>
                       {reservation.customerName} · {formatGuests(reservation.guestsCount)}
                     </h3>
@@ -351,6 +277,7 @@ export default async function ReservationsPage({ params, searchParams }: Props) 
                     status={reservation.status}
                     paymentRequired={reservation.paymentRequired}
                     paymentStatus={reservation.paymentStatus}
+                    visitStarted={visitStarted}
                   />
                 </div>
               </article>
@@ -358,7 +285,12 @@ export default async function ReservationsPage({ params, searchParams }: Props) 
           })}
         </div>
 
-        {!reservations.length ? <div className="empty-state">По выбранным условиям заявок нет.</div> : null}
+        {!reservations.length ? (
+          <div className="empty-state">
+            <strong>{tab.emptyTitle}</strong>
+            <span>{filters.risk === "1" ? "С риском неявки в этой вкладке броней нет." : tab.emptyHint}</span>
+          </div>
+        ) : null}
       </section>
     </div>
   );

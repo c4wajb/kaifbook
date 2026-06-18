@@ -4,18 +4,32 @@ import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { DateInput } from "@/components/ui/DateInput";
 import { OwnerTabs } from "@/components/admin/OwnerTabs";
-import { RESERVATION_STATUSES } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 import { externalPaymentStatusLabel } from "@/lib/external-payments";
 import { formatMoney, reservationDateLabel, statusLabel } from "@/lib/format";
 import { requireOwnerPageUser } from "@/lib/page-auth";
 import { canAccessRestaurant } from "@/lib/permissions";
+import { CLOSED_STATUSES, CLOSURE_TYPE_STATUSES, type ClosureType } from "@/lib/reservation-status";
 import { dateFromInput } from "@/lib/time";
 
 type Props = {
   params: Promise<{ restaurantId: string }>;
-  searchParams: Promise<{ q?: string; from?: string; to?: string; status?: string; guests?: string; sort?: string }>;
+  searchParams: Promise<{ q?: string; from?: string; to?: string; closure?: string; guests?: string; sort?: string }>;
 };
+
+// Closure-type filter for the history screen. Maps a friendly bucket → statuses.
+const CLOSURE_FILTERS: { key: ClosureType | "all"; label: string }[] = [
+  { key: "all", label: "Все" },
+  { key: "completed", label: "Завершены" },
+  { key: "cancelled", label: "Отменены" },
+  { key: "rejected", label: "Отклонены" },
+  { key: "no_show", label: "Неявки" },
+];
+
+function closureStatusFilter(closure: string | undefined): string[] {
+  if (closure && closure in CLOSURE_TYPE_STATUSES) return CLOSURE_TYPE_STATUSES[closure as ClosureType];
+  return CLOSED_STATUSES;
+}
 
 function normalizeText(value: string | null | undefined) {
   return (value || "").toLowerCase().trim();
@@ -65,7 +79,7 @@ export default async function ReservationHistoryPage({ params, searchParams }: P
   const rawReservations = await prisma.reservation.findMany({
     where: {
       restaurantId,
-      status: filters.status || undefined,
+      status: { in: closureStatusFilter(filters.closure) },
       guestsCount: guestsCount > 0 ? guestsCount : undefined,
       reservationDate: Object.keys(dateFilter).length ? dateFilter : undefined,
     },
@@ -83,14 +97,14 @@ export default async function ReservationHistoryPage({ params, searchParams }: P
       return sortAsc ? a.createdAt.getTime() - b.createdAt.getTime() : b.createdAt.getTime() - a.createdAt.getTime();
     });
 
-  const hasFilters = Boolean(filters.q || filters.from || filters.to || filters.status || filters.guests || filters.sort === "asc");
+  const hasFilters = Boolean(filters.q || filters.from || filters.to || filters.closure || filters.guests || filters.sort === "asc");
 
   return (
     <div className="page owner-layout">
       <div className="page-title">
         <p className="eyebrow">Архив ресторана</p>
         <h1>{restaurant.title}</h1>
-        <p>Полная история заявок: от новых броней до отмен, завершенных визитов и неявок.</p>
+        <p>Завершённые визиты, отмены, отказы и неявки. Активные брони — в разделе «Брони».</p>
       </div>
 
       <OwnerTabs restaurantId={restaurant.id} />
@@ -116,11 +130,10 @@ export default async function ReservationHistoryPage({ params, searchParams }: P
           <DateInput name="from" label="Дата от" defaultValue={filters.from || ""} />
           <DateInput name="to" label="Дата до" defaultValue={filters.to || ""} />
           <label>
-            <span>Статус</span>
-            <select name="status" defaultValue={filters.status || ""}>
-              <option value="">Все статусы</option>
-              {Object.values(RESERVATION_STATUSES).map((status) => (
-                <option key={status} value={status}>{statusLabel(status)}</option>
+            <span>Тип закрытия</span>
+            <select name="closure" defaultValue={filters.closure || "all"}>
+              {CLOSURE_FILTERS.map((option) => (
+                <option key={option.key} value={option.key}>{option.label}</option>
               ))}
             </select>
           </label>

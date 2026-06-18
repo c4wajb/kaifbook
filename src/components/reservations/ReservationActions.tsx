@@ -1,27 +1,32 @@
 "use client";
 
-import { Check, CircleSlash, CreditCard, Flag, Link2, UserCheck, X } from "lucide-react";
+import { Check, CircleSlash, CreditCard, Flag, Link2, UserCheck, UserX, X } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { EXTERNAL_PAYMENT_STATUSES } from "@/lib/constants";
+import { BOOKING_ACTIONS, getAvailableActions, type BookingActionKey } from "@/lib/reservation-status";
 
-const ACTIONS = [
-  { status: "confirmed", endpoint: "confirm", label: "Подтвердить", icon: Check },
-  { status: "seated", endpoint: "seated", label: "Посадить", icon: UserCheck },
-  { status: "rejected", endpoint: "reject", label: "Отклонить", icon: X },
-  { status: "cancelled", endpoint: "cancel", label: "Отменить", icon: CircleSlash },
-  { status: "completed", endpoint: "complete", label: "Завершить", icon: Flag },
-  { status: "no_show", endpoint: "no-show", label: "Гость не пришел", icon: X },
-] as const;
+const ICONS: Record<BookingActionKey, LucideIcon> = {
+  confirm: Check,
+  reject: X,
+  mark_paid: CreditCard,
+  request_confirmation: Link2,
+  seated: UserCheck,
+  cancel: CircleSlash,
+  no_show: UserX,
+  complete: Flag,
+};
 
 type Props = {
   reservationId: string;
   status: string;
   paymentRequired?: boolean;
   paymentStatus?: string | null;
+  /** Whether the visit start time has arrived — gates «Гость не пришёл». */
+  visitStarted?: boolean;
 };
 
-export function ReservationActions({ reservationId, status, paymentRequired, paymentStatus }: Props) {
+export function ReservationActions({ reservationId, status, paymentRequired, paymentStatus, visitStarted }: Props) {
   const router = useRouter();
   const [pending, setPending] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -81,24 +86,29 @@ export function ReservationActions({ reservationId, status, paymentRequired, pay
     router.refresh();
   }
 
-  const awaitingRestaurantPayment = paymentRequired && paymentStatus === EXTERNAL_PAYMENT_STATUSES.AWAITING_EXTERNAL_PAYMENT;
+  function handle(key: BookingActionKey) {
+    const action = BOOKING_ACTIONS[key];
+    if (action.kind === "mark_paid") return markPaid();
+    if (action.kind === "request_confirmation") return requestConfirmation();
+    return run(action.endpoint);
+  }
+
+  const actions = getAvailableActions({ status, paymentRequired, paymentStatus, visitStarted });
+  if (!actions.length) return null;
 
   return (
     <div className="reservation-actions">
-      <button className="small-button icon-text" type="button" disabled={pending !== null} onClick={requestConfirmation}>
-        <Link2 size={15} aria-hidden />
-        Ссылка гостю
-      </button>
-      {awaitingRestaurantPayment ? (
-        <button className="small-button icon-text success-action" type="button" disabled={pending !== null} onClick={markPaid}>
-          <CreditCard size={15} aria-hidden />
-          Отметить оплату
-        </button>
-      ) : null}
-      {ACTIONS.filter((action) => action.status !== status).map((action) => {
-        const Icon = action.icon;
+      {actions.map((key) => {
+        const action = BOOKING_ACTIONS[key];
+        const Icon = ICONS[key];
         return (
-          <button className="small-button icon-text" key={action.endpoint} type="button" disabled={pending !== null} onClick={() => run(action.endpoint)}>
+          <button
+            className={`small-button icon-text${action.tone === "success" ? " success-action" : ""}`}
+            key={key}
+            type="button"
+            disabled={pending !== null}
+            onClick={() => handle(key)}
+          >
             <Icon size={15} aria-hidden />
             {action.label}
           </button>
