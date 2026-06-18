@@ -23,11 +23,27 @@
 
 /* Unified product polish */
 :root{--radius:8px;--focus:0 0 0 3px rgba(192,85,53,.14);--info:#5A6875;--soft-warning:#f5f0e6;--soft-success:#e8f0eb;--soft-danger:#fae8e8}
-/* Font dictionary — the ONLY place font stacks live. next/font (layout.tsx)
-   sets --font-playfair / --font-golos on <html>; these map them to the two
-   public families plus the systemic fallbacks. Content rules only ever use
-   var(--font-serif|sans|mono). */
-:root{--font-serif:var(--font-playfair),Georgia,serif;--font-sans:var(--font-golos),system-ui,-apple-system,"Segoe UI",sans-serif;--font-mono:ui-monospace,SFMono-Regular,Menlo,monospace}
+/* ── Type system (Option A: Unbounded display + Golos Text) ──────────────
+   The ONLY place font stacks live. next/font (layout.tsx) sets
+   --font-unbounded / --font-golos on <html>; here we map them to two
+   semantic roles:
+     --font-display → logo + headings (Unbounded, rounded geometric grotesk)
+     --font-text    → UI + body (Golos Text)
+   Content rules use the semantic roles or the legacy --font-serif/--font-sans
+   aliases (kept pointing at the new roles so existing rules need no edits).
+   Display type runs wide, so tighten tracking via --tracking-display. */
+:root{
+  --font-display:var(--font-unbounded),"Trebuchet MS",system-ui,sans-serif;
+  --font-text:var(--font-golos),system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+  /* legacy aliases → new roles */
+  --font-serif:var(--font-display);
+  --font-sans:var(--font-text);
+  /* display tuning tokens */
+  --tracking-display:-.02em;
+  --tracking-tight:-.01em;
+  --weight-display:680;
+}
 body{background:#f5f3f0;font-feature-settings:"kern" 1;text-rendering:optimizeLegibility}
 a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:0;box-shadow:var(--focus)}
 .button,.ghost,.small-button,.danger-button,.secondary-button,.icon-button,.icon-only{border-radius:var(--radius);transition:background .16s ease,border-color .16s ease,transform .16s ease,box-shadow .16s ease}
@@ -644,9 +660,9 @@ body{
 }
 h1,h2,h3,.brand span,.profile-hero-content h1,.showcase-content h2,.catalog-title h1,.page-title h1{
   color:var(--lux-ink);
-  font-family:var(--font-serif);
-  font-weight:760;
-  letter-spacing:-.01em;
+  font-family:var(--font-display);
+  font-weight:var(--weight-display);
+  letter-spacing:var(--tracking-display);
 }
 .app-header.public-header{
   min-height:82px;
@@ -2616,8 +2632,8 @@ body{
   font-family:var(--font-sans);
 }
 h1,h2,h3,.brand span,.catalog-title h1,.showcase-content h2,.profile-hero-content h1,.profile-section h2,.page-title h1{
-  font-family:var(--font-serif);
-  letter-spacing:-.01em;
+  font-family:var(--font-display);
+  letter-spacing:var(--tracking-display);
 }
 .app-header.public-header{
   min-height:82px;
