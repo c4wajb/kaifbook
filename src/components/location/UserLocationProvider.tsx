@@ -1,7 +1,7 @@
 "use client";
 
 import { Capacitor } from "@capacitor/core";
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { LatLng } from "@/lib/geo";
 
 /**
@@ -46,12 +46,15 @@ function readCache(): LatLng | null {
 export function UserLocationProvider({ children }: { children: React.ReactNode }) {
   const [coords, setCoords] = useState<LatLng | null>(null);
   const [status, setStatus] = useState<GeoStatus>("idle");
-  const supported = useRef<boolean>(false);
+  // Assume supported (the common case) so the control is in the SSR HTML with
+  // no hydration flash; correct it downward on mount for the rare browser that
+  // truly lacks geolocation. Must be STATE (not a ref) so the UI re-renders.
+  const [supported, setSupported] = useState(true);
 
   // Platform support + warm cache. Runs once on the client; never prompts.
   useEffect(() => {
     const native = Capacitor.isNativePlatform();
-    supported.current = native || (typeof navigator !== "undefined" && "geolocation" in navigator);
+    setSupported(native || (typeof navigator !== "undefined" && "geolocation" in navigator));
     const cached = readCache();
     if (cached) {
       setCoords(cached);
@@ -104,7 +107,7 @@ export function UserLocationProvider({ children }: { children: React.ReactNode }
     );
   }, [apply]);
 
-  const value = useMemo<UserLocationValue>(() => ({ coords, status, request, supported: supported.current }), [coords, status, request]);
+  const value = useMemo<UserLocationValue>(() => ({ coords, status, request, supported }), [coords, status, request, supported]);
 
   return <UserLocationContext.Provider value={value}>{children}</UserLocationContext.Provider>;
 }
