@@ -2,7 +2,6 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { CalendarCheck, Code, LayoutDashboard, ShieldCheck } from "lucide-react";
 import { BrandLogo } from "@/components/layout/BrandLogo";
-import { HeaderSearch } from "@/components/layout/HeaderSearch";
 import { LogoutButton } from "@/components/ui/LogoutButton";
 import { getCurrentUser } from "@/lib/auth";
 import { OWNER_ROLES, ROLES, STAFF_ROLES } from "@/lib/constants";
@@ -86,7 +85,6 @@ export async function AppHeader() {
       <Link className="brand" href="/">
         <BrandLogo />
       </Link>
-      <HeaderSearch />
       <div className="header-actions">
         <Link className="button compact icon-text" href="/guest/reservations">
           <CalendarCheck size={15} aria-hidden /> Мои брони

@@ -16339,52 +16339,14 @@ html {
 }
 
 /* ============================================================
-   Header V2 — compact: logo · search (flex:1) · «Мои брони»,
-   and catalog categories as quiet text-links (no pills/arrows).
-   Brand tokens; sticky header unchanged. Appended last.
+   Header V2 — compact: logo · «Мои брони» (search removed — the
+   catalog has its own search), and catalog categories as quiet
+   text-links (no pills/arrows). Brand tokens; sticky unchanged.
+   Appended last.
    ============================================================ */
 
-/* Search field (desktop: always-open; mobile: icon that expands). */
-.header-search {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  max-width: 520px;
-  min-height: 44px;
-  padding: 0 6px 0 14px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--surface-2);
-  justify-self: center;
-}
-.header-search:focus-within { border-color: rgba(192, 85, 53, .42); box-shadow: var(--focus); }
-.header-search-icon {
-  display: inline-grid;
-  place-items: center;
-  flex: 0 0 auto;
-  width: 30px;
-  height: 30px;
-  border: 0;
-  border-radius: 9px;
-  background: none;
-  color: var(--accent);
-  cursor: pointer;
-}
-.header-search input {
-  flex: 1 1 auto;
-  min-width: 0;
-  min-height: 40px;
-  border: 0;
-  background: none;
-  color: var(--ink);
-  font-size: 14px;
-  font-weight: 600;
-  outline: none;
-}
-.header-search input::placeholder { color: var(--muted); font-weight: 500; }
-.header-search input::-webkit-search-cancel-button { display: none; }
-.header-search-close { display: none; }
+/* Two zones now (no middle search): brand stretches, «Мои брони» hugs right. */
+.app-header.public-header { grid-template-columns: 1fr auto; }
 .public-header .header-actions .button.compact { min-height: 44px; }
 
 /* Catalog categories — text-links, active underlined, scroll + fade. */
@@ -16431,58 +16393,13 @@ html {
   pointer-events: none;
 }
 
-/* Mobile: search collapses to a lupa icon that expands to a top bar. */
+/* Mobile: keep brand + «Мои брони» on one row (header collapses to 1 grid col). */
 @media (max-width: 720px) {
-  /* the brand must not grow, or it pushes the search icon + «Мои брони» off-screen */
-  .public-header .brand { flex: 0 1 auto !important; font-size: clamp(19px, 5.6vw, 26px) !important; }
+  .app-header.public-header { grid-template-columns: 1fr auto; }
+  .public-header .brand { font-size: clamp(19px, 5.6vw, 26px) !important; }
   /* header-actions was hidden on mobile when it was an empty decorative div;
      it now holds the «Мои брони» button, so show it again. */
-  .public-header .header-actions { display: flex !important; flex: 0 0 auto; }
-  .header-search {
-    width: auto;
-    max-width: none;
-    min-height: 40px;
-    padding: 0;
-    border: 0;
-    background: none;
-    box-shadow: none;
-  }
-  .header-search input { display: none; }
-  .header-search-icon {
-    width: 42px;
-    height: 42px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    background: var(--surface);
-  }
-  .header-search.is-open {
-    position: fixed;
-    inset: 0 0 auto 0;
-    z-index: 60;
-    width: auto;
-    min-height: 62px;
-    gap: 10px;
-    padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
-    border: 0;
-    border-bottom: 1px solid var(--line);
-    border-radius: 0;
-    background: rgba(251, 247, 244, .98);
-    backdrop-filter: blur(12px);
-  }
-  .header-search.is-open .header-search-icon { border: 0; background: none; width: 30px; height: 30px; }
-  .header-search.is-open input { display: block; flex: 1 1 auto; min-height: 44px; font-size: 16px; }
-  .header-search.is-open .header-search-close {
-    display: inline-grid;
-    place-items: center;
-    flex: 0 0 auto;
-    width: 42px;
-    height: 42px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    background: var(--surface);
-    color: var(--ink);
-    cursor: pointer;
-  }
+  .public-header .header-actions { display: flex !important; justify-content: flex-end; }
 }
 
 /* --- Geolocation & distance (Рядом) --- */
