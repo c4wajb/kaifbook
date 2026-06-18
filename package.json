@@ -16,12 +16,14 @@
     "prisma:deploy": "prisma migrate deploy",
     "prisma:generate": "prisma generate",
     "prisma:seed": "prisma db seed",
-    "content:seed": "node scripts/enrich-restaurant-content.mjs"
+    "content:seed": "node scripts/enrich-restaurant-content.mjs",
+    "geo:backfill": "tsx scripts/backfill-coordinates.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@capacitor/geolocation": "^8.2.0",
     "@prisma/client": "^6.19.3",
     "@vkid/sdk": "^2.6.5",
     "@vkontakte/vk-bridge": "^3.0.2",

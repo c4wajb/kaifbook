@@ -6,6 +6,7 @@ import { BadgeRussianRuble, Clock3, MapPin, Phone, PhoneCall, Star, Utensils, Wa
 import { AgeGate } from "@/components/restaurant/AgeGate";
 import { MenuSection } from "@/components/restaurant/MenuSection";
 import { ReservationForm } from "@/components/reservations/ReservationForm";
+import { RestaurantDistance } from "@/components/restaurant/RestaurantDistance";
 import { RestaurantGallery } from "@/components/restaurant/RestaurantGallery";
 import { YandexMap } from "@/components/restaurant/YandexMap";
 import { isAdultOnlyRestaurant } from "@/lib/adult-content";
@@ -87,7 +88,7 @@ export default async function RestaurantPage({ params }: Props) {
             ) : null}
             <span>
               <MapPin size={16} aria-hidden />
-              {restaurant.distanceText ? `${restaurant.distanceText} · ` : ""}
+              <RestaurantDistance latitude={restaurant.latitude} longitude={restaurant.longitude} fallback={restaurant.distanceText} />
               {restaurant.address}
             </span>
             <span>

@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { Clock3, MapPin, Star, WalletCards } from "lucide-react";
 import { useMemo, useState } from "react";
 import { formatMoney } from "@/lib/format";
+import { distanceLabel } from "@/lib/geo";
 import { parseStringList } from "@/lib/json-fields";
+import { useUserLocation } from "@/components/location/UserLocationProvider";
 import { RestaurantCardGallery } from "@/components/restaurant/RestaurantCardGallery";
 
 type WorkingHour = { dayOfWeek: number; openTime: string; closeTime: string; isClosed: boolean };
@@ -17,6 +19,8 @@ type RestaurantCardProps = {
     address: string;
     city: string;
     averageCheck: number;
+    latitude?: number | null;
+    longitude?: number | null;
     rating?: number | null;
     reviewsCount?: number | null;
     cuisineTypes: string;
@@ -59,6 +63,8 @@ export function RestaurantCard({ restaurant, compact = false, restaurantBasePath
   const [hovered, setHovered] = useState(false);
   const cuisineBadge = cuisines.slice(0, 2).join(", ") || "ресторан";
   const rating = restaurant.rating && restaurant.rating > 0 ? restaurant.rating.toFixed(1).replace(".", ",") : null;
+  const { coords } = useUserLocation();
+  const distance = coords ? distanceLabel(coords, { latitude: restaurant.latitude, longitude: restaurant.longitude }) : null;
 
   return (
     <article
@@ -108,6 +114,8 @@ export function RestaurantCard({ restaurant, compact = false, restaurantBasePath
         <div className="restaurant-card-info" aria-label="Информация о ресторане">
           <span title={`${restaurant.city}, ${restaurant.address}`}>
             <MapPin size={17} aria-hidden />
+            {distance ? <strong className="restaurant-card-distance">{distance}</strong> : null}
+            {distance ? " · " : ""}
             {restaurant.address}
           </span>
           <span className="open-status">

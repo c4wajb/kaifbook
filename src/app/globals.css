@@ -16484,3 +16484,37 @@ html {
     cursor: pointer;
   }
 }
+
+/* --- Geolocation & distance (Рядом) --- */
+.restaurant-card-distance {
+  font-weight: 700;
+  color: var(--accent);
+}
+.nearby-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.nearby-locate-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+}
+.nearby-locate-button:disabled {
+  opacity: 0.65;
+  cursor: progress;
+}
+.nearby-located-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+.nearby-hint {
+  margin: 0 0 14px;
+  font-size: 0.86rem;
+}

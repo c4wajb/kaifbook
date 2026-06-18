@@ -13,8 +13,10 @@ export const metadata: Metadata = {
 };
 import { AgeGate } from "@/components/restaurant/AgeGate";
 import { HomeBannerSlider } from "@/components/restaurant/HomeBannerSlider";
+import { NearbyRail } from "@/components/restaurant/NearbyRail";
 import { RestaurantCard } from "@/components/restaurant/RestaurantCard";
 import { RestaurantFilters } from "@/components/restaurant/RestaurantFilters";
+import { UserLocationProvider } from "@/components/location/UserLocationProvider";
 import { filtersImplyAdultContent } from "@/lib/adult-content";
 import { parseStringList } from "@/lib/json-fields";
 import { getHomeBannerRestaurants, getPublicRestaurants, getRestaurantFilterOptions } from "@/lib/public-data";
@@ -121,6 +123,7 @@ export default async function RestaurantsPage({ searchParams }: Props) {
       {requiresAgeGate ? <AgeGate /> : null}
       <h1 className="visually-hidden">Рестораны в Курске</h1>
 
+      <UserLocationProvider>
       <nav className="catalog-categories" aria-label="Категории ресторанов">
         {quickFilters.map((filter) => (
           <Link key={filter.label} href={filter.href} className={isQuickFilterActive(filters, filter.href) ? "active" : undefined} scroll={false}>
@@ -159,7 +162,7 @@ export default async function RestaurantsPage({ searchParams }: Props) {
           </section>
         ) : (
           <>
-            <RestaurantSection title="Популярные" restaurants={nearbySection} showAllHref="/restaurants?view=all#restaurant-list" />
+            <NearbyRail restaurants={allRestaurants} fallback={nearbySection} showAllHref="/restaurants?view=all#restaurant-list" />
             <RestaurantSection title="Лучшие рестораны" restaurants={bestSection} showAllHref="/restaurants?view=all#restaurant-list" />
             <RestaurantSection title="Кальянные" restaurants={hookahSection} showAllHref={categoryHref("feature", "кальян")} />
             <RestaurantSection title="Где поужинать" restaurants={dinnerSection} showAllHref={categoryHref("cuisine", "европейская")} />
@@ -168,6 +171,7 @@ export default async function RestaurantsPage({ searchParams }: Props) {
           </>
         )}
       </div>
+      </UserLocationProvider>
     </div>
   );
 }
