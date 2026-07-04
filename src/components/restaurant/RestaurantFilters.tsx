@@ -226,7 +226,7 @@ export function RestaurantFilters({ values = {}, cities, layoutMode = "grid", ba
           type="search"
           value={filters.q || ""}
           onChange={(event) => setFilters((current) => ({ ...current, q: event.target.value }))}
-          placeholder="Поиск ресторана по названию"
+          placeholder="Поиск ресторана"
           aria-label="Поиск ресторана по названию"
         />
         {filters.q ? (

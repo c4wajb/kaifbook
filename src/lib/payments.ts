@@ -89,14 +89,18 @@ export async function expireOverdueDepositPayments(restaurantId?: string) {
       data: { status: PAYMENT_STATUSES.EXPIRED },
     });
     if (count > 0) {
-      await prisma.reservation.update({
-        where: { id: payment.reservationId },
+      // Only expire a booking that is still waiting for its deposit — never
+      // clobber one that was meanwhile paid, confirmed or cancelled.
+      const { count: reservationUpdated } = await prisma.reservation.updateMany({
+        where: { id: payment.reservationId, status: RESERVATION_STATUSES.AWAITING_DEPOSIT_PAYMENT },
         data: { status: RESERVATION_STATUSES.PAYMENT_EXPIRED },
       });
-      await notifyGuestReservationStatus(
-        { ...payment.reservation, restaurantTitle: payment.reservation.restaurant.title },
-        RESERVATION_STATUSES.PAYMENT_EXPIRED,
-      );
+      if (reservationUpdated > 0) {
+        await notifyGuestReservationStatus(
+          { ...payment.reservation, restaurantTitle: payment.reservation.restaurant.title },
+          RESERVATION_STATUSES.PAYMENT_EXPIRED,
+        );
+      }
       expired.push(payment.id);
     }
   }

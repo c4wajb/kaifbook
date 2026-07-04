@@ -87,6 +87,18 @@ export function appTzOffsetMinutes(): number {
   return Number.isFinite(parsed) ? parsed : DEFAULT_TZ_OFFSET_MINUTES;
 }
 
+/**
+ * "Now" as Moscow wall-clock, derived from the TZ-independent epoch so the
+ * server (UTC) and the client (any device TZ) agree — avoids hydration
+ * mismatches and wrong-day/time bugs in client components. Returns the date
+ * input string (YYYY-MM-DD), day-of-week and minutes-of-day in Moscow time.
+ */
+export function appWallClockNow(now: Date = new Date()): { dateInput: string; dayOfWeek: number; minutes: number } {
+  const shifted = new Date(now.getTime() + appTzOffsetMinutes() * 60_000);
+  const dateInput = `${shifted.getUTCFullYear()}-${String(shifted.getUTCMonth() + 1).padStart(2, "0")}-${String(shifted.getUTCDate()).padStart(2, "0")}`;
+  return { dateInput, dayOfWeek: shifted.getUTCDay(), minutes: shifted.getUTCHours() * 60 + shifted.getUTCMinutes() };
+}
+
 // A slot before opening on an overnight working day (one that closes the next
 // calendar day) belongs to the morning AFTER the picked date.
 export function isAfterMidnightSlot(startTime: string, workingHour: WorkingHourLike | null | undefined): boolean {
@@ -147,10 +159,11 @@ export function generateStartTimeSlots(options: TimeSlotOptions): string[] {
   const lastStart = closeMinutes - Math.max(15, options.minBookingDurationMinutes);
   let firstStart = openMinutes;
 
-  const now = options.now ?? new Date();
-  if (options.date === localDateInputValue(now)) {
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-    firstStart = Math.max(firstStart, currentMinutes + (options.preparationBufferMinutes ?? 30));
+  // Filter out past slots in Moscow wall-clock (consistent on server + any
+  // client device), not the renderer's local timezone.
+  const wall = appWallClockNow(options.now);
+  if (options.date === wall.dateInput) {
+    firstStart = Math.max(firstStart, wall.minutes + (options.preparationBufferMinutes ?? 30));
   }
 
   const slots: string[] = [];

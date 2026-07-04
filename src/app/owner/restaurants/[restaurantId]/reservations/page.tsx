@@ -13,7 +13,7 @@ import { formatGuests, formatMoney, reservationDateLabel, statusLabel } from "@/
 import { requireOwnerPageUser } from "@/lib/page-auth";
 import { canAccessRestaurant } from "@/lib/permissions";
 import { ACTIVE_STATUSES, BOOKING_TABS, getBookingPhase, getBookingPhaseLabel, getBookingTab, type BookingPhase } from "@/lib/reservation-status";
-import { dateFromInput, resolveVisitInstant } from "@/lib/time";
+import { dateFromInput, dayOfWeekFromDate, resolveVisitInstant } from "@/lib/time";
 import { verificationBadgeLabel } from "@/lib/verifications";
 
 type Props = {
@@ -101,7 +101,7 @@ function reservationBadges(reservation: ReservationForList) {
   const badges: string[] = [];
   badges.push(verificationBadgeLabel(reservation.verificationProvider, reservation.verificationStatus));
   if (!reservation.paymentRequired) badges.push("Оплата не требуется");
-  if (reservation.paymentStatus === EXTERNAL_PAYMENT_STATUSES.AWAITING_EXTERNAL_PAYMENT) badges.push(`Ждет оплату ${formatMoney(reservation.paymentAmount)}`);
+  if (reservation.paymentStatus === EXTERNAL_PAYMENT_STATUSES.AWAITING_EXTERNAL_PAYMENT) badges.push(`Ждёт оплату ${formatMoney(reservation.paymentAmount)}`);
   if (reservation.paymentStatus === EXTERNAL_PAYMENT_STATUSES.PAID_TO_RESTAURANT) badges.push("Оплачена ресторану");
   if (parseSeatNumbers(reservation.selectedSeatNumbers).length) badges.push("Выбраны места");
   if (reservation.guestConfirmedAt) badges.push("Гость подтвердил визит");
@@ -116,7 +116,7 @@ export default async function ReservationsPage({ params, searchParams }: Props) 
   const { restaurantId } = await params;
   const filters = await searchParams;
   const tab = getBookingTab(filters.tab);
-  const restaurant = await prisma.restaurant.findUnique({ where: { id: restaurantId } });
+  const restaurant = await prisma.restaurant.findUnique({ where: { id: restaurantId }, include: { workingHours: true } });
   if (!restaurant || !(await canAccessRestaurant(user, restaurant))) notFound();
 
   const allActive = await getActiveReservations(restaurantId, filters);
@@ -188,7 +188,10 @@ export default async function ReservationsPage({ params, searchParams }: Props) 
         <div className="owner-reservation-list">
           {reservations.map((reservation) => {
             const selectedSeats = parseSeatNumbers(reservation.selectedSeatNumbers);
-            const visitStarted = now >= resolveVisitInstant(reservation.reservationDate, reservation.startTime, null).getTime();
+            // Pass the day's working hour so after-midnight slots at overnight
+            // venues resolve on the correct calendar day (not ~24h early).
+            const workingHour = restaurant.workingHours.find((hour) => hour.dayOfWeek === dayOfWeekFromDate(reservation.reservationDate)) ?? null;
+            const visitStarted = now >= resolveVisitInstant(reservation.reservationDate, reservation.startTime, workingHour).getTime();
             return (
               <article
                 className={`reservation-card status-${safeToken(reservation.status)} payment-${safeToken(reservation.paymentStatus)}${

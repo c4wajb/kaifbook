@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { ApiError } from "@/lib/api";
-import { RESERVATION_STATUSES } from "@/lib/constants";
+import { EXTERNAL_PAYMENT_STATUSES, RESERVATION_STATUSES } from "@/lib/constants";
 import { prisma } from "@/lib/db";
+import { getBookingPhase, isClosedBooking } from "@/lib/reservation-status";
 import { dateFromInput } from "@/lib/time";
 import { validateReservationBusinessRules } from "@/lib/reservations";
 import { notifyRestaurantReservationEvent } from "@/lib/verifications";
@@ -28,19 +29,12 @@ export async function getReservationByConfirmationToken(token: string) {
   return reservation;
 }
 
-// Terminal states — a confirmation-token action must not move a reservation out
-// of these (e.g. re-confirming a completed booking or re-cancelling a cancelled one).
-const CLOSED_STATUSES = [
-  RESERVATION_STATUSES.CANCELLED,
-  RESERVATION_STATUSES.CANCELLED_BY_GUEST,
-  RESERVATION_STATUSES.CANCELLED_BY_RESTAURANT,
-  RESERVATION_STATUSES.NO_SHOW,
-  RESERVATION_STATUSES.REJECTED,
-  RESERVATION_STATUSES.COMPLETED,
-] as string[];
-
+// A confirmation-token action must not move a reservation out of a terminal
+// state (e.g. re-confirming a completed booking, or reviving an expired-deposit
+// one). Delegate to the canonical lifecycle helper so payment_expired etc. are
+// always covered — no hand-rolled list to drift.
 function assertActionable(status: string, message: string) {
-  if (CLOSED_STATUSES.includes(status)) throw new ApiError(409, message);
+  if (isClosedBooking(status)) throw new ApiError(409, message);
 }
 
 export async function acceptReservationByToken(token: string) {
@@ -54,11 +48,17 @@ export async function acceptReservationByToken(token: string) {
   ] as string[];
   const paidOrRestaurantConfirmed = paidOrRestaurantConfirmedStatuses.includes(reservation.status);
 
-  const status = reservation.status === RESERVATION_STATUSES.AWAITING_DEPOSIT_PAYMENT
-    ? RESERVATION_STATUSES.AWAITING_DEPOSIT_PAYMENT
-    : paidOrRestaurantConfirmed
-      ? RESERVATION_STATUSES.CONFIRMED
-      : RESERVATION_STATUSES.CONFIRMED_BY_GUEST;
+  // A guest tapping «Я приду» on a not-yet-approved request records their
+  // confirmation but must NOT self-approve: the booking stays in the manager's
+  // «Нужно подтвердить» queue (with the «Гость подтвердил визит» badge). Only
+  // already-approved bookings advance to CONFIRMED; unpaid deposits stay put.
+  const status = getBookingPhase(reservation.status) === "needs_confirmation"
+    ? reservation.status
+    : reservation.status === RESERVATION_STATUSES.AWAITING_DEPOSIT_PAYMENT
+      ? RESERVATION_STATUSES.AWAITING_DEPOSIT_PAYMENT
+      : paidOrRestaurantConfirmed
+        ? RESERVATION_STATUSES.CONFIRMED
+        : RESERVATION_STATUSES.CONFIRMED_BY_GUEST;
 
   const updated = await prisma.reservation.update({
     where: { id: reservation.id },
@@ -162,7 +162,13 @@ export async function rescheduleReservationByToken(token: string, payload: z.inf
       endTime: validated.endTime,
       guestsCount: input.guestsCount,
       comment: input.comment,
-      status: RESERVATION_STATUSES.AWAITING_RESTAURANT_CONFIRMATION,
+      // An unpaid-deposit booking must return to the payment queue, not the
+      // confirmation queue (otherwise the owner is offered «Подтвердить», which
+      // the API rejects until the deposit is paid).
+      status:
+        reservation.paymentRequired && reservation.paymentStatus !== EXTERNAL_PAYMENT_STATUSES.PAID_TO_RESTAURANT
+          ? RESERVATION_STATUSES.AWAITING_DEPOSIT_PAYMENT
+          : RESERVATION_STATUSES.AWAITING_RESTAURANT_CONFIRMATION,
       guestConfirmedAt: null,
       noShowRiskLevel: "medium",
       noShowRiskScore: 45,

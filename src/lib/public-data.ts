@@ -1,6 +1,7 @@
 import { unstable_cache } from "next/cache";
 import { RESTAURANT_STATUSES } from "@/lib/constants";
 import { prisma } from "@/lib/db";
+import { appTzOffsetMinutes } from "@/lib/time";
 export type RestaurantFilters = { q?: string; city?: string; cuisine?: string; feature?: string; averageCheck?: string; type?: string; open?: string };
 
 function includesText(value: string | null | undefined, query: string) {
@@ -13,11 +14,13 @@ function minutesFromTime(value: string) {
 }
 
 function isOpenNow(workingHours: { dayOfWeek: number; openTime: string; closeTime: string; isClosed: boolean }[]) {
-  const now = new Date();
-  const today = workingHours.find((item) => item.dayOfWeek === now.getDay());
+  // openTime/closeTime are Moscow wall-clock; the prod server runs on UTC, so
+  // shift "now" by the app TZ offset and read it as wall-clock (getUTC*).
+  const now = new Date(Date.now() + appTzOffsetMinutes() * 60_000);
+  const today = workingHours.find((item) => item.dayOfWeek === now.getUTCDay());
   if (!today || today.isClosed) return false;
 
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const currentMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
   const openMinutes = minutesFromTime(today.openTime);
   const closeMinutes = minutesFromTime(today.closeTime);
 

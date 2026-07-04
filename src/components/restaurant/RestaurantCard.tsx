@@ -4,8 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Clock3, MapPin, Star, WalletCards } from "lucide-react";
 import { useMemo, useState } from "react";
-import { formatMoney } from "@/lib/format";
+import { formatMoney, formatReviews } from "@/lib/format";
 import { distanceLabel } from "@/lib/geo";
+import { appWallClockNow } from "@/lib/time";
 import { parseStringList } from "@/lib/json-fields";
 import { useUserLocation } from "@/components/location/UserLocationProvider";
 import { RestaurantCardGallery } from "@/components/restaurant/RestaurantCardGallery";
@@ -40,7 +41,7 @@ type RestaurantCardProps = {
 };
 
 function todayHours(hours?: WorkingHour[]) {
-  const today = new Date().getDay();
+  const today = appWallClockNow().dayOfWeek;
   const current = hours?.find((item) => item.dayOfWeek === today);
   if (!current || current.isClosed) return "Сегодня закрыто";
   return `Сегодня до ${current.closeTime}`;
@@ -92,7 +93,7 @@ export function RestaurantCard({ restaurant, compact = false, restaurantBasePath
           <span className="restaurant-card-rating-badge">
             <Star size={14} aria-hidden />
             {rating}
-            {restaurant.reviewsCount ? <small>{restaurant.reviewsCount} оценок</small> : null}
+            {restaurant.reviewsCount ? <small>{formatReviews(restaurant.reviewsCount)}</small> : null}
           </span>
         ) : null}
       </Link>

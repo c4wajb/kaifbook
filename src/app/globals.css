@@ -16492,3 +16492,17 @@ html {
   accent-color: var(--accent);
   cursor: pointer;
 }
+
+/* Positive booking actions (Подтвердить / Посадить / Завершить визит / Отметить
+   оплату) — a quiet green tone so they read apart from neutral/destructive ones. */
+.reservation-actions .success-action {
+  border-color: rgba(74, 124, 92, 0.42);
+  color: var(--success);
+}
+.reservation-actions .success-action:hover {
+  background: var(--soft-success);
+  border-color: var(--success);
+}
+.reservation-actions .success-action svg {
+  color: var(--success);
+}

@@ -5,20 +5,16 @@ import { HallEditor } from "@/components/restaurant/HallEditor";
 import { OwnerTabs } from "@/components/admin/OwnerTabs";
 import { WaiterHallView } from "@/components/restaurant/WaiterHallView";
 import { prisma } from "@/lib/db";
-import { RESERVATION_STATUSES, STAFF_ROLES } from "@/lib/constants";
+import { STAFF_ROLES } from "@/lib/constants";
 import { canAccessRestaurant } from "@/lib/permissions";
 import { requireOwnerPageUser } from "@/lib/page-auth";
+import { ACTIVE_STATUSES } from "@/lib/reservation-status";
 
 type Props = { params: Promise<{ restaurantId: string }>; searchParams: Promise<{ hallId?: string }> };
 
-const LIVE_STATUSES = [
-  RESERVATION_STATUSES.NEW,
-  RESERVATION_STATUSES.CONFIRMED,
-  RESERVATION_STATUSES.CONFIRMED_BY_RESTAURANT,
-  RESERVATION_STATUSES.CONFIRMED_BY_GUEST,
-  RESERVATION_STATUSES.DEPOSIT_PAID,
-  RESERVATION_STATUSES.SEATED,
-];
+// Any non-closed booking holds its table — incl. the default
+// awaiting_restaurant_confirmation / awaiting_deposit_payment new bookings.
+const LIVE_STATUSES = ACTIVE_STATUSES;
 
 export default async function HallsPage({ params, searchParams }: Props) {
   const user = await requireOwnerPageUser();

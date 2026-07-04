@@ -29,6 +29,11 @@ export function formatGuests(count: number): string {
   return `${count} ${pluralizeRu(count, ["гость", "гостя", "гостей"])}`;
 }
 
+/** "1 оценка", "2 оценки", "5 оценок". */
+export function formatReviews(count: number): string {
+  return `${count} ${pluralizeRu(count, ["оценка", "оценки", "оценок"])}`;
+}
+
 export function reservationDateLabel(value: Date): string {
   return formatDateRu(value);
 }
@@ -52,7 +57,7 @@ export function statusLabel(status: string): string {
     approved: "Опубликован",
     rejected: "Отклонена",
     new: "Новая",
-    awaiting_restaurant_confirmation: "Ждет ресторан",
+    awaiting_restaurant_confirmation: "Ждёт ресторан",
     confirmed_by_restaurant: "Подтверждена рестораном",
     awaiting_deposit_payment: "Ожидает оплаты ресторану",
     deposit_paid: "Оплачена ресторану",
@@ -64,7 +69,7 @@ export function statusLabel(status: string): string {
     payment_expired: "Оплата истекла",
     cancelled: "Отменена",
     completed: "Завершена",
-    no_show: "Гость не пришел",
+    no_show: "Гость не пришёл",
     waiting_for_payment: "Ожидает оплату",
     paid: "Оплачено",
     not_required: "Оплата не требуется",

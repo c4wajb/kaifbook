@@ -402,8 +402,9 @@ export async function changeReservationStatus(
   if (!reservation) throw new ApiError(404, "Заявка не найдена.");
 
   // Terminal statuses (completed/cancelled/rejected/no_show/payment_expired) are
-  // read-only — block confirm/seat/reject/cancel/complete/no-show on a closed booking.
-  if (isClosedBooking(reservation.status) && reservation.status !== status) {
+  // read-only — block ALL further transitions (incl. re-closing, which would
+  // otherwise re-run notifications and null the original closure reason).
+  if (isClosedBooking(reservation.status)) {
     throw new ApiError(409, "Бронь уже закрыта — изменить статус нельзя.");
   }
 
@@ -494,6 +495,7 @@ export async function changeReservationStatus(
 export async function markReservationPaymentPaid(reservationId: string, actor: { id: string; role: string }, comment?: string | null) {
   const reservation = await prisma.reservation.findUnique({ where: { id: reservationId } });
   if (!reservation) throw new ApiError(404, "Заявка не найдена.");
+  if (isClosedBooking(reservation.status)) throw new ApiError(409, "Бронь уже закрыта — отметить оплату нельзя.");
   if (!reservation.paymentRequired) throw new ApiError(400, "Для этой заявки оплата не требуется.");
   if (reservation.paymentStatus === EXTERNAL_PAYMENT_STATUSES.PAID_TO_RESTAURANT) return reservation;
 

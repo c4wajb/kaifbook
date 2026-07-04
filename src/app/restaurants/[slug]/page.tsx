@@ -12,7 +12,7 @@ import { YandexMap } from "@/components/restaurant/YandexMap";
 import { isAdultOnlyRestaurant } from "@/lib/adult-content";
 import { getCurrentUser } from "@/lib/auth";
 import { DAY_LABELS } from "@/lib/constants";
-import { formatList, formatMoney } from "@/lib/format";
+import { formatList, formatMoney, formatReviews } from "@/lib/format";
 import { parseStringList } from "@/lib/json-fields";
 import { getRestaurantBySlug } from "@/lib/public-data";
 
@@ -83,7 +83,7 @@ export default async function RestaurantPage({ params }: Props) {
             {ratingText ? (
               <span>
                 <Star size={16} aria-hidden />
-                {ratingText} · {restaurant.reviewsCount || restaurant.reviews.length} оценок
+                {ratingText} · {formatReviews(restaurant.reviewsCount || restaurant.reviews.length)}
               </span>
             ) : null}
             <span>
@@ -158,7 +158,7 @@ export default async function RestaurantPage({ params }: Props) {
               {ratingText ? (
                 <span className="profile-rating-pill">
                   <Star size={16} aria-hidden />
-                  {ratingText} · {restaurant.reviewsCount || restaurant.reviews.length} оценок
+                  {ratingText} · {formatReviews(restaurant.reviewsCount || restaurant.reviews.length)}
                 </span>
               ) : null}
             </div>

@@ -5,6 +5,7 @@ import { ArrowLeft, Armchair, CalendarCheck, CheckCircle2, Clock3, MapPin, Phone
 import { Badge } from "@/components/ui/Badge";
 import { ReservationQrCard } from "@/components/reservations/ReservationQrCard";
 import { EXTERNAL_PAYMENT_STATUSES, PAYMENT_STATUSES, RESERVATION_STATUSES } from "@/lib/constants";
+import { isClosedBooking } from "@/lib/reservation-status";
 import { formatMoney, reservationDateLabel, statusLabel } from "@/lib/format";
 import { acceptReservationByToken, cancelReservationByToken, getReservationByConfirmationToken } from "@/lib/public-reservation-confirmation";
 import { reservationQrUrl } from "@/lib/reservation-qr";
@@ -42,15 +43,9 @@ export default async function ReservationConfirmationPage({ params }: Props) {
 
   const payment = reservation.payments[0] ?? null;
   const selectedSeats = parseSeatNumbers(reservation.selectedSeatNumbers);
-  const closedStatuses = [
-    RESERVATION_STATUSES.CANCELLED,
-    RESERVATION_STATUSES.CANCELLED_BY_GUEST,
-    RESERVATION_STATUSES.CANCELLED_BY_RESTAURANT,
-    RESERVATION_STATUSES.NO_SHOW,
-    RESERVATION_STATUSES.REJECTED,
-    RESERVATION_STATUSES.COMPLETED,
-  ] as string[];
-  const canConfirm = !closedStatuses.includes(reservation.status);
+  // Mirror the server guard (assertActionable) so the buttons never render for a
+  // closed booking — includes payment_expired via the canonical helper.
+  const canConfirm = !isClosedBooking(reservation.status);
   const paymentStatus = payment?.status === PAYMENT_STATUSES.PAID ? PAYMENT_STATUSES.PAID : reservation.paymentStatus;
   const paymentAmount = payment?.amount || reservation.paymentAmount || reservation.depositAmount || 0;
   const paymentUrl = payment?.paymentUrl || reservation.paymentUrl;

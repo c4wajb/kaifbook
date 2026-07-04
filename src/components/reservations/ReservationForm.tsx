@@ -354,6 +354,7 @@ export function ReservationForm({
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const submittingRef = useRef(false);
+  const skipDraftResetRef = useRef(false);
   const [reservationDate, setReservationDate] = useState(localDateInputValue());
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -465,6 +466,12 @@ export function ReservationForm({
   }, [endTime, endTimeOptions, reservationDurationMinutes, startTime]);
 
   useEffect(() => {
+    // A draft restore sets date/time AND the table together; swallow the one
+    // reset that the date/time change triggers so the restored table survives.
+    if (skipDraftResetRef.current) {
+      skipDraftResetRef.current = false;
+      return;
+    }
     resetVisualSelection("date_or_time_changed");
   }, [endTime, reservationDate, resetVisualSelection, startTime]);
 
@@ -559,6 +566,7 @@ export function ReservationForm({
       if (draft.customerName) setCustomerName(draft.customerName);
       if (draft.customerPhone && !initialFormattedPhone) setCustomerPhone(formatRuPhoneInput(draft.customerPhone));
       if (Array.isArray(draft.selectedSeatIds)) setSelectedSeatIds(draft.selectedSeatIds);
+      if (draft.tableId || draft.selectedTable) skipDraftResetRef.current = true;
       if (draft.tableId) setTableId(draft.tableId);
       if (draft.selectedTable) setSelectedTable(draft.selectedTable);
     } catch {

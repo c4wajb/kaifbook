@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { BarChart3, CalendarClock, MousePointerClick, UserRoundCheck } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { RESERVATION_STATUSES, ROLES, STAFF_ROLES } from "@/lib/constants";
+import { getBookingPhase, isNeedsConfirmationBooking } from "@/lib/reservation-status";
 import { prisma } from "@/lib/db";
 import { formatMoney } from "@/lib/format";
 import { requireOwnerPageUser } from "@/lib/page-auth";
@@ -45,11 +46,13 @@ export default async function OwnerDashboardPage() {
   ]);
 
   const todayReservations = reservations.filter((reservation) => reservation.reservationDate >= today && reservation.reservationDate < tomorrow);
-  const newRequests = reservations.filter((reservation) => reservation.status === RESERVATION_STATUSES.NEW).length;
-  const activeStatuses = [RESERVATION_STATUSES.CONFIRMED, RESERVATION_STATUSES.SEATED, RESERVATION_STATUSES.COMPLETED] as string[];
-  const confirmed = reservations.filter((reservation) => activeStatuses.includes(reservation.status));
+  // Count by lifecycle phase, not legacy literals — createReservation no longer
+  // uses "new", and "confirmed" covers deposit_paid / confirmed_by_guest / _by_restaurant.
+  const newRequests = reservations.filter((reservation) => isNeedsConfirmationBooking(reservation.status)).length;
+  const isConfirmedPhase = (status: string) => getBookingPhase(status) === "confirmed" || getBookingPhase(status) === "seated";
+  const confirmed = reservations.filter((reservation) => isConfirmedPhase(reservation.status) || reservation.status === RESERVATION_STATUSES.COMPLETED);
   const noShowCount = reservations.filter((reservation) => reservation.status === RESERVATION_STATUSES.NO_SHOW).length;
-  const guestsToday = todayReservations.filter((reservation) => reservation.status === RESERVATION_STATUSES.CONFIRMED || reservation.status === RESERVATION_STATUSES.SEATED).reduce((sum, reservation) => sum + reservation.guestsCount, 0);
+  const guestsToday = todayReservations.filter((reservation) => isConfirmedPhase(reservation.status)).reduce((sum, reservation) => sum + reservation.guestsCount, 0);
   const conversionRate = percent(confirmed.length, reservations.length);
   const noShowRate = percent(noShowCount, reservations.length);
   const viewToBookingRate = percent(reservations.length, pageViews);
